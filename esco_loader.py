@@ -94,9 +94,14 @@ class ESCOIndex:
             return None
 
         normalized = normalize_label(phrase)
+        candidates = [
+            label for label in self.all_labels
+            if min(len(label), len(normalized)) / max(len(label), len(normalized)) >= 0.5
+            and (len(label) >= 3 or len(label) == len(normalized))
+        ]
         match_result = process.extractOne(
             normalized,
-            self.all_labels,
+            candidates,
             scorer=fuzz.WRatio,
             score_cutoff=threshold
         )
