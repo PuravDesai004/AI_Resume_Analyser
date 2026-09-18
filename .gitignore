@@ -1,0 +1,16 @@
+# Virtual environment
+venv/
+.venv/
+__pycache__/
+
+# Environment variables & API keys
+.env
+
+# Vector DB local storage
+chroma_db/
+my_local_db/
+*.sqlite3
+
+# Documents & Data
+Pdfs/
+data/*.csv

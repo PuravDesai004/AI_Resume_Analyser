@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+google-genai
+chromadb
+rank-bm25
+sentence-transformers
+tiktoken
+langchain-community
+langchain-text-splitters
+pymupdf
+python-dotenv
+pydantic
+rapidfuzz
+pandas
+numpy
