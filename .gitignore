@@ -13,4 +13,7 @@ my_local_db/
 
 # Documents & Data
 Pdfs/
-data/*.csv
+data/*.csv
+
+# Local testing UI
+app.py
