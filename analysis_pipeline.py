@@ -18,7 +18,7 @@ from skill_comparison import compare_skills
 from sufficiency_check import check_sufficiency, build_insufficient_response
 from analysis_prompt_builder import build_analysis_prompt, get_generation_config
 
-load_dotenv()
+load_dotenv(override=True)
 GEMINI_MODEL = "gemini-3.6-flash"
 
 

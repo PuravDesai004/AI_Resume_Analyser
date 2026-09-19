@@ -8,7 +8,7 @@ from embedding_manager import EmbeddingManager
 from sentence_transformers import CrossEncoder
 from retrieval import *
 
-load_dotenv()
+load_dotenv(override=True)
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 print("Execution Started")
