@@ -182,8 +182,8 @@ class TestPlacementAnalyzer(unittest.TestCase):
         jd_index.clear_store_for_testing()
 
         # Add 2 JDs with distinct synthetic embeddings
-        vec_py = [1.0, 0.0, 0.0]
-        vec_front = [0.0, 1.0, 0.0]
+        vec_py = [1.0] + [0.0] * 3071
+        vec_front = [0.0, 1.0] + [0.0] * 3070
 
         with patch.object(jd_index, "_get_embedder") as mock_idx_emb:
             mock_emb = MagicMock()
@@ -198,7 +198,7 @@ class TestPlacementAnalyzer(unittest.TestCase):
              patch("google.genai.models.Models.generate_content") as mock_gen:
 
             mock_emb2 = MagicMock()
-            mock_emb2.embed_chunk.return_value = [0.95, 0.05, 0.0]
+            mock_emb2.embed_chunk.return_value = [0.95, 0.05] + [0.0] * 3070
             mock_rank_emb.return_value = mock_emb2
 
             res = ranking.rank_jds("Python developer with FastAPI experience", "res_001")
@@ -439,7 +439,7 @@ class TestPlacementAnalyzer(unittest.TestCase):
         jd_index.clear_store_for_testing()
         with patch.object(jd_index, "_get_embedder") as mock_idx_emb:
             mock_emb = MagicMock()
-            mock_emb.embed_chunk.return_value = [0.1] * 768
+            mock_emb.embed_chunk.return_value = [0.1] * 3072
             mock_idx_emb.return_value = mock_emb
             jd_rec = jd_index.add_jd("Role", "Co", "Remote", " ".join(["requirement"] * 40))
 
