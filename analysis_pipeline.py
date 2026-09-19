@@ -19,7 +19,7 @@ from sufficiency_check import check_sufficiency, build_insufficient_response
 from analysis_prompt_builder import build_analysis_prompt, get_generation_config
 
 load_dotenv(override=True)
-GEMINI_MODEL = "gemini-3.6-flash"
+MODELS_TO_TRY = ["gemini-3.5-flash", "gemini-3.6-flash", "gemini-3.7-flash"]
 
 
 class AnalysisPipeline:
@@ -42,7 +42,7 @@ class AnalysisPipeline:
 
         api_key = os.getenv("GEMINI_API_KEY")
         self.client = genai.Client(api_key=api_key)
-        print(f"[AnalysisPipeline] Gemini client initialized (Model: {GEMINI_MODEL}).")
+        print(f"[AnalysisPipeline] Gemini client initialized (Models: {MODELS_TO_TRY}).")
 
     def rank(self, resume_text: str, resume_id: str) -> dict[str, Any]:
         """
@@ -91,21 +91,25 @@ class AnalysisPipeline:
 
             response = None
             last_err = None
-            for attempt in range(2):
-                try:
-                    response = self.client.models.generate_content(
-                        model=GEMINI_MODEL,
-                        contents=prompt,
-                        config=config
-                    )
+            for model_name in MODELS_TO_TRY:
+                for attempt in range(2):
+                    try:
+                        response = self.client.models.generate_content(
+                            model=model_name,
+                            contents=prompt,
+                            config=config
+                        )
+                        if response:
+                            break
+                    except Exception as e:
+                        last_err = e
+                        if ("503" in str(e) or "429" in str(e)) and attempt == 0:
+                            import time
+                            time.sleep(1.0)
+                            continue
+                        break
+                if response is not None:
                     break
-                except Exception as e:
-                    last_err = e
-                    if "503" in str(e) and attempt == 0:
-                        import time
-                        time.sleep(1.5)
-                        continue
-                    raise e
 
             if response is None:
                 raise last_err if last_err else RuntimeError("Generation failed")
