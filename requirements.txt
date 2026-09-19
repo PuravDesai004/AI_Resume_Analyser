@@ -12,3 +12,6 @@ python-dotenv
 pydantic
 rapidfuzz
 numpy
+streamlit
+python-docx
+plotly
