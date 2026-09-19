@@ -28,6 +28,8 @@ class RAGPipeline:
         self.client = genai.Client()
 
     def run(self, query_text):
+        if not self.all_chunks:
+            return "No documents found in the database. Please add documents first."
 
         vector_search = query_collection(query_text, self.embedder, 3) # gives the format of the chroma db
         vector_chunks = [

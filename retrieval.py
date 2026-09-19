@@ -34,11 +34,15 @@ def get_all_chunks_from_db():
 # this performs the keyword search
 # first we have to give the index to chunk for tracking them later
 def build_bm25_index(chunk_list):
+    if not chunk_list:
+        return None
     tokenized = [c["document"].lower().split() for c in chunk_list]
     return BM25Okapi(tokenized) # this returns the weights for the chunks
 
 # this is the main keyword search
 def bm25_search(query, bm25_index, chunk_list, n_results=10):
+    if bm25_index is None or not chunk_list:
+        return []
     scores = bm25_index.get_scores(query.lower().split())
     ranked = sorted(zip(chunk_list, scores), key=lambda x: x[1], reverse=True)
     return ranked[:n_results]
