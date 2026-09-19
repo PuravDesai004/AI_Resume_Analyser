@@ -518,37 +518,40 @@ with tab_upload:
             progress_bar = st.progress(0, text="Step 1/5: Uploading & Parsing Documents...")
             time.sleep(0.3)
 
-            # Step 1: Upload / Ingest JDs to Backend
-            progress_bar.progress(25, text="Step 2/5: Ingesting & Embedding Job Descriptions...")
-            api_reset_jds()
-            for j in st.session_state.jds:
-                res = api_add_jd(j["title"], j["company"], j["location"], j["text"])
-                if "jd_id" in res:
-                    j["backend_id"] = res["jd_id"]
-                elif "error" in res:
-                    st.error(f"Error adding JD '{j['title']}': {res.get('detail')}")
+            try:
+                # Step 1: Upload / Ingest JDs to Backend
+                progress_bar.progress(25, text="Step 2/5: Ingesting & Embedding Job Descriptions...")
+                api_reset_jds()
+                for j in st.session_state.jds:
+                    res = api_add_jd(j["title"], j["company"], j["location"], j["text"])
+                    if "jd_id" in res:
+                        j["backend_id"] = res["jd_id"]
+                    elif "error" in res:
+                        st.error(f"Error adding JD '{j['title']}': {res.get('detail')}")
 
-            # Step 2: Tier 1 Ranking
-            progress_bar.progress(50, text="Step 3/5: Vectorizing Resume & Running Cosine Similarity Matching...")
-            rank_resp = api_rank(target_resume["text"], target_resume["id"])
-            st.session_state.rank_results = rank_resp.get("results", [])
+                # Step 2: Tier 1 Ranking
+                progress_bar.progress(50, text="Step 3/5: Vectorizing Resume & Running Cosine Similarity Matching...")
+                rank_resp = api_rank(target_resume["text"], target_resume["id"])
+                st.session_state.rank_results = rank_resp.get("results", [])
 
-            progress_bar.progress(75, text="Step 4/5: Ranking Top-5 Matches (Zero Gemini Calls)...")
-            time.sleep(0.3)
+                progress_bar.progress(75, text="Step 4/5: Ranking Top-5 Matches (Zero Gemini Calls)...")
+                time.sleep(0.3)
 
-            # Step 3: Trigger Tier 2 analysis on top match if available
-            if st.session_state.rank_results:
-                top_jd = st.session_state.rank_results[0]
-                top_id = top_jd["jd_id"]
-                progress_bar.progress(90, text=f"Step 5/5: Running Gemini Deep Analysis on #1 match ({top_jd['title']})...")
-                analysis_res = api_analyze(target_resume["text"], target_resume["id"], top_id)
-                st.session_state.analyses[top_id] = analysis_res
-                st.session_state.selected_jd_id = top_id
+                # Step 3: Trigger Tier 2 analysis on top match if available
+                if st.session_state.rank_results:
+                    top_jd = st.session_state.rank_results[0]
+                    top_id = top_jd["jd_id"]
+                    progress_bar.progress(90, text=f"Step 5/5: Running Gemini Deep Analysis on #1 match ({top_jd['title']})...")
+                    analysis_res = api_analyze(target_resume["text"], target_resume["id"], top_id)
+                    st.session_state.analyses[top_id] = analysis_res
+                    st.session_state.selected_jd_id = top_id
 
-            progress_bar.progress(100, text="Complete! Results ready.")
-            st.success("Analysis complete! View the results in Tab 2 and Tab 3.")
-            time.sleep(0.5)
-            st.rerun()
+                progress_bar.progress(100, text="Complete! Results ready.")
+                st.success("Analysis complete! View the results in Tab 2 and Tab 3.")
+                time.sleep(0.5)
+                st.rerun()
+            except Exception as e:
+                st.error(f"Analysis failed: {e}")
 
 
 # ════════════════════════════════════════════════════════════════

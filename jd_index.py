@@ -9,8 +9,21 @@ JD_STORE_CAP = 15
 
 # Use ChromaDB client from existing chroma_db.py to avoid modifying Phase 2 files
 _client = chroma_db.client
-_collection = _client.get_or_create_collection(name="job_descriptions")
+_collection = None
 _embedder = None
+
+
+def _get_collection():
+    """Dynamically gets or refreshes the ChromaDB collection to prevent stale collection UUID errors."""
+    global _collection
+    if _collection is not None:
+        try:
+            _ = _collection.count()
+            return _collection
+        except Exception:
+            _collection = None
+    _collection = _client.get_or_create_collection(name="job_descriptions")
+    return _collection
 
 
 def _get_embedder() -> EmbeddingManager:
@@ -22,7 +35,7 @@ def _get_embedder() -> EmbeddingManager:
 
 def count() -> int:
     """Current number of stored job descriptions."""
-    return _collection.count()
+    return _get_collection().count()
 
 
 def add_jd(
@@ -59,7 +72,7 @@ def add_jd(
         "snippet": snippet
     }
 
-    _collection.add(
+    _get_collection().add(
         ids=[jd_id],
         embeddings=[embedding],
         documents=[clean_text],
@@ -78,7 +91,7 @@ def add_jd(
 
 def get_all_jd_embeddings() -> list[tuple[str, list[float]]]:
     """Fetch all stored JD ids and their vectors for Tier 1 ranking."""
-    data = _collection.get(include=["embeddings"])
+    data = _get_collection().get(include=["embeddings"])
     ids = data.get("ids", [])
     embeddings = data.get("embeddings", [])
     if embeddings is None or len(embeddings) == 0:
@@ -88,7 +101,7 @@ def get_all_jd_embeddings() -> list[tuple[str, list[float]]]:
 
 def get_jd_record(jd_id: str) -> Optional[JDRecord]:
     """Fetch one JD's full text and metadata for Tier 2 analysis."""
-    data = _collection.get(ids=[jd_id], include=["metadatas", "documents"])
+    data = _get_collection().get(ids=[jd_id], include=["metadatas", "documents"])
     ids = data.get("ids", [])
     if not ids:
         return None
@@ -106,10 +119,20 @@ def get_jd_record(jd_id: str) -> Optional[JDRecord]:
 
 
 def clear_store_for_testing() -> None:
-    """Helper for testing to reset the collection."""
-    global _collection
-    _client.delete_collection(name="job_descriptions")
-    _collection = _client.get_or_create_collection(name="job_descriptions")
+    """Clears all stored records without deleting the collection object."""
+    coll = _get_collection()
+    try:
+        data = coll.get()
+        ids = data.get("ids", [])
+        if ids:
+            coll.delete(ids=ids)
+    except Exception:
+        global _collection
+        try:
+            _client.delete_collection(name="job_descriptions")
+        except Exception:
+            pass
+        _collection = _client.get_or_create_collection(name="job_descriptions")
 
 
 if __name__ == "__main__":
