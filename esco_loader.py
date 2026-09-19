@@ -1,108 +1,134 @@
 import os
 import csv
+import json
+import re
 from typing import Optional
 
-try:
-    from rapidfuzz import process, fuzz
-except ImportError:
-    process = None
-    fuzz = None
+from rapidfuzz import process, fuzz
 
 
 def normalize_label(label: str) -> str:
-    """Normalize label for consistent dictionary lookup."""
-    return label.strip().lower()
+    """Normalize label: lowercase, strip, and collapse whitespace."""
+    if not label:
+        return ""
+    return re.sub(r"\s+", " ", label.strip().lower())
 
 
-def load_esco_skills(csv_path: str = "data/skills_en.csv") -> dict:
-    """
-    Reads the ESCO skills CSV and constructs lookup indexes.
-    Expects columns: conceptUri, preferredLabel, altLabels, description, skillType.
-    """
-    if not os.path.exists(csv_path):
-        raise FileNotFoundError(
-            f"ESCO taxonomy file not found at '{csv_path}'. "
-            f"Please download 'skills_en.csv' from https://esco.ec.europa.eu/en/use-esco/download "
-            f"and place it in the 'data/' directory."
-        )
+class SkillIndex:
+    """Unified lookup index spanning ESCO and custom skills taxonomy."""
 
-    by_label: dict[str, dict] = {}
-    all_labels_set: set[str] = set()
+    def __init__(
+        self,
+        esco_csv_path: str = "data/skills_en.csv",
+        custom_json_path: str = "data/custom_skills.json"
+    ):
+        if not os.path.exists(esco_csv_path):
+            raise FileNotFoundError(
+                f"ESCO taxonomy file not found at expected path: '{esco_csv_path}'. "
+                f"Please download skills_en.csv from https://esco.ec.europa.eu/en/use-esco/download"
+            )
+        if not os.path.exists(custom_json_path):
+            raise FileNotFoundError(
+                f"Custom skills file not found at expected path: '{custom_json_path}'."
+            )
 
-    with open(csv_path, mode="r", encoding="utf-8-sig") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            uri = row.get("conceptUri", "").strip()
-            pref_label = row.get("preferredLabel", "").strip()
-            alt_labels_raw = row.get("altLabels", "").strip()
+        self.esco_csv_path = esco_csv_path
+        self.custom_json_path = custom_json_path
 
-            if not pref_label:
-                continue
+        self.by_label: dict[str, dict] = {}
+        self.all_labels: list[str] = []
+        self._source_counts: dict[str, int] = {"esco": 0, "custom": 0}
+
+        self._load_sources()
+
+    def _load_sources(self) -> None:
+        # 1. Load ESCO dataset
+        with open(self.esco_csv_path, mode="r", encoding="utf-8-sig") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                uri = row.get("conceptUri", "").strip()
+                pref_label = row.get("preferredLabel", "").strip()
+                alt_labels_raw = row.get("altLabels", "").strip()
+
+                if not pref_label:
+                    continue
+
+                record = {
+                    "skill_id": uri,
+                    "preferred_label": pref_label,
+                    "source": "esco"
+                }
+
+                norm_pref = normalize_label(pref_label)
+                if norm_pref not in self.by_label:
+                    self.by_label[norm_pref] = record
+                    self._source_counts["esco"] += 1
+
+                if alt_labels_raw:
+                    for alt in alt_labels_raw.split("\n"):
+                        cleaned = alt.strip()
+                        if cleaned:
+                            norm_alt = normalize_label(cleaned)
+                            if norm_alt not in self.by_label:
+                                self.by_label[norm_alt] = record
+                                self._source_counts["esco"] += 1
+
+        # 2. Load custom skills dataset
+        with open(self.custom_json_path, mode="r", encoding="utf-8") as f:
+            custom_data = json.load(f)
+
+        for item in custom_data:
+            skill_id = item["id"]
+            pref_label = item["preferred_label"]
+            alt_labels = item.get("alt_labels", [])
 
             record = {
-                "uri": uri,
-                "preferred_label": pref_label
+                "skill_id": skill_id,
+                "preferred_label": pref_label,
+                "source": "custom"
             }
 
-            norm_pref = normalize_label(pref_label)
-            by_label[norm_pref] = record
-            all_labels_set.add(norm_pref)
+            all_custom_labels = [pref_label] + alt_labels
+            for label in all_custom_labels:
+                norm_lbl = normalize_label(label)
+                if norm_lbl and norm_lbl not in self.by_label:
+                    self.by_label[norm_lbl] = record
+                    self._source_counts["custom"] += 1
 
-            # Process alt labels (often separated by newlines or pipes in ESCO exports)
-            if alt_labels_raw:
-                delimiters = ["\n", "|", "\r\n"]
-                alt_list = [alt_labels_raw]
-                for d in delimiters:
-                    expanded = []
-                    for item in alt_list:
-                        expanded.extend(item.split(d))
-                    alt_list = expanded
-
-                for alt in alt_list:
-                    cleaned_alt = alt.strip()
-                    if cleaned_alt:
-                        norm_alt = normalize_label(cleaned_alt)
-                        if norm_alt not in by_label:
-                            by_label[norm_alt] = record
-                        all_labels_set.add(norm_alt)
-
-    return {
-        "by_label": by_label,
-        "all_labels": list(all_labels_set)
-    }
-
-
-class ESCOIndex:
-    """Singleton-style in-memory lookup index for ESCO skills."""
-
-    def __init__(self, csv_path: str = "data/skills_en.csv"):
-        data = load_esco_skills(csv_path)
-        self.by_label: dict[str, dict] = data["by_label"]
-        self.all_labels: list[str] = data["all_labels"]
+        self.all_labels = list(self.by_label.keys())
 
     def exact_match(self, phrase: str) -> Optional[dict]:
-        """Perform exact normalized dictionary lookup."""
-        normalized = normalize_label(phrase)
-        return self.by_label.get(normalized)
+        """Perform exact normalized dictionary lookup in O(1)."""
+        if not phrase:
+            return None
+        norm = normalize_label(phrase)
+        return self.by_label.get(norm)
 
-    def fuzzy_match(self, phrase: str, threshold: int = 80) -> Optional[dict]:
+    def fuzzy_match(self, phrase: str, threshold: int = 85) -> Optional[dict]:
         """
-        Perform fuzzy match using rapidfuzz against all known ESCO labels.
-        Returns matched record plus match score if above threshold.
+        Perform fuzzy match using RapidFuzz against indexed labels.
+        Returns matched record and score if meeting threshold.
         """
-        if not process or not self.all_labels:
+        if not phrase or not self.all_labels:
             return None
 
-        normalized = normalize_label(phrase)
+        norm = normalize_label(phrase)
+
+        # Pre-filter candidate labels to keep fuzzy match fast and accurate
+        norm_len = len(norm)
         candidates = [
-            label for label in self.all_labels
-            if min(len(label), len(normalized)) / max(len(label), len(normalized)) >= 0.5
-            and (len(label) >= 3 or len(label) == len(normalized))
+            lbl for lbl in self.all_labels
+            if min(len(lbl), norm_len) / max(len(lbl), norm_len) >= 0.5
+            and (len(lbl) >= 3 or len(lbl) == norm_len)
         ]
+
+        if not candidates:
+            return None
+
         match_result = process.extractOne(
-            normalized,
+            norm,
             candidates,
-            scorer=fuzz.WRatio,
+            scorer=fuzz.QRatio,
             score_cutoff=threshold
         )
 
@@ -111,25 +137,35 @@ class ESCOIndex:
             record = self.by_label.get(matched_label)
             if record:
                 return {
-                    "uri": record["uri"],
+                    "skill_id": record["skill_id"],
                     "preferred_label": record["preferred_label"],
+                    "source": record["source"],
                     "matched_label": matched_label,
                     "score": float(score)
                 }
 
         return None
 
-    def get_all_labels(self) -> list[str]:
-        """Return list of all registered skill labels."""
-        return self.all_labels
+    def stats(self) -> dict:
+        """Counts of indexed labels by source."""
+        return {
+            "esco": self._source_counts["esco"],
+            "custom": self._source_counts["custom"],
+            "total_labels": len(self.by_label)
+        }
 
 
 if __name__ == "__main__":
-    test_path = "data/skills_en.csv"
-    if os.path.exists(test_path):
-        index = ESCOIndex(test_path)
-        print(f"Loaded {len(index.all_labels)} labels.")
-        print("Exact match 'python':", index.exact_match("python"))
-        print("Fuzzy match 'React.js':", index.fuzzy_match("React.js"))
-    else:
-        print(f"Notice: '{test_path}' not found yet. Place the ESCO CSV in 'data/' to test.")
+    index = SkillIndex()
+    print("SkillIndex stats:", index.stats())
+    fastapi_match = index.exact_match("FastAPI")
+    print("FastAPI match:", fastapi_match)
+    assert fastapi_match is not None and fastapi_match["source"] == "custom"
+
+    python_match = index.exact_match("Python")
+    print("Python match:", python_match)
+    assert python_match is not None and python_match["source"] == "esco"
+
+    python_lower_match = index.exact_match("python")
+    assert python_lower_match == python_match
+    print("esco_loader acceptance criteria passed!")

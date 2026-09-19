@@ -1,0 +1,61 @@
+{
+  "resumes": [
+    {
+      "id": "res_python_dev",
+      "text": "Experienced Python Developer with 4 years building web applications. Expert in Python, FastAPI, Django, PostgreSQL, and Redis. Built REST APIs and microservices deployed with Docker on AWS (EC2, S3). Strong testing skills with Pytest and CI/CD automation via GitHub Actions. Bachelor of Science in Computer Science."
+    },
+    {
+      "id": "res_frontend_eng",
+      "text": "Frontend Engineer specializing in modern JavaScript and TypeScript web applications. Proficient in React, Next.js, Redux, Tailwind CSS, HTML5, and CSS3. Hands-on unit testing experience with Jest and Cypress. Collaborated in Agile Scrum teams using Jira and Git."
+    },
+    {
+      "id": "res_data_scientist",
+      "text": "Data Scientist with a background in machine learning and data engineering. Skilled in Python, NumPy, Pandas, Scikit-learn, PyTorch, and SQL. Experienced in model fine-tuning, vector embeddings, and building retrieval-augmented generation (RAG) pipelines using ChromaDB and LangChain. Visualizations built using Matplotlib and Streamlit."
+    },
+    {
+      "id": "res_devops_eng",
+      "text": "DevOps and Cloud Infrastructure Engineer with 5 years managing distributed systems. Extensive experience with Docker, Kubernetes, Terraform, Ansible, Jenkins, and GitLab CI/CD. Proficient in Linux system administration and Bash scripting across AWS and Microsoft Azure."
+    },
+    {
+      "id": "res_fullstack_eng",
+      "text": "Full Stack Developer proficient in Python, Node.js, Express.js, and React. Built relational database schemas in PostgreSQL and MySQL, as well as document stores in MongoDB. Deployed fullstack systems on Google Cloud Platform using Docker containerization and Nginx reverse proxies."
+    }
+  ],
+  "jds": [
+    {
+      "id": "jd_python_backend",
+      "title": "Senior Python Backend Engineer",
+      "company": "CloudScale Inc",
+      "location": "San Francisco, CA (Remote)",
+      "text": "We are looking for a Senior Python Backend Engineer. Required (Essential): Strong experience with Python, FastAPI, PostgreSQL, and Docker. Must have at least 3 years building REST APIs and microservices. Preferred: Redis caching, AWS cloud deployment, and CI/CD pipelines with GitHub Actions. Bachelor's degree in Computer Science or equivalent experience required."
+    },
+    {
+      "id": "jd_react_frontend",
+      "title": "React Frontend Developer",
+      "company": "PixelCraft Labs",
+      "location": "New York, NY",
+      "text": "Seeking a talented Frontend Developer. Requirements (Essential): Proficiency in React, TypeScript, JavaScript, HTML5, and CSS3. Experience with state management using Redux. Preferred: Next.js framework, Tailwind CSS, Jest testing, and working in an Agile Scrum environment."
+    },
+    {
+      "id": "jd_ai_ml_engineer",
+      "title": "AI / Machine Learning Engineer",
+      "company": "NeuralEdge Technologies",
+      "location": "Austin, TX (Hybrid)",
+      "text": "Join our AI team! Essential Requirements: Strong Python programming, PyTorch or TensorFlow, and Scikit-learn. Experience with vector embeddings, ChromaDB or Pinecone, and building RAG pipelines with LLMs. Preferred: Model fine-tuning, LangChain, Streamlit for rapid prototyping, and Docker."
+    },
+    {
+      "id": "jd_devops_cloud",
+      "title": "DevOps & Cloud Engineer",
+      "company": "SaaS Matrix",
+      "location": "Remote",
+      "text": "Looking for an infrastructure engineer. Essential Skills: Docker containerization, Kubernetes orchestration, Terraform Infrastructure as Code, and Linux administration. Preferred Skills: AWS or Azure cloud certifications, Jenkins or GitLab CI/CD, Ansible, and Bash scripting."
+    },
+    {
+      "id": "jd_fullstack_node_py",
+      "title": "Full Stack Software Engineer",
+      "company": "Innovate Digital",
+      "location": "Seattle, WA",
+      "text": "We need a versatile Full Stack Software Engineer. Essential Qualifications: Experience with Node.js or Python backend services, React on the frontend, and relational databases like PostgreSQL. Preferred Qualifications: MongoDB, Nginx configuration, Google Cloud Platform (GCP), and microservices architecture."
+    }
+  ]
+}

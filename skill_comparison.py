@@ -1,84 +1,134 @@
-from schemas import GroundedSkill, GroundingResult, ComparisonResult
+from schemas import GroundedSkill, SkillGap, MatchedSkill
 
 
-def compare_skills(grounding: GroundingResult) -> ComparisonResult:
+def compare_skills(
+    grounded_resume: list[GroundedSkill],
+    grounded_jd_essential: list[GroundedSkill],
+    grounded_jd_preferred: list[GroundedSkill]
+) -> tuple[SkillGap, int]:
     """
-    Deterministically compares verified grounded skills between candidate resume and job description.
-    Unverified skills are separated for transparency and not matched directly.
+    Deterministically compares grounded skills between resume and JD.
+    Uses set operations keyed on standardized_name.lower().
+    Computes match_score using fixed weighted formula: 80% essential, 20% preferred.
     """
-    verified_resume = [s for s in grounding.resume_skills if s.match_type != "unverified"]
-    unverified_resume = [s for s in grounding.resume_skills if s.match_type == "unverified"]
+    # Key resume skills by normalized standardized name
+    resume_map: dict[str, GroundedSkill] = {}
+    for s in grounded_resume:
+        key = s.standardized_name.strip().lower()
+        if key not in resume_map:
+            resume_map[key] = s
 
-    verified_jd = [s for s in grounding.jd_skills if s.match_type != "unverified"]
-    unverified_jd = [s for s in grounding.jd_skills if s.match_type == "unverified"]
+    # Deduplicate and key JD essential skills
+    essential_map: dict[str, GroundedSkill] = {}
+    for s in grounded_jd_essential:
+        key = s.standardized_name.strip().lower()
+        if key not in essential_map:
+            essential_map[key] = s
 
-    # Map normalized standardized names
-    resume_map: dict[str, GroundedSkill] = {
-        s.standardized_name.strip().lower(): s for s in verified_resume
-    }
-    jd_map: dict[str, GroundedSkill] = {
-        s.standardized_name.strip().lower(): s for s in verified_jd
-    }
+    # Deduplicate and key JD preferred skills (excluding any already in essential)
+    preferred_map: dict[str, GroundedSkill] = {}
+    for s in grounded_jd_preferred:
+        key = s.standardized_name.strip().lower()
+        if key not in essential_map and key not in preferred_map:
+            preferred_map[key] = s
 
-    matched_skills: list[GroundedSkill] = []
-    missing_essential: list[GroundedSkill] = []
-    missing_preferred: list[GroundedSkill] = []
-    extra_skills: list[GroundedSkill] = []
+    matched: list[MatchedSkill] = []
+    missing_essential: list[str] = []
+    missing_preferred: list[str] = []
+    extra: list[str] = []
 
-    # 1. Evaluate JD skills against candidate
-    for norm_name, jd_skill in jd_map.items():
-        if norm_name in resume_map:
-            resume_skill = resume_map[norm_name]
-            # Create matched skill preserving resume context and JD priority
-            matched_skills.append(
-                GroundedSkill(
-                    original_name=resume_skill.original_name,
-                    standardized_name=jd_skill.standardized_name,
-                    esco_id=jd_skill.esco_id or resume_skill.esco_id,
-                    match_type=resume_skill.match_type,
-                    match_score=resume_skill.match_score,
-                    context=resume_skill.context,
-                    priority=jd_skill.priority
+    matched_essential_count = 0
+    missing_essential_count = 0
+    matched_preferred_count = 0
+    missing_preferred_count = 0
+
+    # 1. Compare Essential
+    for key, jd_skill in essential_map.items():
+        if key in resume_map:
+            matched_essential_count += 1
+            res_skill = resume_map[key]
+            matched.append(
+                MatchedSkill(
+                    skill_name=jd_skill.standardized_name,
+                    match_type=res_skill.match_type
                 )
             )
         else:
-            if jd_skill.priority == "essential":
-                missing_essential.append(jd_skill)
-            else:
-                missing_preferred.append(jd_skill)
+            missing_essential_count += 1
+            missing_essential.append(jd_skill.standardized_name)
 
-    # 2. Evaluate Resume skills not present in JD
-    for norm_name, resume_skill in resume_map.items():
-        if norm_name not in jd_map:
-            extra_skills.append(resume_skill)
+    # 2. Compare Preferred
+    for key, jd_skill in preferred_map.items():
+        if key in resume_map:
+            matched_preferred_count += 1
+            res_skill = resume_map[key]
+            matched.append(
+                MatchedSkill(
+                    skill_name=jd_skill.standardized_name,
+                    match_type=res_skill.match_type
+                )
+            )
+        else:
+            missing_preferred_count += 1
+            missing_preferred.append(jd_skill.standardized_name)
 
-    return ComparisonResult(
-        matched_skills=matched_skills,
+    # 3. Compute Extra (Resume skills not in essential or preferred)
+    for key, res_skill in resume_map.items():
+        if key not in essential_map and key not in preferred_map:
+            extra.append(res_skill.standardized_name)
+
+    # 4. Compute Match Score
+    essential_total = matched_essential_count + missing_essential_count
+    preferred_total = matched_preferred_count + missing_preferred_count
+
+    essential_ratio = (matched_essential_count / essential_total) if essential_total > 0 else 1.0
+    preferred_ratio = (matched_preferred_count / preferred_total) if preferred_total > 0 else 1.0
+
+    match_score = round(100 * (0.8 * essential_ratio + 0.2 * preferred_ratio))
+    # Clamp to [0, 100]
+    match_score = max(0, min(100, match_score))
+
+    skill_gap = SkillGap(
+        matched=matched,
         missing_essential=missing_essential,
         missing_preferred=missing_preferred,
-        extra_skills=extra_skills,
-        unverified_resume=unverified_resume,
-        unverified_jd=unverified_jd
+        extra=extra
     )
+
+    return skill_gap, match_score
 
 
 if __name__ == "__main__":
-    print("Testing skill comparison...")
-    g_res = GroundingResult(
-        resume_skills=[
-            GroundedSkill(original_name="Python", standardized_name="Python", match_type="exact", context="Work Experience"),
-            GroundedSkill(original_name="Docker", standardized_name="Docker", match_type="exact", context="Projects"),
-            GroundedSkill(original_name="CustomInternalTool", standardized_name="CustomInternalTool", match_type="unverified")
-        ],
-        jd_skills=[
-            GroundedSkill(original_name="Python", standardized_name="Python", match_type="exact", priority="essential"),
-            GroundedSkill(original_name="Kubernetes", standardized_name="Kubernetes", match_type="exact", priority="essential"),
-            GroundedSkill(original_name="AWS", standardized_name="AWS", match_type="exact", priority="preferred")
-        ]
-    )
-    comp = compare_skills(g_res)
-    print("Matched:", [s.standardized_name for s in comp.matched_skills])
-    print("Missing Essential:", [s.standardized_name for s in comp.missing_essential])
-    print("Missing Preferred:", [s.standardized_name for s in comp.missing_preferred])
-    print("Extra Skills:", [s.standardized_name for s in comp.extra_skills])
-    print("Unverified Resume:", [s.original_name for s in comp.unverified_resume])
+    # Test fixture with known overlap
+    r_skills = [
+        GroundedSkill(original_name="Python", standardized_name="Python", skill_id="custom:python", source="custom", match_type="exact"),
+        GroundedSkill(original_name="Docker", standardized_name="Docker", skill_id="custom:docker", source="custom", match_type="exact"),
+        GroundedSkill(original_name="FastAPI", standardized_name="FastAPI", skill_id="custom:fastapi", source="custom", match_type="close")
+    ]
+    jd_ess = [
+        GroundedSkill(original_name="Python", standardized_name="Python", skill_id="custom:python", source="custom", match_type="exact"),
+        GroundedSkill(original_name="Kubernetes", standardized_name="Kubernetes", skill_id="custom:kubernetes", source="custom", match_type="exact")
+    ]
+    jd_pref = [
+        GroundedSkill(original_name="Docker", standardized_name="Docker", skill_id="custom:docker", source="custom", match_type="exact"),
+        GroundedSkill(original_name="AWS", standardized_name="AWS", skill_id="custom:aws", source="custom", match_type="exact")
+    ]
+
+    gap, score = compare_skills(r_skills, jd_ess, jd_pref)
+    print("Computed Gap:", gap.model_dump())
+    print("Computed Score:", score)
+
+    # Essential: 1/2 = 0.5. Preferred: 1/2 = 0.5. Score = round(100 * (0.8 * 0.5 + 0.2 * 0.5)) = 50.
+    assert score == 50
+    assert len(gap.matched) == 2
+    assert gap.missing_essential == ["Kubernetes"]
+    assert gap.missing_preferred == ["AWS"]
+    assert gap.extra == ["FastAPI"]
+
+    # 10 identical runs test
+    for _ in range(10):
+        g, s = compare_skills(r_skills, jd_ess, jd_pref)
+        assert s == 50
+        assert g == gap
+
+    print("skill_comparison acceptance criteria passed!")

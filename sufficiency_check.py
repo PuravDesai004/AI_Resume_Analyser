@@ -1,88 +1,92 @@
-from schemas import ComparisonResult, GroundingResult, SufficiencyResult, AnalysisOutput
-
-MIN_GROUNDED_SKILLS = 3
+from typing import Optional
+from schemas import DetailAnalysis, SkillGap
 
 
 def check_sufficiency(
-    comparison: ComparisonResult,
-    grounding: GroundingResult,
-    min_grounded: int = MIN_GROUNDED_SKILLS
-) -> SufficiencyResult:
+    resume_text: str,
+    jd_text: str,
+    min_words: int = 30
+) -> tuple[bool, Optional[str]]:
     """
-    Evaluates whether both the resume and the JD have enough verified skills
-    to produce a statistically sound, hallucination-free gap analysis.
+    Pure text-length gate. Evaluates whether both documents meet the minimum word count.
+    Runs before any Gemini API call is made.
     """
-    resume_verified = [s for s in grounding.resume_skills if s.match_type in ("exact", "close")]
-    jd_verified = [s for s in grounding.jd_skills if s.match_type in ("exact", "close")]
+    resume_words = len(resume_text.strip().split()) if resume_text else 0
+    jd_words = len(jd_text.strip().split()) if jd_text else 0
 
-    resume_count = len(resume_verified)
-    jd_count = len(jd_verified)
-
-    passed = (resume_count >= min_grounded) and (jd_count >= min_grounded)
-    reason = None
-
-    if not passed:
-        reason = (
-            f"Insufficient verified skills: found {resume_count} verified in resume, "
-            f"{jd_count} in job description (minimum {min_grounded} each required)."
+    if resume_words < min_words and jd_words < min_words:
+        return (
+            False,
+            f"Both documents are too short for meaningful analysis: "
+            f"resume has {resume_words} words, JD has {jd_words} words (minimum {min_words} each required)."
+        )
+    if resume_words < min_words:
+        return (
+            False,
+            f"Resume text is too short for analysis: found {resume_words} words (minimum {min_words} required)."
+        )
+    if jd_words < min_words:
+        return (
+            False,
+            f"Job description text is too short for analysis: found {jd_words} words (minimum {min_words} required)."
         )
 
-    return SufficiencyResult(
-        passed=passed,
-        reason=reason,
-        resume_grounded_count=resume_count,
-        jd_grounded_count=jd_count
-    )
+    return True, None
 
 
 def build_insufficient_response(
-    sufficiency: SufficiencyResult,
-    comparison: ComparisonResult
-) -> AnalysisOutput:
+    resume_id: str,
+    jd_id: str,
+    reason: str
+) -> DetailAnalysis:
     """
-    Constructs an AnalysisOutput response when sufficiency check fails,
-    returning partial deterministic data while safely skipping LLM generation.
+    Builds a fully-shaped DetailAnalysis object when context is insufficient.
+    Guarantees that the response structure is identical to a successful run.
     """
-    summary = (
-        f"Automated generation was bypassed: {sufficiency.reason} "
-        f"Please provide a more detailed resume or job description to enable comprehensive evaluation."
-    )
-
-    return AnalysisOutput(
-        summary=summary,
-        match_score=None,
-        matched_skills=[
-            {"skill": s.standardized_name, "context": s.context}
-            for s in comparison.matched_skills
-        ],
-        missing_essential=[
-            {"skill": s.standardized_name}
-            for s in comparison.missing_essential
-        ],
-        missing_preferred=[
-            {"skill": s.standardized_name}
-            for s in comparison.missing_preferred
-        ],
-        extra_skills=[
-            {"skill": s.standardized_name, "context": s.context}
-            for s in comparison.extra_skills
-        ],
-        unverified_skills={
-            "resume": [s.original_name for s in comparison.unverified_resume],
-            "jd": [s.original_name for s in comparison.unverified_jd],
-        },
-        recommendations=[],
-        generation_ran=False,
-        sufficiency_detail=sufficiency.reason
+    return DetailAnalysis(
+        resume_id=resume_id,
+        jd_id=jd_id,
+        context_sufficient=False,
+        insufficient_reason=reason,
+        match_score=0,
+        summary=f"Analysis bypassed: {reason}",
+        strengths=[],
+        weaknesses=[],
+        skill_gap=SkillGap(
+            matched=[],
+            missing_essential=[],
+            missing_preferred=[],
+            extra=[]
+        ),
+        requirement_match=[],
+        recommendations=[]
     )
 
 
 if __name__ == "__main__":
-    print("Testing sufficiency check...")
-    g_res = GroundingResult(resume_skills=[], jd_skills=[])
-    comp = ComparisonResult()
-    suff = check_sufficiency(comp, g_res, min_grounded=3)
-    print("Passed:", suff.passed)
-    print("Reason:", suff.reason)
-    insufficient_resp = build_insufficient_response(suff, comp)
-    print("Generation ran:", insufficient_resp.generation_ran)
+    short_resume = "Hello I am a python dev."
+    good_resume = " ".join(["word"] * 40)
+    short_jd = "Need a coder."
+    good_jd = " ".join(["requirement"] * 50)
+
+    # 1. Short resume test
+    ok, reason = check_sufficiency(short_resume, good_jd)
+    assert not ok
+    assert "Resume text is too short" in reason
+
+    # 2. Both short test
+    ok, reason = check_sufficiency(short_resume, short_jd)
+    assert not ok
+    assert "Both documents are too short" in reason
+
+    # 3. Sufficient test
+    ok, reason = check_sufficiency(good_resume, good_jd)
+    assert ok
+    assert reason is None
+
+    # 4. Response structure validation
+    resp = build_insufficient_response("res_01", "jd_01", "Too short")
+    assert DetailAnalysis.model_validate(resp.model_dump()) == resp
+    assert resp.context_sufficient is False
+    assert resp.match_score == 0
+    print("sufficiency_check acceptance criteria passed!")

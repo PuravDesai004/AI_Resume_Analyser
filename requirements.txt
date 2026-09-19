@@ -11,5 +11,4 @@ pymupdf
 python-dotenv
 pydantic
 rapidfuzz
-pandas
 numpy
