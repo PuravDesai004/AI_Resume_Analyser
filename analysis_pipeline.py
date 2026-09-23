@@ -19,7 +19,7 @@ from sufficiency_check import check_sufficiency, build_insufficient_response
 from analysis_prompt_builder import build_analysis_prompt, get_generation_config
 
 load_dotenv(override=True)
-MODELS_TO_TRY = ["gemini-3.5-flash", "gemini-3.6-flash", "gemini-3.7-flash"]
+MODELS_TO_TRY = ["gemini-3.5-flash", "gemini-flash-latest", "gemini-3.6-flash", "gemini-3.7-flash"]
 
 
 class AnalysisPipeline:
