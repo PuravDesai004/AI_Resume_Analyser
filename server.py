@@ -95,14 +95,24 @@ def rank_jds(payload: RankRequest):
 @app.post("/analyze", summary="Tier 2: Detailed gap analysis for chosen JD")
 def analyze_candidate_jd(payload: AnalyzeRequest):
     """Executes single Gemini call + deterministic taxonomy grounding and scoring."""
-    result = analyzer.analyze(
-        resume_text=payload.resume_text,
-        resume_id=payload.resume_id,
-        jd_id=payload.jd_id
-    )
-    if "error_code" in result:
-        raise HTTPException(status_code=404, detail=result)
-    return result
+    try:
+        result = analyzer.analyze(
+            resume_text=payload.resume_text,
+            resume_id=payload.resume_id,
+            jd_id=payload.jd_id
+        )
+        if "error_code" in result:
+            raise HTTPException(status_code=404, detail=result)
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        status = 503 if ("503" in str(e) or "UNAVAILABLE" in str(e)) else 500
+        raise HTTPException(
+            status_code=status,
+            detail={"error_code": "LLM_PROVIDER_ERROR", "message": str(e)}
+        )
+
 
 
 if __name__ == "__main__":

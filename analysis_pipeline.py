@@ -27,7 +27,8 @@ from analysis_prompt_builder import (
 )
 
 load_dotenv(override=True)
-MODELS_TO_TRY = ["gemini-3.5-flash", "gemini-3.6-flash"]
+MODELS_TO_TRY = ["gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-3.5-flash"]
+
 
 
 class AnalysisPipeline:
