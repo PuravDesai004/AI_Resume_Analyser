@@ -48,8 +48,8 @@ def rank_jds(resume_text: str, resume_id: str) -> RankingResult:
         sim = _cosine_similarity(resume_embedding, j_vec)
         scored.append((j_id, sim))
 
-    # Sort descending by cosine similarity
-    scored.sort(key=lambda x: x[1], reverse=True)
+    # Sort descending by cosine similarity, with deterministic jd_id tie-breaker
+    scored.sort(key=lambda x: (-x[1], str(x[0])))
     top_5 = scored[:5]
 
     cards: list[RankingCard] = []

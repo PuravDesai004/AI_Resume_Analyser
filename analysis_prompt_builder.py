@@ -130,7 +130,8 @@ def get_generation_config() -> genai.types.GenerateContentConfig:
     """Returns Gemini GenerateContentConfig with structured response schema."""
     return genai.types.GenerateContentConfig(
         system_instruction=ANALYSIS_SYSTEM_PROMPT,
-        temperature=0.2,
+        temperature=0.0,
+        seed=42,
         response_mime_type="application/json",
         response_schema=GENERATION_RESPONSE_SCHEMA
     )
@@ -150,6 +151,7 @@ if __name__ == "__main__":
     assert "--- JOB DESCRIPTION ---" in prompt
 
     config = get_generation_config()
-    assert config.temperature == 0.2
+    assert config.temperature == 0.0
+    assert config.seed == 42
     assert config.response_mime_type == "application/json"
     print("analysis_prompt_builder acceptance criteria passed!")

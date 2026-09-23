@@ -88,6 +88,11 @@ def compare_skills(
     # Clamp to [0, 100]
     match_score = max(0, min(100, match_score))
 
+    matched.sort(key=lambda m: m.skill_name.lower())
+    missing_essential.sort()
+    missing_preferred.sort()
+    extra.sort()
+
     skill_gap = SkillGap(
         matched=matched,
         missing_essential=missing_essential,
