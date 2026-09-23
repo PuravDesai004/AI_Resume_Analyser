@@ -52,7 +52,7 @@ def query_rag(query_text: str):
 @app.post("/jds", summary="Ingest a new Job Description into store (max 15)")
 def add_job_description(payload: JDCreateRequest):
     """Adds a JD to the store, embeds it once, and returns the record."""
-    result = jd_index.add_jd(
+    result = analyzer.ingest_jd(
         title=payload.title,
         company=payload.company,
         location=payload.location,

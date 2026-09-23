@@ -1,9 +1,10 @@
+import json
 import uuid
 from typing import Optional, Union
 
 import chroma_db
 from embedding_manager import EmbeddingManager
-from schemas import JDRecord, ErrorResponse
+from schemas import JDRecord, ErrorResponse, GroundedSkill
 
 JD_STORE_CAP = 15
 
@@ -47,6 +48,7 @@ def add_jd(
     """
     Adds a new JD to the store if below the 15-record cap.
     Embeds jd_text once and stores vector + metadata in ChromaDB.
+    Returns JDRecord with skills_cached=False.
     """
     current_count = count()
     if current_count >= JD_STORE_CAP:
@@ -69,7 +71,10 @@ def add_jd(
         "title": title.strip(),
         "company": company.strip(),
         "location": location.strip(),
-        "snippet": snippet
+        "snippet": snippet,
+        "essential_skills": "[]",
+        "preferred_skills": "[]",
+        "skills_cached": False
     }
 
     _get_collection().add(
@@ -85,7 +90,38 @@ def add_jd(
         company=company.strip(),
         location=location.strip(),
         snippet=snippet,
-        full_text=clean_text
+        full_text=clean_text,
+        essential_skills=[],
+        preferred_skills=[],
+        skills_cached=False
+    )
+
+
+def update_jd_skills(
+    jd_id: str,
+    essential: list[GroundedSkill],
+    preferred: list[GroundedSkill]
+) -> None:
+    """
+    Persist extracted and grounded skills into ChromaDB metadata.
+    Only called upon confirmed successful extraction.
+    essential and preferred lists are JSON-serialized strings.
+    skills_cached is stored as a native bool True in ChromaDB metadata.
+    """
+    coll = _get_collection()
+    data = coll.get(ids=[jd_id], include=["metadatas"])
+    ids = data.get("ids", [])
+    if not ids:
+        return
+
+    meta = dict(data["metadatas"][0]) if data.get("metadatas") else {}
+    meta["essential_skills"] = json.dumps([s.model_dump() for s in essential])
+    meta["preferred_skills"] = json.dumps([s.model_dump() for s in preferred])
+    meta["skills_cached"] = True
+
+    coll.update(
+        ids=[jd_id],
+        metadatas=[meta]
     )
 
 
@@ -108,13 +144,36 @@ def get_jd_record(jd_id: str) -> Optional[JDRecord]:
 
     meta = data["metadatas"][0]
     doc = data["documents"][0]
+
+    essential_raw = meta.get("essential_skills", "[]")
+    preferred_raw = meta.get("preferred_skills", "[]")
+
+    try:
+        essential_skills = [
+            GroundedSkill.model_validate(x) for x in json.loads(essential_raw)
+        ] if essential_raw else []
+    except Exception:
+        essential_skills = []
+
+    try:
+        preferred_skills = [
+            GroundedSkill.model_validate(x) for x in json.loads(preferred_raw)
+        ] if preferred_raw else []
+    except Exception:
+        preferred_skills = []
+
+    skills_cached = bool(meta.get("skills_cached", False))
+
     return JDRecord(
         jd_id=jd_id,
         title=meta.get("title", ""),
         company=meta.get("company", ""),
         location=meta.get("location", ""),
         snippet=meta.get("snippet", ""),
-        full_text=doc
+        full_text=doc,
+        essential_skills=essential_skills,
+        preferred_skills=preferred_skills,
+        skills_cached=skills_cached
     )
 
 

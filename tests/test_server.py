@@ -6,8 +6,9 @@ from fastapi.testclient import TestClient
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from server import app
+from server import app, analyzer
 import jd_index
+from schemas import GroundedSkill
 
 
 class TestServerEndpoints(unittest.TestCase):
@@ -24,9 +25,19 @@ class TestServerEndpoints(unittest.TestCase):
     def test_post_jds_and_rank(self):
         jd_index.clear_store_for_testing()
 
-        # Add a JD via API with mocked embedding
         fake_vec = [0.1] * 3072
-        with patch.object(jd_index, "_get_embedder") as mock_emb_fn:
+        mock_skills = [
+            GroundedSkill(
+                original_name="AWS",
+                standardized_name="AWS",
+                skill_id="custom:aws",
+                source="custom",
+                match_type="exact"
+            )
+        ]
+
+        with patch.object(jd_index, "_get_embedder") as mock_emb_fn, \
+             patch.object(analyzer, "_extract_and_ground_jd_skills", return_value=(mock_skills, [], True)):
             mock_emb = MagicMock()
             mock_emb.embed_chunk.return_value = fake_vec
             mock_emb_fn.return_value = mock_emb
@@ -41,6 +52,9 @@ class TestServerEndpoints(unittest.TestCase):
             data = resp.json()
             self.assertIn("jd_id", data)
             self.assertEqual(data["title"], "Cloud Architect")
+            self.assertTrue(data.get("skills_cached"))
+            self.assertEqual(len(data.get("essential_skills", [])), 1)
+            self.assertEqual(data["essential_skills"][0]["standardized_name"], "AWS")
             jd_id = data["jd_id"]
 
         # Rank via API with mocked resume embedding

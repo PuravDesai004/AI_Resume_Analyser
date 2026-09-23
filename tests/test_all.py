@@ -232,7 +232,7 @@ class TestPlacementAnalyzer(unittest.TestCase):
         self.assertEqual(bad_resp.match_score, 0)
         self.assertIsInstance(bad_resp, DetailAnalysis)
 
-    # ── 7. Pipeline Guarantees & Gemini Handling ──
+    # ── 7. Pipeline Guarantees, Caching & Gemini Handling ──
 
     def test_pipeline_single_gemini_call_and_no_trust_in_fabricated_fields(self):
         pipeline = AnalysisPipeline(
@@ -247,13 +247,16 @@ class TestPlacementAnalyzer(unittest.TestCase):
             mock_idx_emb.return_value = mock_emb
             jd_rec = jd_index.add_jd("Backend Role", "Co", "Remote", " ".join(["python"] * 40))
 
+        # Pre-cache JD skills as if done during ingestion
+        essential_cached = ground_candidates(["Python", "Docker"], self.skill_index)
+        preferred_cached = ground_candidates(["FastAPI"], self.skill_index)
+        jd_index.update_jd_skills(jd_rec.jd_id, essential_cached, preferred_cached)
+
         resume_text = " ".join(["Experienced developer with Python and FastAPI skills."] * 10)
 
-        # Fabricate a response from Gemini that includes illegal decision fields
+        # Fabricate an analyze response from Gemini that includes illegal decision fields
         fabricated_gemini_output = {
             "resume_skills": ["Python", "FastAPI"],
-            "jd_essential_skills": ["Python", "Docker"],
-            "jd_preferred_skills": ["FastAPI"],
             "summary": "Candidate matches backend requirements.",
             "strengths": ["Strong Python"],
             "weaknesses": ["Missing Docker"],
@@ -274,7 +277,7 @@ class TestPlacementAnalyzer(unittest.TestCase):
         with patch.object(pipeline.client.models, "generate_content", return_value=mock_resp) as mock_gen:
             analysis = pipeline.analyze(resume_text, "res_001", jd_rec.jd_id)
 
-            # Exactly ONE call made
+            # Exactly ONE call made in analyze()
             self.assertEqual(mock_gen.call_count, 1)
 
             # Ignored fabricated fields
@@ -293,6 +296,178 @@ class TestPlacementAnalyzer(unittest.TestCase):
             self.assertIn("Python (computer programming)", matched_names)
             self.assertIn("FastAPI", matched_names)
             self.assertEqual(analysis["skill_gap"]["missing_essential"], ["Docker"])
+
+    def test_jd_ingestion_and_skill_caching(self):
+        """Verifies ingest_jd extracts, grounds, persists skills and sets skills_cached=True."""
+        pipeline = AnalysisPipeline(
+            esco_csv_path="data/skills_en.csv",
+            custom_json_path="data/custom_skills.json"
+        )
+        jd_index.clear_store_for_testing()
+
+        mock_essential = [
+            GroundedSkill(original_name="Python", standardized_name="Python", skill_id="custom:python", source="custom", match_type="exact")
+        ]
+        mock_preferred = [
+            GroundedSkill(original_name="Docker", standardized_name="Docker", skill_id="custom:docker", source="custom", match_type="exact")
+        ]
+
+        with patch.object(jd_index, "_get_embedder") as mock_idx_emb, \
+             patch.object(pipeline, "_extract_and_ground_jd_skills", return_value=(mock_essential, mock_preferred, True)):
+            mock_emb = MagicMock()
+            mock_emb.embed_chunk.return_value = [0.1] * 3072
+            mock_idx_emb.return_value = mock_emb
+
+            rec = pipeline.ingest_jd("Backend Role", "Co", "Remote", "Python and Docker requirements " * 10)
+            self.assertIsInstance(rec, JDRecord)
+            self.assertTrue(rec.skills_cached)
+            self.assertEqual(len(rec.essential_skills), 1)
+            self.assertEqual(len(rec.preferred_skills), 1)
+
+            # Verify persisted record in ChromaDB
+            stored = jd_index.get_jd_record(rec.jd_id)
+            self.assertIsNotNone(stored)
+            self.assertTrue(stored.skills_cached)
+            self.assertEqual(len(stored.essential_skills), 1)
+            self.assertEqual(stored.essential_skills[0].standardized_name, "Python")
+            self.assertEqual(stored.preferred_skills[0].standardized_name, "Docker")
+
+    def test_analyze_cache_hit_does_not_reextract_jd_skills(self):
+        """Calling analyze() twice against the same JD never re-extracts JD skills."""
+        pipeline = AnalysisPipeline(
+            esco_csv_path="data/skills_en.csv",
+            custom_json_path="data/custom_skills.json"
+        )
+        jd_index.clear_store_for_testing()
+
+        with patch.object(jd_index, "_get_embedder") as mock_idx_emb:
+            mock_emb = MagicMock()
+            mock_emb.embed_chunk.return_value = [0.1] * 3072
+            mock_idx_emb.return_value = mock_emb
+            rec = jd_index.add_jd("Role", "Co", "Remote", "Long JD text " * 15)
+
+        # Mark as cached
+        essential = [GroundedSkill(original_name="Python", standardized_name="Python", skill_id="custom:python", source="custom", match_type="exact")]
+        jd_index.update_jd_skills(rec.jd_id, essential, [])
+
+        resume_1 = " ".join(["First resume with Python skills."] * 15)
+        resume_2 = " ".join(["Second resume with Python and Django skills."] * 15)
+
+        mock_analyze_resp = MagicMock()
+        mock_analyze_resp.text = json.dumps({
+            "resume_skills": ["Python"],
+            "summary": "Summary",
+            "strengths": [],
+            "weaknesses": [],
+            "requirement_match": [],
+            "recommendations": []
+        })
+
+        with patch.object(pipeline, "_extract_and_ground_jd_skills") as mock_extract, \
+             patch.object(pipeline.client.models, "generate_content", return_value=mock_analyze_resp) as mock_gen:
+
+            pipeline.analyze(resume_1, "res_1", rec.jd_id)
+            pipeline.analyze(resume_2, "res_2", rec.jd_id)
+
+            # JD skill extraction must NEVER be called
+            mock_extract.assert_not_called()
+            # Analyze generate_content called once per resume = 2
+            self.assertEqual(mock_gen.call_count, 2)
+
+    def test_lazy_backfill_for_uncached_jd(self):
+        """
+        Tests that an uncached JD (skills_cached=False) gets backfilled on first analyze call,
+        even when the extraction legitimately returns empty skill lists ([], [], True).
+        Subsequent calls must NOT re-extract.
+        """
+        pipeline = AnalysisPipeline(
+            esco_csv_path="data/skills_en.csv",
+            custom_json_path="data/custom_skills.json"
+        )
+        jd_index.clear_store_for_testing()
+
+        with patch.object(jd_index, "_get_embedder") as mock_idx_emb:
+            mock_emb = MagicMock()
+            mock_emb.embed_chunk.return_value = [0.1] * 3072
+            mock_idx_emb.return_value = mock_emb
+            rec = jd_index.add_jd("General Role", "Co", "Remote", "General responsibilities as assigned " * 10)
+
+        # Confirm initially uncached
+        self.assertFalse(rec.skills_cached)
+
+        resume_1 = " ".join(["Developer resume with various project experiences."] * 15)
+        resume_2 = " ".join(["Another candidate resume for this role."] * 15)
+
+        mock_analyze_resp = MagicMock()
+        mock_analyze_resp.text = json.dumps({
+            "resume_skills": ["Python"],
+            "summary": "Summary",
+            "strengths": [],
+            "weaknesses": [],
+            "requirement_match": [],
+            "recommendations": []
+        })
+
+        # Mock extraction succeeding with empty lists (vague JD)
+        with patch.object(pipeline, "_extract_and_ground_jd_skills", return_value=([], [], True)) as mock_extract, \
+             patch.object(pipeline.client.models, "generate_content", return_value=mock_analyze_resp):
+
+            # Call 1: should trigger backfill
+            pipeline.analyze(resume_1, "res_1", rec.jd_id)
+            self.assertEqual(mock_extract.call_count, 1)
+
+            # Stored JD must now have skills_cached=True
+            stored = jd_index.get_jd_record(rec.jd_id)
+            self.assertTrue(stored.skills_cached)
+
+            # Call 2: should NOT re-trigger extraction even though lists are empty!
+            pipeline.analyze(resume_2, "res_2", rec.jd_id)
+            self.assertEqual(mock_extract.call_count, 1)
+
+    def test_backfill_retries_on_genuine_failure(self):
+        """
+        Tests that if JD skill extraction fails ([], [], False), skills_cached stays False
+        and the next analyze call retries extraction.
+        """
+        pipeline = AnalysisPipeline(
+            esco_csv_path="data/skills_en.csv",
+            custom_json_path="data/custom_skills.json"
+        )
+        jd_index.clear_store_for_testing()
+
+        with patch.object(jd_index, "_get_embedder") as mock_idx_emb:
+            mock_emb = MagicMock()
+            mock_emb.embed_chunk.return_value = [0.1] * 3072
+            mock_idx_emb.return_value = mock_emb
+            rec = jd_index.add_jd("Role", "Co", "Remote", "JD text for failure test " * 10)
+
+        resume_1 = " ".join(["Developer resume text "] * 15)
+        resume_2 = " ".join(["Candidate resume text "] * 15)
+
+        mock_analyze_resp = MagicMock()
+        mock_analyze_resp.text = json.dumps({
+            "resume_skills": ["Python"],
+            "summary": "Summary",
+            "strengths": [],
+            "weaknesses": [],
+            "requirement_match": [],
+            "recommendations": []
+        })
+
+        with patch.object(pipeline, "_extract_and_ground_jd_skills", return_value=([], [], False)) as mock_extract, \
+             patch.object(pipeline.client.models, "generate_content", return_value=mock_analyze_resp):
+
+            # Call 1: extraction fails
+            pipeline.analyze(resume_1, "res_1", rec.jd_id)
+            self.assertEqual(mock_extract.call_count, 1)
+
+            # Stored JD must still have skills_cached=False
+            stored = jd_index.get_jd_record(rec.jd_id)
+            self.assertFalse(stored.skills_cached)
+
+            # Call 2: should RETRY extraction
+            pipeline.analyze(resume_2, "res_2", rec.jd_id)
+            self.assertEqual(mock_extract.call_count, 2)
 
     def test_pipeline_insufficient_bypasses_gemini(self):
         pipeline = AnalysisPipeline(
@@ -326,6 +501,9 @@ class TestPlacementAnalyzer(unittest.TestCase):
             mock_emb.embed_chunk.return_value = [0.1] * 3072
             mock_idx_emb.return_value = mock_emb
             jd_rec = jd_index.add_jd("Role", "Co", "Remote", " ".join(["requirement"] * 40))
+
+        # Mark JD skills as cached
+        jd_index.update_jd_skills(jd_rec.jd_id, [], [])
 
         normal_resume = " ".join(["Python developer with experience."] * 15)
 
@@ -373,12 +551,15 @@ class TestPlacementAnalyzer(unittest.TestCase):
             mock_idx_emb.return_value = mock_emb
             jd_rec = jd_index.add_jd("Role", "Co", "Remote", " ".join(["requirement"] * 40))
 
+        # Pre-cache JD skills
+        essential = [GroundedSkill(original_name="Python", standardized_name="Python", skill_id="custom:python", source="custom", match_type="exact")]
+        preferred = [GroundedSkill(original_name="Docker", standardized_name="Docker", skill_id="custom:docker", source="custom", match_type="exact")]
+        jd_index.update_jd_skills(jd_rec.jd_id, essential, preferred)
+
         normal_resume = " ".join(["Python developer with FastAPI experience."] * 15)
 
         gemini_mock_output = {
             "resume_skills": ["Python", "FastAPI"],
-            "jd_essential_skills": ["Python"],
-            "jd_preferred_skills": ["Docker"],
             "summary": "First run narrative prose...",
             "strengths": ["Strength 1"],
             "weaknesses": ["Weakness 1"],
@@ -443,11 +624,14 @@ class TestPlacementAnalyzer(unittest.TestCase):
             mock_idx_emb.return_value = mock_emb
             jd_rec = jd_index.add_jd("Role", "Co", "Remote", " ".join(["requirement"] * 40))
 
+        # Pre-cache JD skills
+        essential = ground_candidates(["Python", "PostgreSQL"], self.skill_index)
+        preferred = ground_candidates(["Docker", "Kubernetes"], self.skill_index)
+        jd_index.update_jd_skills(jd_rec.jd_id, essential, preferred)
+
         mock_resp = MagicMock()
         mock_resp.text = json.dumps({
             "resume_skills": ["Python", "FastAPI", "PostgreSQL", "Docker"],
-            "jd_essential_skills": ["Python", "PostgreSQL"],
-            "jd_preferred_skills": ["Docker", "Kubernetes"],
             "summary": "Fit summary",
             "strengths": ["Python depth"],
             "weaknesses": ["Kubernetes"],

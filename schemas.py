@@ -2,6 +2,17 @@ from typing import Literal, Optional
 from pydantic import BaseModel, Field
 
 
+# ── Internal Schemas ──
+
+class GroundedSkill(BaseModel):
+    """Internal standardized skill representation after taxonomy grounding."""
+    original_name: str
+    standardized_name: str
+    skill_id: str
+    source: Literal["esco", "custom"]
+    match_type: Literal["exact", "close"]
+
+
 # ── External & API Schemas ──
 
 class JDRecord(BaseModel):
@@ -12,6 +23,9 @@ class JDRecord(BaseModel):
     location: str
     snippet: str
     full_text: str
+    essential_skills: list[GroundedSkill] = Field(default_factory=list)
+    preferred_skills: list[GroundedSkill] = Field(default_factory=list)
+    skills_cached: bool = False
 
 
 class RankingCard(BaseModel):
@@ -79,28 +93,45 @@ class ErrorResponse(BaseModel):
     stage: Optional[str] = None
 
 
-# ── Internal Schemas ──
-
-class GroundedSkill(BaseModel):
-    """Internal standardized skill representation after taxonomy grounding."""
-    original_name: str
-    standardized_name: str
-    skill_id: str
-    source: Literal["esco", "custom"]
-    match_type: Literal["exact", "close"]
-
-
 if __name__ == "__main__":
     # Self-validation block
+    grounded = GroundedSkill(
+        original_name="Python3",
+        standardized_name="Python",
+        skill_id="custom:python",
+        source="custom",
+        match_type="exact"
+    )
+    assert GroundedSkill.model_validate(grounded.model_dump()) == grounded
+
     jd = JDRecord(
         jd_id="jd_001",
         title="Backend Engineer",
         company="Acme Corp",
         location="Remote",
         snippet="Looking for a Python backend engineer...",
-        full_text="Looking for a Python backend engineer with FastAPI experience."
+        full_text="Looking for a Python backend engineer with FastAPI experience.",
+        essential_skills=[grounded],
+        preferred_skills=[],
+        skills_cached=True
     )
     assert JDRecord.model_validate(jd.model_dump()) == jd
+
+    # Test empty skill lists with skills_cached=True (valid expected state)
+    jd_empty = JDRecord(
+        jd_id="jd_002",
+        title="General Role",
+        company="Acme Corp",
+        location="Remote",
+        snippet="General duties...",
+        full_text="General duties as assigned.",
+        essential_skills=[],
+        preferred_skills=[],
+        skills_cached=True
+    )
+    assert JDRecord.model_validate(jd_empty.model_dump()) == jd_empty
+    assert jd_empty.skills_cached is True
+    assert len(jd_empty.essential_skills) == 0
 
     card = RankingCard(
         jd_id="jd_001",
