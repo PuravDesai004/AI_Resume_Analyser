@@ -80,34 +80,32 @@ def merge_rrf(vector_results, bm25_results, k=60):
 
 # return just the chunk texts (not the scores) as a plain list, best first
 
-def rerank(query, chunks, cross_encoder, top_n ):
-
-    print("this is from the rerank function")
+def rerank(query, chunks, cross_encoder, top_n):
     """
     query: the user's question (string)
-    chunks: list of chunk text strings (your merge_rrf output, e.g. top 10)
+    chunks: list of chunk dicts (merge_rrf output, e.g. top 10)
     top_n: how many chunks to keep after reranking
 
     Returns:
-        List of chunk texts, re-ordered by cross-encoder relevance, top_n only.
+        List of chunk dicts, re-ordered by cross-encoder relevance, top_n only.
     """
-    # build pairs, a list of [query, chunk] for every chunk
-    pairs = [(query, chunk["document"]) for chunk in chunks]
+    if not chunks:
+        return []
 
-    # get scores, pass pairs into cross_encoder.predict()
-    scores = cross_encoder.predict(pairs)
+    if cross_encoder is None:
+        return chunks[:top_n]
 
-    # sort chunks by score, descending
-    # hint: same pattern as merge_rrf's sorted(..., key=..., reverse=True) —
-    # but here you're sorting (chunk, score) pairs, not a dict
-    ranked_pairs = sorted(
-        zip(chunks, scores),
-        key = lambda x: x[1],
-        reverse=True)
-
-
-    # return just the top_n chunk texts (no scores)
-    return [chunk for chunk, score in ranked_pairs[:top_n]]
+    try:
+        pairs = [(query, chunk["document"]) for chunk in chunks]
+        scores = cross_encoder.predict(pairs)
+        ranked_pairs = sorted(
+            zip(chunks, scores),
+            key=lambda x: x[1],
+            reverse=True
+        )
+        return [chunk for chunk, score in ranked_pairs[:top_n]]
+    except Exception:
+        return chunks[:top_n]
 
 if __name__ == "__main__":
     print(get_all_chunks_from_db())

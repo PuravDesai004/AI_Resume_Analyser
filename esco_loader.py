@@ -7,11 +7,18 @@ from typing import Optional
 from rapidfuzz import process, fuzz
 
 
+from collections import defaultdict
+from functools import lru_cache
+
+# In-memory singleton cache to prevent redundant CSV reads across pipeline/test instances
+_TAXONOMY_CACHE: dict[tuple[str, str], dict] = {}
+
+
 def normalize_label(label: str) -> str:
     """Normalize label: lowercase, strip, and collapse whitespace."""
     if not label:
         return ""
-    return re.sub(r"\s+", " ", label.strip().lower())
+    return " ".join(label.lower().split())
 
 
 class SkillIndex:
@@ -35,11 +42,34 @@ class SkillIndex:
         self.esco_csv_path = esco_csv_path
         self.custom_json_path = custom_json_path
 
+        # Memoization cache for repeat fuzzy matches
+        self._fuzzy_cache: dict[tuple[str, int], Optional[dict]] = {}
+        self._exact_cache: dict[str, Optional[dict]] = {}
+
+        # Check singleton taxonomy cache
+        cache_key = (os.path.abspath(esco_csv_path), os.path.abspath(custom_json_path))
+        if cache_key in _TAXONOMY_CACHE:
+            cached = _TAXONOMY_CACHE[cache_key]
+            self.by_label = cached["by_label"]
+            self.all_labels = cached["all_labels"]
+            self._labels_by_len = cached["_labels_by_len"]
+            self._source_counts = cached["_source_counts"]
+            return
+
         self.by_label: dict[str, dict] = {}
         self.all_labels: list[str] = []
+        self._labels_by_len: dict[int, list[str]] = defaultdict(list)
         self._source_counts: dict[str, int] = {"esco": 0, "custom": 0}
 
         self._load_sources()
+
+        # Cache for instant subsequent initializations
+        _TAXONOMY_CACHE[cache_key] = {
+            "by_label": self.by_label,
+            "all_labels": self.all_labels,
+            "_labels_by_len": self._labels_by_len,
+            "_source_counts": self._source_counts
+        }
 
     def _load_sources(self) -> None:
         # 1. Load ESCO dataset
@@ -96,33 +126,56 @@ class SkillIndex:
                     self._source_counts["custom"] += 1
 
         self.all_labels = list(self.by_label.keys())
+        # Index labels by length for ultra-fast candidate pre-filtering
+        for lbl in self.all_labels:
+            self._labels_by_len[len(lbl)].append(lbl)
 
     def exact_match(self, phrase: str) -> Optional[dict]:
-        """Perform exact normalized dictionary lookup in O(1)."""
+        """Perform exact normalized dictionary lookup in O(1) with memoization."""
         if not phrase:
             return None
+        if phrase in self._exact_cache:
+            return self._exact_cache[phrase]
         norm = normalize_label(phrase)
-        return self.by_label.get(norm)
+        res = self.by_label.get(norm)
+        self._exact_cache[phrase] = res
+        return res
 
     def fuzzy_match(self, phrase: str, threshold: int = 85) -> Optional[dict]:
         """
         Perform fuzzy match using RapidFuzz against indexed labels.
+        Uses length-bucketed candidate pre-filtering and memoization.
         Returns matched record and score if meeting threshold.
         """
         if not phrase or not self.all_labels:
             return None
 
-        norm = normalize_label(phrase)
+        cache_key = (phrase, threshold)
+        if cache_key in self._fuzzy_cache:
+            return self._fuzzy_cache[cache_key]
 
-        # Pre-filter candidate labels to keep fuzzy match fast and accurate
+        norm = normalize_label(phrase)
         norm_len = len(norm)
-        candidates = [
-            lbl for lbl in self.all_labels
-            if min(len(lbl), norm_len) / max(len(lbl), norm_len) >= 0.5
-            and (len(lbl) >= 3 or len(lbl) == norm_len)
-        ]
+        if norm_len == 0:
+            self._fuzzy_cache[cache_key] = None
+            return None
+
+        # Pre-filter candidate labels using pre-indexed length buckets
+        # Condition: min(len, norm_len) / max(len, norm_len) >= 0.5
+        # => ceil(norm_len * 0.5) <= len <= floor(norm_len * 2.0)
+        min_k = max(1, (norm_len + 1) // 2)
+        max_k = norm_len * 2
+
+        candidates = []
+        for k in range(min_k, max_k + 1):
+            if k < 3 and k != norm_len:
+                continue
+            bucket = self._labels_by_len.get(k)
+            if bucket:
+                candidates.extend(bucket)
 
         if not candidates:
+            self._fuzzy_cache[cache_key] = None
             return None
 
         match_result = process.extractOne(
@@ -132,11 +185,12 @@ class SkillIndex:
             score_cutoff=threshold
         )
 
+        res = None
         if match_result:
             matched_label, score, _ = match_result
             record = self.by_label.get(matched_label)
             if record:
-                return {
+                res = {
                     "skill_id": record["skill_id"],
                     "preferred_label": record["preferred_label"],
                     "source": record["source"],
@@ -144,7 +198,8 @@ class SkillIndex:
                     "score": float(score)
                 }
 
-        return None
+        self._fuzzy_cache[cache_key] = res
+        return res
 
     def stats(self) -> dict:
         """Counts of indexed labels by source."""

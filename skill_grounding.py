@@ -10,42 +10,53 @@ def ground_candidates(skill_names: list[str], index: SkillIndex) -> list[Grounde
     Candidates that do not match are discarded.
     """
     grounded: list[GroundedSkill] = []
+    # Local cache to prevent redundant taxonomy lookups for duplicates within the same list
+    seen_memo: dict[str, Optional[GroundedSkill]] = {}
 
     for name in skill_names:
+        if not name:
+            continue
         clean_name = name.strip()
         if not clean_name:
+            continue
+
+        cache_key = clean_name.lower()
+        if cache_key in seen_memo:
+            cached_skill = seen_memo[cache_key]
+            if cached_skill is not None:
+                grounded.append(cached_skill)
             continue
 
         # Step 1: Exact normalized match
         exact = index.exact_match(clean_name)
         if exact:
-            grounded.append(
-                GroundedSkill(
-                    original_name=clean_name,
-                    standardized_name=exact["preferred_label"],
-                    skill_id=exact["skill_id"],
-                    source=exact["source"],
-                    match_type="exact"
-                )
+            skill = GroundedSkill(
+                original_name=clean_name,
+                standardized_name=exact["preferred_label"],
+                skill_id=exact["skill_id"],
+                source=exact["source"],
+                match_type="exact"
             )
+            grounded.append(skill)
+            seen_memo[cache_key] = skill
             continue
 
         # Step 2: Fuzzy match (threshold >= 85)
         fuzzy = index.fuzzy_match(clean_name, threshold=85)
         if fuzzy:
-            grounded.append(
-                GroundedSkill(
-                    original_name=clean_name,
-                    standardized_name=fuzzy["preferred_label"],
-                    skill_id=fuzzy["skill_id"],
-                    source=fuzzy["source"],
-                    match_type="close"
-                )
+            skill = GroundedSkill(
+                original_name=clean_name,
+                standardized_name=fuzzy["preferred_label"],
+                skill_id=fuzzy["skill_id"],
+                source=fuzzy["source"],
+                match_type="close"
             )
+            grounded.append(skill)
+            seen_memo[cache_key] = skill
             continue
 
         # Step 3: Discard non-matching noise
-        # Candidate is silently dropped as specified
+        seen_memo[cache_key] = None
 
     return grounded
 

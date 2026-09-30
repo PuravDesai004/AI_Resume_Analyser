@@ -5,27 +5,70 @@ import os
 import time
 from generation import build_prompt
 from embedding_manager import EmbeddingManager
-from sentence_transformers import CrossEncoder
-from retrieval import *
+from retrieval import (
+    get_all_chunks_from_db,
+    build_bm25_index,
+    query_collection,
+    bm25_search,
+    merge_rrf,
+    rerank
+)
 
 load_dotenv(override=True)
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-print("Execution Started")
+_SHARED_CROSS_ENCODER = None
+
+
+def _get_shared_cross_encoder():
+    global _SHARED_CROSS_ENCODER
+    if _SHARED_CROSS_ENCODER is None:
+        try:
+            from sentence_transformers import CrossEncoder
+            _SHARED_CROSS_ENCODER = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+        except Exception as e:
+            # Fall back gracefully if DLL or package blocked/missing
+            _SHARED_CROSS_ENCODER = None
+    return _SHARED_CROSS_ENCODER
+
 
 class RAGPipeline:
     def __init__(self):
-        # Load these ONCE when server starts
-        self.embedder = EmbeddingManager()
+        self._embedder = None
+        self._cross_encoder = None
+        self._all_chunks = None
+        self._bm25_index = None
+        self._client = None
 
-        # Load once, not per-query — this loads the model into memory
-        self.cross_encoder = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+    @property
+    def embedder(self):
+        if self._embedder is None:
+            self._embedder = EmbeddingManager()
+        return self._embedder
 
-        self.all_chunks = get_all_chunks_from_db()  # as we are performing the hybrid retrieval
+    @property
+    def cross_encoder(self):
+        if self._cross_encoder is None:
+            self._cross_encoder = _get_shared_cross_encoder()
+        return self._cross_encoder
 
-        self.bm25_index = build_bm25_index(self.all_chunks)
+    @property
+    def all_chunks(self):
+        if self._all_chunks is None:
+            self._all_chunks = get_all_chunks_from_db()
+        return self._all_chunks
 
-        self.client = genai.Client()
+    @property
+    def bm25_index(self):
+        if self._bm25_index is None:
+            self._bm25_index = build_bm25_index(self.all_chunks)
+        return self._bm25_index
+
+    @property
+    def client(self):
+        if self._client is None:
+            self._client = genai.Client(api_key=GEMINI_API_KEY)
+        return self._client
 
     def run(self, query_text):
         if not self.all_chunks:

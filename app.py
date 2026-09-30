@@ -53,8 +53,8 @@ def extract_text_from_file(uploaded_file) -> str:
     filename = uploaded_file.name.lower()
 
     if filename.endswith(".pdf"):
-        doc = pymupdf.open(stream=file_bytes, filetype="pdf")
-        text = "\n".join([page.get_text() for page in doc])
+        with pymupdf.open(stream=file_bytes, filetype="pdf") as doc:
+            text = "\n".join([page.get_text() for page in doc])
         return text.strip()
 
     elif filename.endswith(".docx") or filename.endswith(".doc"):
@@ -308,8 +308,8 @@ with st.sidebar:
         if resume_pdfs and jd_pdfs:
             st.session_state.resumes = []
             for path in resume_pdfs[:10]:
-                doc = pymupdf.open(path)
-                raw_text = "\n".join([page.get_text() for page in doc]).strip()
+                with pymupdf.open(path) as doc:
+                    raw_text = "\n".join([page.get_text() for page in doc]).strip()
                 status, warn = validate_doc_text(raw_text)
                 name = os.path.basename(path).replace(".pdf", "").replace("_", " ")
                 st.session_state.resumes.append({
@@ -324,8 +324,8 @@ with st.sidebar:
             api_reset_jds()
             st.session_state.jds = []
             for path in jd_pdfs[:10]:
-                doc = pymupdf.open(path)
-                raw_text = "\n".join([page.get_text() for page in doc]).strip()
+                with pymupdf.open(path) as doc:
+                    raw_text = "\n".join([page.get_text() for page in doc]).strip()
                 status, warn = validate_doc_text(raw_text)
                 title = os.path.basename(path).replace(".pdf", "").replace("JD_", "").replace("_", " ")
                 st.session_state.jds.append({

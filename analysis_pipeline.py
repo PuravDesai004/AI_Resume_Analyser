@@ -19,7 +19,8 @@ from sufficiency_check import check_sufficiency, build_insufficient_response
 from analysis_prompt_builder import build_analysis_prompt, get_generation_config
 
 load_dotenv(override=True)
-MODELS_TO_TRY = ["gemini-3.5-flash", "gemini-flash-latest", "gemini-3.6-flash", "gemini-3.7-flash"]
+# Model fallback cascade per specification: gemini-3.6-flash -> gemini-3.5-flash-lite -> gemini-3.5-flash -> gemini-flash-latest
+MODELS_TO_TRY = ["gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-3.5-flash", "gemini-flash-latest"]
 
 
 class AnalysisPipeline:
@@ -65,28 +66,32 @@ class AnalysisPipeline:
         7. Merge verified and judged fields into DetailAnalysis.
         Never raises: falls back to fully-shaped DetailAnalysis on unexpected errors.
         """
+        clean_resume_text = str(resume_text or "").strip()
+        clean_resume_id = str(resume_id or "").strip()
+        clean_jd_id = str(jd_id or "").strip()
+
         try:
             # Step 1: Fetch stored JD record
-            jd_record = jd_index.get_jd_record(jd_id)
+            jd_record = jd_index.get_jd_record(clean_jd_id)
             if jd_record is None:
                 return ErrorResponse(
                     error_code="JD_NOT_FOUND",
-                    message=f"Job description with ID '{jd_id}' was not found in the store.",
+                    message=f"Job description with ID '{clean_jd_id}' was not found in the store.",
                     stage="tier2_lookup"
                 ).model_dump()
 
             # Step 2: Sufficiency check gate (0 Gemini calls on failure)
-            is_sufficient, reason = check_sufficiency(resume_text, jd_record.full_text)
+            is_sufficient, reason = check_sufficiency(clean_resume_text, jd_record.full_text)
             if not is_sufficient:
                 insufficient_resp = build_insufficient_response(
-                    resume_id=resume_id,
-                    jd_id=jd_id,
+                    resume_id=clean_resume_id,
+                    jd_id=clean_jd_id,
                     reason=reason or "Context insufficient"
                 )
                 return insufficient_resp.model_dump()
 
-            # Step 3: Exactly ONE Gemini call (with transient retry on 503)
-            prompt = build_analysis_prompt(resume_text, jd_record.full_text)
+            # Step 3: Exactly ONE Gemini call (with transient retry on 503/429)
+            prompt = build_analysis_prompt(clean_resume_text, jd_record.full_text)
             config = get_generation_config()
 
             response = None
@@ -99,22 +104,32 @@ class AnalysisPipeline:
                             contents=prompt,
                             config=config
                         )
-                        if response:
+                        if response and response.text:
                             break
                     except Exception as e:
                         last_err = e
-                        if ("503" in str(e) or "429" in str(e)) and attempt == 0:
+                        err_str = str(e).lower()
+                        if ("503" in err_str or "429" in err_str or "high demand" in err_str or "resource_exhausted" in err_str) and attempt == 0:
                             import time
                             time.sleep(1.0)
                             continue
                         break
-                if response is not None:
+                if response is not None and response.text:
                     break
 
-            if response is None:
-                raise last_err if last_err else RuntimeError("Generation failed")
+            if response is None or not response.text:
+                raise last_err if last_err else RuntimeError("Generation failed: empty model response")
 
-            response_text = response.text.strip() if response.text else "{}"
+            response_text = response.text.strip()
+            # Clean possible markdown formatting wrappers
+            if response_text.startswith("```"):
+                lines = response_text.splitlines()
+                if lines and lines[0].startswith("```"):
+                    lines = lines[1:]
+                if lines and lines[-1].startswith("```"):
+                    lines = lines[:-1]
+                response_text = "\n".join(lines).strip()
+
             parsed = json.loads(response_text)
 
             # Step 4: Ground candidates using SkillIndex

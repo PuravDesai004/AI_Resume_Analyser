@@ -116,25 +116,31 @@ GENERATION_RESPONSE_SCHEMA = {
 
 def build_analysis_prompt(resume_text: str, jd_text: str) -> str:
     """Builds prompt containing the full text of both documents."""
+    clean_resume = str(resume_text or "").strip()
+    clean_jd = str(jd_text or "").strip()
     return f"""Analyze the following resume and job description according to your system instructions.
 
 --- CANDIDATE RESUME ---
-{resume_text.strip()}
+{clean_resume}
 
 --- JOB DESCRIPTION ---
-{jd_text.strip()}
+{clean_jd}
 """
 
 
+# Statically initialize GenerateContentConfig once at module level to eliminate per-request overhead
+_STATIC_GENERATION_CONFIG = genai.types.GenerateContentConfig(
+    system_instruction=ANALYSIS_SYSTEM_PROMPT,
+    temperature=0.0,
+    seed=42,
+    response_mime_type="application/json",
+    response_schema=GENERATION_RESPONSE_SCHEMA
+)
+
+
 def get_generation_config() -> genai.types.GenerateContentConfig:
-    """Returns Gemini GenerateContentConfig with structured response schema."""
-    return genai.types.GenerateContentConfig(
-        system_instruction=ANALYSIS_SYSTEM_PROMPT,
-        temperature=0.0,
-        seed=42,
-        response_mime_type="application/json",
-        response_schema=GENERATION_RESPONSE_SCHEMA
-    )
+    """Returns statically initialized Gemini GenerateContentConfig."""
+    return _STATIC_GENERATION_CONFIG
 
 
 if __name__ == "__main__":

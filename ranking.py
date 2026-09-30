@@ -43,10 +43,25 @@ def rank_jds(resume_text: str, resume_id: str) -> RankingResult:
     embedder = _get_embedder()
     resume_embedding = embedder.embed_chunk(clean_resume)
 
+    resume_arr = np.array(resume_embedding, dtype=np.float32)
+    norm_resume = float(np.linalg.norm(resume_arr))
+    if norm_resume == 0.0:
+        return RankingResult(resume_id=resume_id, results=[])
+
     scored: list[tuple[str, float]] = []
-    for j_id, j_vec in all_jds:
-        sim = _cosine_similarity(resume_embedding, j_vec)
-        scored.append((j_id, sim))
+    # Vectorized cosine computation across stored JD vectors
+    jd_ids = [j_id for j_id, _ in all_jds]
+    jd_matrix = np.array([j_vec for _, j_vec in all_jds], dtype=np.float32)
+    dots = np.dot(jd_matrix, resume_arr)
+    norms_jd = np.linalg.norm(jd_matrix, axis=1)
+
+    for i, j_id in enumerate(jd_ids):
+        n_jd = float(norms_jd[i])
+        if n_jd == 0.0:
+            scored.append((j_id, 0.0))
+        else:
+            sim = float(dots[i] / (n_jd * norm_resume))
+            scored.append((j_id, sim))
 
     # Sort descending by cosine similarity, with deterministic jd_id tie-breaker
     scored.sort(key=lambda x: (-x[1], str(x[0])))

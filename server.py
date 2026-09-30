@@ -4,16 +4,26 @@ load_dotenv(override=True)
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
-from query import RAGPipeline
 from analysis_pipeline import AnalysisPipeline
 import jd_index
 from schemas import ErrorResponse
 
 app = FastAPI(title="AI Placement Analyzer & RAG API")
 
-# Initialize services
-rag = RAGPipeline()
+from typing import Optional
+
+# Initialize services (analyzer is primary Phase 1 service, rag is lazy-loaded for Phase 2)
 analyzer = AnalysisPipeline()
+_rag: Optional[RAGPipeline] = None
+
+
+def get_rag() -> RAGPipeline:
+    """Lazy-load RAG pipeline so server starts instantly without importing heavy models."""
+    global _rag
+    if _rag is None:
+        from query import RAGPipeline
+        _rag = RAGPipeline()
+    return _rag
 
 
 # ── Request Models ──
@@ -41,7 +51,7 @@ class AnalyzeRequest(BaseModel):
 @app.post("/query")
 def query_rag(query_text: str):
     """General-purpose RAG endpoint reserved for Phase 2."""
-    answer = rag.run(query_text)
+    answer = get_rag().run(query_text)
     return {
         "answer": answer
     }
