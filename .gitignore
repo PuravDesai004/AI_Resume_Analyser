@@ -15,5 +15,7 @@ my_local_db/
 Pdfs/
 data/*.csv
 
-# Local testing UI
-app.py
+# Scratch
+scratch/
+
+
