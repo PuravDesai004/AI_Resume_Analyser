@@ -15,4 +15,7 @@ my_local_db/
 Pdfs/
 data/*.csv
 
+# Scratch
+scratch/
+
 

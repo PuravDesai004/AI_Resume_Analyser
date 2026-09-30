@@ -5,6 +5,7 @@ load_dotenv(override=True)
 import io
 import json
 import time
+import glob
 import requests
 import streamlit as st
 import plotly.graph_objects as go
@@ -16,17 +17,20 @@ import docx
 import jd_index
 from analysis_pipeline import AnalysisPipeline
 
+# 5MB upload limit
+MAX_FILE_SIZE_MB = 5
+MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
+
 # Page configuration
 st.set_page_config(
-    page_title="AI Placement Analyzer — Test Dashboard",
-    page_icon="🎯",
+    page_title="AI Placement Analyzer - Test Dashboard (Caching Enabled)",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000")
 
-# ── Session State Initialization ──
+# Session State Initialization
 if "resumes" not in st.session_state:
     st.session_state.resumes = [] # list of dicts: {"id", "name", "text", "words", "status", "warning"}
 if "jds" not in st.session_state:
@@ -41,7 +45,7 @@ if "selected_resume_idx" not in st.session_state:
     st.session_state.selected_resume_idx = 0
 
 
-# ── Helper Functions: Document Parsing ──
+# Helper Functions: Document Parsing
 
 def extract_text_from_file(uploaded_file) -> str:
     """Extracts raw text from PDF, DOCX, or TXT uploaded files."""
@@ -77,7 +81,7 @@ def validate_doc_text(text: str) -> tuple[str, str]:
     return "Valid", "Ready for analysis."
 
 
-# ── Backend Communication (API with Direct Fallback) ──
+# Backend Communication (API with Direct Fallback)
 
 def check_backend_alive() -> bool:
     try:
@@ -120,7 +124,7 @@ def api_add_jd(title: str, company: str, location: str, text: str) -> dict:
     except Exception:
         pass
 
-    # Direct fallback: use AnalysisPipeline.ingest_jd to extract & cache skills
+    # Direct fallback: use AnalysisPipeline.ingest_jd to extract and cache skills
     pipeline = get_local_pipeline()
     res = pipeline.ingest_jd(title, company, location, text)
     if hasattr(res, "error_code"):
@@ -165,7 +169,7 @@ def api_analyze(resume_text: str, resume_id: str, jd_id: str) -> dict:
             detail = r.json().get("detail", {})
             msg = detail.get("message") if isinstance(detail, dict) else str(detail)
             return {"error": "LLM_SERVICE_BUSY", "detail": f"Gemini is experiencing peak demand (503). Retrying will route through fallback models. ({msg})"}
-    except Exception as e:
+    except Exception:
         pass
 
     t0 = time.time()
@@ -175,7 +179,7 @@ def api_analyze(resume_text: str, resume_id: str, jd_id: str) -> dict:
     return res
 
 
-# ── Charting Helpers ──
+# Charting Helpers
 
 def make_gauge_chart(score: int) -> go.Figure:
     """Creates a circular gauge chart for match score."""
@@ -273,25 +277,25 @@ def make_skill_comparison_bar(skill_gap: dict) -> go.Figure:
     return fig
 
 
-# ── SIDEBAR: System Status & Session Controls ──
+# SIDEBAR: System Status & Session Controls
 
 with st.sidebar:
-    st.title("🎯 AI Placement Analyzer")
-    st.caption("Phase 1 Testing Dashboard — Cached JD Skills")
+    st.title("AI Placement Analyzer")
+    st.caption("Phase 1 Testing Dashboard (Caching Enabled)")
     st.divider()
 
     # Backend status badge
     backend_ok = check_backend_alive()
     if backend_ok:
-        st.success("🟢 FastAPI Backend: Connected (127.0.0.1:8000)")
+        st.success("[Connected] FastAPI Backend (127.0.0.1:8000)")
     else:
-        st.warning("🟠 Backend Server Offline — using Direct Pipeline fallback")
+        st.warning("[Offline] Backend Server - using Direct Pipeline fallback")
 
     # Ingestion & Cache Counter
     cached_jds_count = sum(1 for j in st.session_state.jds if j.get("skills_cached"))
     total_jds_count = len(st.session_state.jds)
 
-    st.subheader("📊 Session Counters")
+    st.subheader("Session Counters")
     col1, col2 = st.columns(2)
     col1.metric("Resumes", f"{len(st.session_state.resumes)} / 10")
     col2.metric("JDs Stored", f"{total_jds_count} / 10")
@@ -302,14 +306,14 @@ with st.sidebar:
     # Caching status badge in sidebar
     if total_jds_count > 0:
         if cached_jds_count == total_jds_count:
-            st.success(f"⚡ JD Skills Cached: {cached_jds_count}/{total_jds_count} (100%)")
+            st.success(f"JD Skills Cached: {cached_jds_count}/{total_jds_count} (100%)")
         else:
-            st.info(f"⚡ JD Skills Cached: {cached_jds_count}/{total_jds_count}")
+            st.info(f"JD Skills Cached: {cached_jds_count}/{total_jds_count}")
 
     st.divider()
 
     # Reset Action
-    if st.button("🔄 Reset Session & Clear Store", use_container_width=True, type="secondary"):
+    if st.button("Reset Session and Clear Store", use_container_width=True, type="secondary"):
         api_reset_jds()
         st.session_state.resumes = []
         st.session_state.jds = []
@@ -322,8 +326,56 @@ with st.sidebar:
 
     # Quick Fixture Loader
     st.divider()
-    st.subheader("⚡ Quick Test Fixtures")
-    if st.button("📥 Load 5 Sample Resumes & 5 JDs", use_container_width=True):
+    st.subheader("Quick Test Fixtures")
+
+    # Load from Sample PDFs
+    if st.button("Load 5 PDF Resumes and 5 PDF JDs", use_container_width=True):
+        resume_pdfs = sorted(glob.glob("sample_pdfs/resumes/*.pdf"))
+        jd_pdfs = sorted(glob.glob("sample_pdfs/job_descriptions/*.pdf"))
+
+        if resume_pdfs and jd_pdfs:
+            st.session_state.resumes = []
+            for path in resume_pdfs[:10]:
+                doc = pymupdf.open(path)
+                raw_text = "\n".join([page.get_text() for page in doc]).strip()
+                status, warn = validate_doc_text(raw_text)
+                name = os.path.basename(path).replace(".pdf", "").replace("_", " ")
+                st.session_state.resumes.append({
+                    "id": f"res_{int(time.time()*1000)%100000}_{len(st.session_state.resumes)}",
+                    "name": name,
+                    "text": raw_text,
+                    "words": len(raw_text.split()),
+                    "status": status,
+                    "warning": warn
+                })
+
+            api_reset_jds()
+            st.session_state.jds = []
+            for path in jd_pdfs[:10]:
+                doc = pymupdf.open(path)
+                raw_text = "\n".join([page.get_text() for page in doc]).strip()
+                status, warn = validate_doc_text(raw_text)
+                title = os.path.basename(path).replace(".pdf", "").replace("JD_", "").replace("_", " ")
+                st.session_state.jds.append({
+                    "id": f"jd_{int(time.time()*1000)%100000}_{len(st.session_state.jds)}",
+                    "title": title,
+                    "company": "Partner Company",
+                    "location": "Bengaluru / Remote",
+                    "text": raw_text,
+                    "words": len(raw_text.split()),
+                    "status": status,
+                    "warning": warn,
+                    "backend_id": None,
+                    "skills_cached": False,
+                    "essential_skills": [],
+                    "preferred_skills": []
+                })
+            st.success("Loaded 5 PDF Resumes and 5 PDF Job Descriptions! Click Ingest to pre-cache skills.")
+            st.rerun()
+        else:
+            st.error("Sample PDF directory not found. Please verify sample_pdfs folder.")
+
+    if st.button("Load JSON Fixtures (5 Resumes / 5 JDs)", use_container_width=True):
         if os.path.exists("tests/fixtures/sample_data.json"):
             with open("tests/fixtures/sample_data.json", "r", encoding="utf-8") as f:
                 fixtures = json.load(f)
@@ -362,46 +414,47 @@ with st.sidebar:
                     "essential_skills": [],
                     "preferred_skills": []
                 })
-            st.success("5 Resumes and 5 JDs loaded from fixtures! Ready to ingest or analyze.")
+            st.success("JSON Fixtures loaded successfully.")
             st.rerun()
 
 
-# ── MAIN PANEL ──
+# MAIN PANEL
 
 tab_upload, tab_results, tab_detail = st.tabs([
-    "📁 1. Upload & Manage Documents",
-    "🏆 2. Top-5 Matching Results",
-    "🔬 3. In-Depth Gap Analysis"
+    "1. Upload and Manage Documents",
+    "2. Top-5 Matching Results",
+    "3. Detailed Gap Analysis"
 ])
 
 
-# ════════════════════════════════════════════════════════════════
 # TAB 1: RESUME & JD UPLOAD PANEL
-# ════════════════════════════════════════════════════════════════
 
 with tab_upload:
-    st.header("Upload & Document Management Panel")
-    st.markdown("Upload up to **10 candidate resumes** and **10 job descriptions**. JD skills are extracted and grounded **once at ingestion** and cached in ChromaDB metadata.")
+    st.header("Upload and Document Management Panel")
+    st.markdown("Upload candidate resumes and job descriptions (Max 10 documents each, **5MB max file size**). JD skills are extracted and grounded **once at ingestion** and cached in ChromaDB metadata.")
 
     col_res, col_jd = st.columns(2)
 
-    # ── Left Column: Resumes ──
+    # Left Column: Resumes
     with col_res:
-        st.subheader("📄 Candidate Resumes (Max 10)")
+        st.subheader("Candidate Resumes (Max 10, Limit 5MB)")
         res_upload_mode = st.radio("Resume Upload Mode", ["Files (PDF / DOCX / TXT)", "Manual Paste"], horizontal=True, key="res_mode")
 
         if res_upload_mode == "Files (PDF / DOCX / TXT)":
             res_files = st.file_uploader(
-                "Select Resume Files",
+                "Select Resume Files (Max 5MB each)",
                 type=["pdf", "docx", "doc", "txt"],
                 accept_multiple_files=True,
                 key="res_file_input"
             )
-            if res_files and st.button("➕ Add Uploaded Resumes"):
+            if res_files and st.button("Add Uploaded Resumes"):
                 for f in res_files:
                     if len(st.session_state.resumes) >= 10:
                         st.warning("Resume cap reached (10 max).")
                         break
+                    if f.size > MAX_FILE_SIZE_BYTES:
+                        st.error(f"File '{f.name}' exceeds the 5MB size limit ({f.size / (1024*1024):.2f}MB). Upload rejected.")
+                        continue
                     try:
                         raw_text = extract_text_from_file(f)
                         status, warn = validate_doc_text(raw_text)
@@ -421,7 +474,7 @@ with tab_upload:
             with st.form("manual_resume_form"):
                 m_res_name = st.text_input("Candidate Name / ID", value="Candidate John Doe")
                 m_res_text = st.text_area("Resume Full Text", height=160, placeholder="Paste resume contents here...")
-                submit_res = st.form_submit_button("➕ Add Manual Resume")
+                submit_res = st.form_submit_button("Add Manual Resume")
                 if submit_res:
                     if len(st.session_state.resumes) >= 10:
                         st.error("Resume cap reached (10 max).")
@@ -444,33 +497,36 @@ with tab_upload:
         if not st.session_state.resumes:
             st.info("No resumes uploaded yet.")
         for idx, r in enumerate(st.session_state.resumes):
-            with st.expander(f"{r['name']} ({r['words']} words) — Status: {r['status']}"):
+            with st.expander(f"{r['name']} ({r['words']} words) - Status: {r['status']}"):
                 if r['status'] == "Valid":
                     st.success(f"Status: {r['status']} ({r['warning']})")
                 else:
-                    st.warning(f"Status: {r['status']} — {r['warning']}")
+                    st.warning(f"Status: {r['status']} - {r['warning']}")
                 st.text_area("Content Preview", r['text'][:400] + ("..." if len(r['text']) > 400 else ""), height=100, key=f"prev_r_{idx}")
-                if st.button("🗑️ Remove Resume", key=f"del_r_{idx}"):
+                if st.button("Remove Resume", key=f"del_r_{idx}"):
                     st.session_state.resumes.pop(idx)
                     st.rerun()
 
-    # ── Right Column: Job Descriptions ──
+    # Right Column: Job Descriptions
     with col_jd:
-        st.subheader("💼 Job Descriptions (Max 10)")
+        st.subheader("Job Descriptions (Max 10, Limit 5MB)")
         jd_upload_mode = st.radio("JD Upload Mode", ["Files (PDF / DOCX / TXT)", "Manual Form"], horizontal=True, key="jd_mode")
 
         if jd_upload_mode == "Files (PDF / DOCX / TXT)":
             jd_files = st.file_uploader(
-                "Select JD Files",
+                "Select JD Files (Max 5MB each)",
                 type=["pdf", "docx", "doc", "txt"],
                 accept_multiple_files=True,
                 key="jd_file_input"
             )
-            if jd_files and st.button("➕ Add Uploaded JDs"):
+            if jd_files and st.button("Add Uploaded JDs"):
                 for f in jd_files:
                     if len(st.session_state.jds) >= 10:
                         st.warning("JD cap reached (10 max).")
                         break
+                    if f.size > MAX_FILE_SIZE_BYTES:
+                        st.error(f"File '{f.name}' exceeds the 5MB size limit ({f.size / (1024*1024):.2f}MB). Upload rejected.")
+                        continue
                     try:
                         raw_text = extract_text_from_file(f)
                         status, warn = validate_doc_text(raw_text)
@@ -478,7 +534,7 @@ with tab_upload:
                         st.session_state.jds.append({
                             "id": f"jd_{int(time.time()*1000)%100000}",
                             "title": title.title(),
-                            "company": "Company Inc.",
+                            "company": "Partner Company",
                             "location": "Remote / Hybrid",
                             "text": raw_text,
                             "words": len(raw_text.split()),
@@ -499,7 +555,7 @@ with tab_upload:
                 m_jd_company = st.text_input("Company Name", value="CloudScale Inc")
                 m_jd_location = st.text_input("Location", value="Remote")
                 m_jd_text = st.text_area("Job Description Full Text", height=120, placeholder="Requirements, qualifications, skills...")
-                submit_jd = st.form_submit_button("➕ Add Manual JD")
+                submit_jd = st.form_submit_button("Add Manual JD")
                 if submit_jd:
                     if len(st.session_state.jds) >= 10:
                         st.error("JD cap reached (10 max).")
@@ -526,10 +582,10 @@ with tab_upload:
         # Ingest All Pending JDs Action
         pending_jds = [j for j in st.session_state.jds if not j.get("backend_id") or not j.get("skills_cached")]
         if pending_jds:
-            if st.button(f"⚡ Ingest & Pre-Cache All {len(pending_jds)} Pending JDs Now", use_container_width=True, type="secondary"):
+            if st.button(f"Ingest and Pre-Cache All {len(pending_jds)} Pending JDs Now", use_container_width=True, type="secondary"):
                 p_bar = st.progress(0, text="Starting JD ingestion and skill extraction...")
                 for i, j in enumerate(pending_jds):
-                    p_bar.progress((i) / len(pending_jds), text=f"Ingesting '{j['title']}' — extracting & grounding skills with Gemini...")
+                    p_bar.progress((i) / len(pending_jds), text=f"Ingesting '{j['title']}' - extracting and grounding skills with Gemini...")
                     res = api_add_jd(j["title"], j["company"], j["location"], j["text"])
                     if "jd_id" in res:
                         j["backend_id"] = res["jd_id"]
@@ -548,14 +604,14 @@ with tab_upload:
         if not st.session_state.jds:
             st.info("No JDs added yet.")
         for idx, j in enumerate(st.session_state.jds):
-            cache_badge = "🟢 Cached" if j.get("skills_cached") else "⚪ Pending"
-            with st.expander(f"{j['title']} @ {j['company']} — [{cache_badge}] ({j['words']} words)"):
+            cache_badge = "[Cached]" if j.get("skills_cached") else "[Pending]"
+            with st.expander(f"{j['title']} @ {j['company']} - {cache_badge} ({j['words']} words)"):
                 if j.get("skills_cached"):
-                    st.success(f"✅ Ingested in ChromaDB as `{j['backend_id']}` — Skills Pre-Cached")
+                    st.success(f"Ingested in ChromaDB as `{j['backend_id']}` - Skills Pre-Cached")
                     c_ess = j.get("essential_skills", [])
                     c_pref = j.get("preferred_skills", [])
                     st.markdown(f"**Extracted Skills at Ingestion:** {len(c_ess)} Essential, {len(c_pref)} Preferred")
-                    
+
                     e_col, p_col = st.columns(2)
                     with e_col:
                         st.markdown("**Essential Skills (JD Requirements):**")
@@ -563,7 +619,7 @@ with tab_upload:
                             for s in c_ess:
                                 s_name = s.get("standardized_name") or s.get("original_name", "")
                                 s_conf = s.get("confidence_tier", "exact")
-                                st.markdown(f"- 🔴 **{s_name}** `({s_conf})`")
+                                st.markdown(f"- **{s_name}** `({s_conf})`")
                         else:
                             st.caption("None extracted")
                     with p_col:
@@ -572,13 +628,13 @@ with tab_upload:
                             for s in c_pref:
                                 s_name = s.get("standardized_name") or s.get("original_name", "")
                                 s_conf = s.get("confidence_tier", "exact")
-                                st.markdown(f"- 🟠 **{s_name}** `({s_conf})`")
+                                st.markdown(f"- **{s_name}** `({s_conf})`")
                         else:
                             st.caption("None extracted")
                 else:
-                    st.info("⚪ Not yet ingested to ChromaDB (Skills will be extracted and cached on analysis, or click below)")
-                    if st.button("⚡ Ingest & Cache Skills Now", key=f"btn_ingest_{idx}"):
-                        with st.spinner(f"Ingesting '{j['title']}' & extracting skills..."):
+                    st.info("Not yet ingested to ChromaDB (Skills will be extracted and cached on analysis, or click below)")
+                    if st.button("Ingest and Cache Skills Now", key=f"btn_ingest_{idx}"):
+                        with st.spinner(f"Ingesting '{j['title']}' and extracting skills..."):
                             res = api_add_jd(j["title"], j["company"], j["location"], j["text"])
                             if "jd_id" in res:
                                 j["backend_id"] = res["jd_id"]
@@ -592,13 +648,13 @@ with tab_upload:
                                 st.error(f"Failed to ingest: {res.get('detail')}")
 
                 st.text_area("Content Preview", j['text'][:350] + ("..." if len(j['text']) > 350 else ""), height=80, key=f"prev_j_{idx}")
-                if st.button("🗑️ Remove JD", key=f"del_j_{idx}"):
+                if st.button("Remove JD", key=f"del_j_{idx}"):
                     st.session_state.jds.pop(idx)
                     st.rerun()
 
-    # ── Action Bar: Analysis Trigger ──
+    # Action Bar: Analysis Trigger
     st.divider()
-    st.subheader("🚀 Run Alignment Analysis")
+    st.subheader("Run Alignment Analysis")
 
     if not st.session_state.resumes:
         st.info("Upload at least one resume to run analysis.")
@@ -613,13 +669,13 @@ with tab_upload:
         target_resume = st.session_state.resumes[selected_idx]
 
         force_reingest = st.checkbox(
-            "🔄 Force re-ingest all JDs (clears ChromaDB & re-extracts skills from Gemini)",
+            "Force re-ingest all JDs (clears ChromaDB and re-extracts skills from Gemini)",
             value=False,
-            help="Leave unchecked to use pre-cached JD skills. When unchecked, switching resumes does not re-extract JD skills!"
+            help="Leave unchecked to use pre-cached JD skills. When unchecked, switching resumes does not re-extract JD skills."
         )
 
-        if st.button("🔥 Analyze Placement Fit (Embed & Rank)", type="primary", use_container_width=True):
-            progress_bar = st.progress(0, text="Step 1/5: Uploading & Parsing Documents...")
+        if st.button("Analyze Placement Fit (Embed and Rank)", type="primary", use_container_width=True):
+            progress_bar = st.progress(0, text="Step 1/5: Uploading and Parsing Documents...")
             time.sleep(0.2)
 
             try:
@@ -654,7 +710,7 @@ with tab_upload:
                         time.sleep(0.3)
 
                 # Step 2: Tier 1 Ranking
-                progress_bar.progress(50, text="Step 3/5: Vectorizing Resume & Running Cosine Similarity Matching...")
+                progress_bar.progress(50, text="Step 3/5: Vectorizing Resume and Running Cosine Similarity Matching...")
                 rank_resp = api_rank(target_resume["text"], target_resume["id"])
                 st.session_state.rank_results = rank_resp.get("results", [])
 
@@ -678,12 +734,10 @@ with tab_upload:
                 st.error(f"Analysis failed: {e}")
 
 
-# ════════════════════════════════════════════════════════════════
 # TAB 2: TOP-5 JD RESULTS
-# ════════════════════════════════════════════════════════════════
 
 with tab_results:
-    st.header("🏆 Top-5 Ranked Job Descriptions")
+    st.header("Top-5 Ranked Job Descriptions")
 
     if not st.session_state.rank_results:
         st.info("No ranking results yet. Go to Tab 1 and click 'Analyze Placement Fit'.")
@@ -697,7 +751,7 @@ with tab_results:
         for card in top_5:
             rank_num = card.get("rank", 1)
             sim_score = card.get("similarity_score", 0)
-            medal = "🥇" if rank_num == 1 else ("🥈" if rank_num == 2 else ("🥉" if rank_num == 3 else f"#{rank_num}"))
+            rank_label = f"#{rank_num}"
             jd_id = card.get("jd_id")
 
             # Look up cached skill counts
@@ -706,14 +760,14 @@ with tab_results:
             cached_pref = len(jd_meta.get("preferred_skills", [])) if jd_meta else 0
 
             with st.container():
-                st.markdown(f"### {medal} {card.get('title')} — {card.get('company')}")
+                st.markdown(f"### {rank_label} {card.get('title')} - {card.get('company')}")
                 c1, c2, c3 = st.columns([2, 5, 3])
 
                 with c1:
                     st.metric("Similarity Score", f"{sim_score}%")
-                    st.caption(f"📍 Location: {card.get('location')}")
+                    st.caption(f"Location: {card.get('location')}")
                     if jd_meta and jd_meta.get("skills_cached"):
-                        st.caption(f"⚡ Cached Skills: {cached_ess} Ess. / {cached_pref} Pref.")
+                        st.caption(f"Cached Skills: {cached_ess} Essential / {cached_pref} Preferred")
 
                 with c2:
                     st.markdown("**Overview Snippet:**")
@@ -721,7 +775,7 @@ with tab_results:
 
                 with c3:
                     st.markdown("**Actions:**")
-                    if st.button(f"🔍 View Full Gap Analysis", key=f"btn_analyze_{jd_id}"):
+                    if st.button(f"View Full Gap Analysis", key=f"btn_analyze_{jd_id}"):
                         if jd_id not in st.session_state.analyses:
                             with st.spinner(f"Running Gemini Tier 2 analysis on {card.get('title')} (1 Gemini call)..."):
                                 analysis_data = api_analyze(target_res["text"], target_res["id"], jd_id)
@@ -732,12 +786,10 @@ with tab_results:
                 st.divider()
 
 
-# ════════════════════════════════════════════════════════════════
 # TAB 3: IN-DEPTH GAP ANALYSIS
-# ════════════════════════════════════════════════════════════════
 
 with tab_detail:
-    st.header("🔬 Detailed Match & Skill Gap Analysis")
+    st.header("Detailed Match and Skill Gap Analysis")
 
     if not st.session_state.selected_jd_id or st.session_state.selected_jd_id not in st.session_state.analyses:
         st.info("Select a job description in Tab 2 by clicking 'View Full Gap Analysis' to inspect deep results.")
@@ -747,20 +799,20 @@ with tab_detail:
 
         # Check Provider Error State
         if analysis.get("error") or analysis.get("error_code"):
-            st.error(f"⚠️ Provider Notice: {analysis.get('error', 'Error')}")
+            st.error(f"Provider Notice: {analysis.get('error', 'Error')}")
             st.warning(analysis.get("detail", analysis.get("message", "Service temporary failure.")))
             target_res = st.session_state.resumes[st.session_state.selected_resume_idx]
-            if st.button("🔄 Retry Analysis (Automatic Fallback Route)", type="primary"):
+            if st.button("Retry Analysis (Automatic Fallback Route)", type="primary"):
                 with st.spinner("Retrying analysis via multi-model fallback..."):
                     st.session_state.analyses[active_jd_id] = api_analyze(target_res["text"], target_res["id"], active_jd_id)
                     st.rerun()
         # Check Insufficient Context State
         elif not analysis.get("context_sufficient", True):
-            st.error("⚠️ Insufficient Context Detected")
+            st.error("Insufficient Context Detected")
             st.warning(f"Reason: {analysis.get('insufficient_reason', 'Document too short')}")
             st.info("The backend determined that either the resume or job description does not contain sufficient text for statistically reliable skill grounding. Automated generation was safely bypassed without errors.")
         else:
-            # ── Top Row: Gauge & Scores ──
+            # Top Row: Gauge & Scores
             score = analysis.get("match_score", 0)
             score_col, summary_col = st.columns([1, 2])
 
@@ -770,20 +822,20 @@ with tab_detail:
             with summary_col:
                 st.subheader("Executive Fit Summary")
                 st.markdown(f"> {analysis.get('summary', 'No summary available.')}")
-                
+
                 latency = analysis.get("_latency_sec")
-                latency_str = f" | ⏱️ Latency: **{latency}s**" if latency else ""
-                st.caption(f"JD ID: `{active_jd_id}` | Resume ID: `{analysis.get('resume_id')}` | Context Sufficient: ✅ True{latency_str}")
-                st.info("⚡ **High-Efficiency Caching**: JD skills were loaded directly from ChromaDB metadata ground truth. Gemini executed **only 1 call** to extract candidate resume skills fresh.")
+                latency_str = f" | Latency: **{latency}s**" if latency else ""
+                st.caption(f"JD ID: `{active_jd_id}` | Resume ID: `{analysis.get('resume_id')}` | Context Sufficient: True{latency_str}")
+                st.info("High-Efficiency Caching: JD skills were loaded directly from ChromaDB metadata ground truth. Gemini executed only 1 call to extract candidate resume skills fresh.")
 
             st.divider()
 
-            # ── Row 2: Strengths & Weaknesses ──
-            st.subheader("📋 Strengths & Qualification Gaps")
+            # Row 2: Strengths & Weaknesses
+            st.subheader("Strengths and Qualification Gaps")
             str_col, weak_col = st.columns(2)
 
             with str_col:
-                st.markdown("#### ✅ Key Strengths")
+                st.markdown("#### Key Strengths")
                 strengths = analysis.get("strengths", [])
                 if strengths:
                     for s in strengths:
@@ -792,7 +844,7 @@ with tab_detail:
                     st.write("No specific strengths listed.")
 
             with weak_col:
-                st.markdown("#### ⚠️ Areas for Improvement / Gaps")
+                st.markdown("#### Areas for Improvement / Gaps")
                 weaknesses = analysis.get("weaknesses", [])
                 if weaknesses:
                     for w in weaknesses:
@@ -802,8 +854,8 @@ with tab_detail:
 
             st.divider()
 
-            # ── Row 3: Interactive Visualizations ──
-            st.subheader("📊 Visual Alignment Analytics")
+            # Row 3: Interactive Visualizations
+            st.subheader("Visual Alignment Analytics")
             chart_c1, chart_c2, chart_c3 = st.columns(3)
 
             gap_data = analysis.get("skill_gap", {})
@@ -820,8 +872,8 @@ with tab_detail:
 
             st.divider()
 
-            # ── Row 4: Skill Gap Breakdown ──
-            st.subheader("🎯 Grounded Skill Gap Breakdown")
+            # Row 4: Skill Gap Breakdown
+            st.subheader("Grounded Skill Gap Breakdown")
 
             matched_skills = gap_data.get("matched", [])
             miss_essential = gap_data.get("missing_essential", [])
@@ -834,8 +886,8 @@ with tab_detail:
                 st.markdown(f"**Matched Skills ({len(matched_skills)})**")
                 if matched_skills:
                     for m in matched_skills:
-                        badge = "🟢" if m.get("match_type") == "exact" else "🟡 (close)"
-                        st.markdown(f"- **{m.get('skill_name')}** {badge}")
+                        badge = "[Exact]" if m.get("match_type") == "exact" else "[Close]"
+                        st.markdown(f"- **{m.get('skill_name')}** `{badge}`")
                 else:
                     st.write("None")
 
@@ -843,7 +895,7 @@ with tab_detail:
                 st.markdown(f"**Missing Essential ({len(miss_essential)})**")
                 if miss_essential:
                     for s in miss_essential:
-                        st.markdown(f"- 🔴 **{s}**")
+                        st.markdown(f"- **{s}** `[Essential]`")
                 else:
                     st.write("None")
 
@@ -851,7 +903,7 @@ with tab_detail:
                 st.markdown(f"**Missing Preferred ({len(miss_preferred)})**")
                 if miss_preferred:
                     for s in miss_preferred:
-                        st.markdown(f"- 🟠 **{s}**")
+                        st.markdown(f"- **{s}** `[Preferred]`")
                 else:
                     st.write("None")
 
@@ -859,14 +911,14 @@ with tab_detail:
                 st.markdown(f"**Candidate Extra ({len(extra_skills)})**")
                 if extra_skills:
                     for s in extra_skills:
-                        st.markdown(f"- 🔵 **{s}**")
+                        st.markdown(f"- **{s}** `[Candidate Extra]`")
                 else:
                     st.write("None")
 
             st.divider()
 
-            # ── Row 5: Actionable Skill Recommendations ──
-            st.subheader("💡 Targeted Skill Recommendations")
+            # Row 5: Actionable Skill Recommendations
+            st.subheader("Targeted Skill Recommendations")
             recs = analysis.get("recommendations", [])
             if recs:
                 r_cols = st.columns(min(len(recs), 3))
@@ -874,13 +926,13 @@ with tab_detail:
                     col_idx = i % len(r_cols)
                     with r_cols[col_idx]:
                         with st.container(border=True):
-                            st.markdown(f"**🎯 {r.get('skill', 'Skill')}**")
+                            st.markdown(f"**{r.get('skill', 'Skill')}**")
                             st.write(r.get("reason", ""))
             else:
                 st.info("No specific recommendations generated.")
 
             st.divider()
 
-            # ── Row 6: Raw API Response & Cached Skill Ground Truth ──
-            with st.expander("🛠️ Raw Backend API Response JSON"):
+            # Raw API Response
+            with st.expander("Raw Backend API Response JSON"):
                 st.json(analysis)
