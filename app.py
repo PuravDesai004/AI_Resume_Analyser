@@ -170,10 +170,17 @@ def make_gauge_chart(score: int) -> go.Figure:
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
         value=score,
-        domain={"x": [0, 1], "y": [0, 1]},
+        domain={"x": [0.08, 0.92], "y": [0, 1]},
         title={"text": "Overall Match Score", "font": {"size": 18}},
         gauge={
-            "axis": {"range": [0, 100], "tickwidth": 1, "tickcolor": "#bdc3c7"},
+            "axis": {
+                "range": [0, 100],
+                "tickwidth": 1,
+                "tickcolor": "#bdc3c7",
+                "tickmode": "array",
+                "tickvals": [0, 25, 50, 75, 100],
+                "ticktext": ["0", "25", "50", "75", "100"]
+            },
             "bar": {"color": color, "thickness": 0.3},
             "bgcolor": "#ecf0f1",
             "borderwidth": 1,
@@ -184,8 +191,9 @@ def make_gauge_chart(score: int) -> go.Figure:
             ]
         }
     ))
-    fig.update_layout(height=240, margin=dict(l=20, r=20, t=40, b=20))
+    fig.update_layout(height=240, margin=dict(l=35, r=45, t=40, b=25))
     return fig
+
 
 
 def make_skill_donut_chart(skill_gap: dict) -> go.Figure:
@@ -682,7 +690,7 @@ with tab_detail:
             with summary_col:
                 st.subheader("Executive Fit Summary")
                 st.markdown(f"> {analysis.get('summary', 'No summary available.')}")
-                st.caption(f"JD ID: `{active_jd_id}` | Resume ID: `{analysis.get('resume_id')}` | Context Sufficient: True")
+                st.caption(f"JD ID: {active_jd_id} | Resume ID: {analysis.get('resume_id')} | Context Sufficient: True")
 
             st.divider()
 
@@ -742,8 +750,7 @@ with tab_detail:
                 st.markdown(f"**Matched Skills ({len(matched_skills)})**")
                 if matched_skills:
                     for m in matched_skills:
-                        badge = "[Exact]" if m.get("match_type") == "exact" else "[Close]"
-                        st.markdown(f"- **{m.get('skill_name')}** `{badge}`")
+                        st.markdown(f"- {m.get('skill_name')}")
                 else:
                     st.write("None")
 
@@ -751,7 +758,7 @@ with tab_detail:
                 st.markdown(f"**Missing Essential ({len(miss_essential)})**")
                 if miss_essential:
                     for s in miss_essential:
-                        st.markdown(f"- **{s}** `[Essential]`")
+                        st.markdown(f"- {s}")
                 else:
                     st.write("None")
 
@@ -759,7 +766,7 @@ with tab_detail:
                 st.markdown(f"**Missing Preferred ({len(miss_preferred)})**")
                 if miss_preferred:
                     for s in miss_preferred:
-                        st.markdown(f"- **{s}** `[Preferred]`")
+                        st.markdown(f"- {s}")
                 else:
                     st.write("None")
 
@@ -767,7 +774,7 @@ with tab_detail:
                 st.markdown(f"**Candidate Extra ({len(extra_skills)})**")
                 if extra_skills:
                     for s in extra_skills:
-                        st.markdown(f"- **{s}** `[Candidate Extra]`")
+                        st.markdown(f"- {s}")
                 else:
                     st.write("None")
 
