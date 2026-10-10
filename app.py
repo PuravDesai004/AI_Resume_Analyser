@@ -48,6 +48,8 @@ if "pref_location" not in st.session_state:
     st.session_state.pref_location = ""
 if "pref_arrangement" not in st.session_state:
     st.session_state.pref_arrangement = "Any"
+if "active_ranked_resume_id" not in st.session_state:
+    st.session_state.active_ranked_resume_id = None
 
 
 # Helper Functions: Document Parsing
@@ -227,13 +229,25 @@ def make_gauge_chart(score: int) -> go.Figure:
 
 def make_skill_donut_chart(skill_gap: dict) -> go.Figure:
     """Donut chart for skill match categories."""
+    if not isinstance(skill_gap, dict):
+        skill_gap = {}
     labels = ["Matched", "Missing (Essential)", "Missing (Preferred)", "Candidate Extra"]
     values = [
-        len(skill_gap.get("matched", [])),
-        len(skill_gap.get("missing_essential", [])),
-        len(skill_gap.get("missing_preferred", [])),
-        len(skill_gap.get("extra", []))
+        len(skill_gap.get("matched", []) or []),
+        len(skill_gap.get("missing_essential", []) or []),
+        len(skill_gap.get("missing_preferred", []) or []),
+        len(skill_gap.get("extra", []) or [])
     ]
+    if sum(values) == 0:
+        fig = go.Figure()
+        fig.update_layout(
+            title_text="No skill composition data available",
+            xaxis=dict(visible=False),
+            yaxis=dict(visible=False),
+            height=280
+        )
+        return fig
+
     colors = ["#2ecc71", "#e74c3c", "#f39c12", "#3498db"]
 
     fig = go.Figure(data=[go.Pie(
@@ -254,8 +268,18 @@ def make_skill_donut_chart(skill_gap: dict) -> go.Figure:
 
 def make_requirement_bar_chart(req_matches: list) -> go.Figure:
     """Bar chart for requirement categories."""
-    categories = [r.get("category", "") for r in req_matches]
-    percentages = [r.get("match_percent", 0) for r in req_matches]
+    if not req_matches:
+        fig = go.Figure()
+        fig.update_layout(
+            title_text="No requirement data available",
+            xaxis=dict(visible=False),
+            yaxis=dict(visible=False),
+            height=280
+        )
+        return fig
+
+    categories = [r.get("category", "") if isinstance(r, dict) else str(r) for r in req_matches]
+    percentages = [r.get("match_percent", 0) if isinstance(r, dict) else 0 for r in req_matches]
     colors = ["#3498db" if c != "Skills" else "#2ecc71" for c in categories]
 
     fig = go.Figure(data=[go.Bar(
@@ -276,13 +300,25 @@ def make_requirement_bar_chart(req_matches: list) -> go.Figure:
 
 def make_skill_comparison_bar(skill_gap: dict) -> go.Figure:
     """Compares candidate skills vs JD requirements count."""
-    matched_count = len(skill_gap.get("matched", []))
-    miss_ess = len(skill_gap.get("missing_essential", []))
-    miss_pref = len(skill_gap.get("missing_preferred", []))
-    extra_count = len(skill_gap.get("extra", []))
+    if not isinstance(skill_gap, dict):
+        skill_gap = {}
+    matched_count = len(skill_gap.get("matched", []) or [])
+    miss_ess = len(skill_gap.get("missing_essential", []) or [])
+    miss_pref = len(skill_gap.get("missing_preferred", []) or [])
+    extra_count = len(skill_gap.get("extra", []) or [])
 
     candidate_total = matched_count + extra_count
     jd_total = matched_count + miss_ess + miss_pref
+
+    if candidate_total == 0 and jd_total == 0:
+        fig = go.Figure()
+        fig.update_layout(
+            title_text="No skill volume data available",
+            xaxis=dict(visible=False),
+            yaxis=dict(visible=False),
+            height=280
+        )
+        return fig
 
     fig = go.Figure(data=[
         go.Bar(name="Candidate Skills", x=["Resume Skills", "JD Requirements"], y=[candidate_total, 0], marker_color="#3498db"),
@@ -297,15 +333,79 @@ def make_skill_comparison_bar(skill_gap: dict) -> go.Figure:
     return fig
 
 
+def get_analysis_cache_key(resume_id: str, jd_id: str) -> str:
+    """Returns a composite cache key to strictly isolate analyses across candidate resumes."""
+    return f"{str(resume_id).strip()}::{str(jd_id).strip()}"
+
+
+def get_cached_analysis(resume_id: str, jd_id: str) -> Optional[dict]:
+    """Retrieves cached analysis using composite key with backward-compatible lookup."""
+    key = get_analysis_cache_key(resume_id, jd_id)
+    if "analyses" in st.session_state and key in st.session_state.analyses:
+        return st.session_state.analyses[key]
+    if "analyses" in st.session_state and jd_id in st.session_state.analyses:
+        legacy = st.session_state.analyses[jd_id]
+        if isinstance(legacy, dict) and legacy.get("resume_id") == str(resume_id).strip():
+            return legacy
+    return None
+
+
+def set_cached_analysis(resume_id: str, jd_id: str, analysis: dict):
+    """Caches analysis using composite key and keeps active pointer."""
+    if "analyses" not in st.session_state:
+        st.session_state.analyses = {}
+    key = get_analysis_cache_key(resume_id, jd_id)
+    st.session_state.analyses[key] = analysis
+    st.session_state.analyses[jd_id] = analysis
+
+
+def matches_work_arrangement(location: str, chk_remote: bool, chk_hybrid: bool, chk_onsite: bool) -> bool:
+    """
+    Evaluates whether a JD's location matches active work arrangement checkboxes.
+    If none are selected, all arrangements pass (returns True).
+    """
+    if not (chk_remote or chk_hybrid or chk_onsite):
+        return True
+
+    loc_lower = (location or "").lower()
+    is_remote = "remote" in loc_lower
+    is_hybrid = "hybrid" in loc_lower
+    onsite_keywords = ["on-site", "onsite", "in-person", "in person", "office", "in office"]
+    is_onsite = any(kw in loc_lower for kw in onsite_keywords) or (not is_remote and not is_hybrid and bool(loc_lower.strip()))
+
+    if chk_remote and is_remote:
+        return True
+    if chk_hybrid and is_hybrid:
+        return True
+    if chk_onsite and is_onsite:
+        return True
+
+    return False
+
+
 def make_multi_jd_grouped_bar(analyses_map: dict, jd_titles_map: dict) -> go.Figure:
-    """Grouped bar chart for Multi-JD Comparison across requirement categories."""
+    """Grouped bar chart for Multi-JD Comparison across requirement categories with empty guards."""
     categories = ["Skills", "Experience", "Education", "Responsibilities"]
     fig = go.Figure()
+    if not analyses_map:
+        fig.update_layout(
+            title_text="No JD analysis data available to compare",
+            xaxis=dict(visible=False),
+            yaxis=dict(visible=False),
+            height=200
+        )
+        return fig
+
     colors = ["#3498db", "#2ecc71", "#e67e22"]
+    valid_count = 0
 
     for idx, (jd_id, analysis) in enumerate(analyses_map.items()):
+        if not isinstance(analysis, dict):
+            continue
+        valid_count += 1
         jd_label = jd_titles_map.get(jd_id, jd_id)
-        req_matches = {r.get("category"): r.get("match_percent", 0) for r in analysis.get("requirement_match", [])}
+        raw_matches = analysis.get("requirement_match", [])
+        req_matches = {r.get("category"): r.get("match_percent", 0) for r in raw_matches if isinstance(r, dict)}
         y_vals = [req_matches.get(cat, 0) for cat in categories]
         color = colors[idx % len(colors)]
         fig.add_trace(go.Bar(
@@ -316,6 +416,15 @@ def make_multi_jd_grouped_bar(analyses_map: dict, jd_titles_map: dict) -> go.Fig
             text=[f"{v}%" for v in y_vals],
             textposition="auto"
         ))
+
+    if valid_count == 0:
+        fig.update_layout(
+            title_text="No valid requirement data found across selected JDs",
+            xaxis=dict(visible=False),
+            yaxis=dict(visible=False),
+            height=200
+        )
+        return fig
 
     fig.update_layout(
         barmode="group",
@@ -771,6 +880,7 @@ with tab_upload:
                     preferred_arrangement=pref_arr
                 )
                 st.session_state.rank_results = rank_resp.get("results", [])
+                st.session_state.active_ranked_resume_id = target_resume["id"]
 
                 progress_bar.progress(75, text="Step 4/5: Ranking Matches (Zero Gemini Calls)...")
                 time.sleep(0.3)
@@ -780,9 +890,12 @@ with tab_upload:
                     top_jd = st.session_state.rank_results[0]
                     top_id = top_jd["jd_id"]
                     progress_bar.progress(90, text=f"Step 5/5: Running Gemini Deep Analysis on #1 match ({top_jd['title']})...")
-                    analysis_res = api_analyze(target_resume["text"], target_resume["id"], top_id)
-                    st.session_state.analyses[top_id] = analysis_res
-                    st.session_state.selected_jd_id = top_id
+                    try:
+                        analysis_res = api_analyze(target_resume["text"], target_resume["id"], top_id)
+                        set_cached_analysis(target_resume["id"], top_id, analysis_res)
+                        st.session_state.selected_jd_id = top_id
+                    except Exception as exc:
+                        st.warning(f"Could not automatically analyze #1 match: {exc}")
 
                 progress_bar.progress(100, text="Complete! Results ready.")
                 st.success("Analysis complete! View the results in Tab 2 and Tab 3.")
@@ -848,24 +961,16 @@ with tab_results:
         # Apply filtering
         filtered_cards = []
         for card in st.session_state.rank_results:
-            card_loc = (card.get("location") or "").lower()
+            card_loc = card.get("location") or ""
             card_score = card.get("similarity_score", 0)
 
             # Location filter
-            if loc_filter.strip() and loc_filter.strip().lower() not in card_loc:
+            if loc_filter.strip() and loc_filter.strip().lower() not in card_loc.lower():
                 continue
 
             # Work arrangement filter
-            arr_selected = []
-            if chk_remote:
-                arr_selected.append("remote")
-            if chk_hybrid:
-                arr_selected.append("hybrid")
-            if chk_onsite:
-                arr_selected.append("on-site")
-            if arr_selected:
-                if not any(arr in card_loc for arr in arr_selected):
-                    continue
+            if not matches_work_arrangement(card_loc, chk_remote, chk_hybrid, chk_onsite):
+                continue
 
             # Minimum similarity filter
             if card_score < min_score:
@@ -920,12 +1025,19 @@ with tab_results:
                     with c3:
                         st.markdown("**Actions:**")
                         if st.button(f"View Full Gap Analysis", key=f"btn_analyze_{jd_id}"):
-                            if jd_id not in st.session_state.analyses:
+                            cached_data = get_cached_analysis(target_res["id"], jd_id)
+                            if not cached_data:
                                 with st.spinner(f"Running Gemini Tier 2 analysis on {card.get('title')}..."):
-                                    analysis_data = api_analyze(target_res["text"], target_res["id"], jd_id)
-                                    st.session_state.analyses[jd_id] = analysis_data
-                            st.session_state.selected_jd_id = jd_id
-                            st.success(f"Loaded analysis for {card.get('title')}! Switch to Tab 3.")
+                                    try:
+                                        analysis_data = api_analyze(target_res["text"], target_res["id"], jd_id)
+                                        set_cached_analysis(target_res["id"], jd_id, analysis_data)
+                                        st.session_state.selected_jd_id = jd_id
+                                        st.success(f"Loaded analysis for {card.get('title')}! Switch to Tab 3.")
+                                    except Exception as exc:
+                                        st.error(f"Analysis failed for {card.get('title')}: {exc}")
+                            else:
+                                st.session_state.selected_jd_id = jd_id
+                                st.success(f"Loaded analysis for {card.get('title')}! Switch to Tab 3.")
 
                     st.divider()
 
@@ -935,42 +1047,31 @@ with tab_results:
 with tab_detail:
     st.header("Detailed Match and Skill Gap Analysis")
 
-    if not st.session_state.selected_jd_id or st.session_state.selected_jd_id not in st.session_state.analyses:
-        st.info("Select a job description in Tab 2 by clicking 'View Full Gap Analysis' to inspect deep results.")
+    if not st.session_state.resumes or not (0 <= st.session_state.selected_resume_idx < len(st.session_state.resumes)):
+        st.info("Upload a candidate resume and run placement fit in Tab 1.")
     else:
+        target_res = st.session_state.resumes[st.session_state.selected_resume_idx]
         active_jd_id = st.session_state.selected_jd_id
-        analysis = st.session_state.analyses[active_jd_id]
+        analysis = get_cached_analysis(target_res["id"], active_jd_id) if active_jd_id else None
 
-        # Check Insufficient Context State
-        if not analysis.get("context_sufficient", True):
-            st.error("Insufficient Context Detected")
-            st.warning(f"Reason: {analysis.get('insufficient_reason', 'Document too short')}")
-            st.info("The backend determined that either the resume or job description does not contain sufficient text for statistically reliable skill grounding. Automated generation was safely bypassed without errors.")
+        if not active_jd_id or not analysis:
+            st.info("Select a job description in Tab 2 by clicking 'View Full Gap Analysis' to inspect deep results.")
         else:
-            # Top Row: Gauge & Scores
-            score = analysis.get("match_score", 0)
-            score_col, summary_col = st.columns([1, 2])
+            # Check Insufficient Context State
+            if not analysis.get("context_sufficient", True):
+                st.error("Insufficient Context Detected")
+                st.warning(f"Reason: {analysis.get('insufficient_reason', 'Document too short')}")
+                st.info("The backend determined that either the resume or job description does not contain sufficient text for statistically reliable skill grounding. Automated generation was safely bypassed without errors.")
 
-            with score_col:
-                st.plotly_chart(make_gauge_chart(score), use_container_width=True)
-
-            with summary_col:
-                st.subheader("Executive Fit Summary")
-                st.markdown(f"> {analysis.get('summary', 'No summary available.')}")
-                st.caption(f"JD ID: {active_jd_id} | Resume ID: {analysis.get('resume_id')} | Context Sufficient: True")
-
-                # Feature 3: Download Report
-                target_res_name = "Candidate"
-                if st.session_state.resumes and 0 <= st.session_state.selected_resume_idx < len(st.session_state.resumes):
-                    target_res_name = st.session_state.resumes[st.session_state.selected_resume_idx]["name"]
-
+                # Feature 3: Download Report for insufficient context
+                target_res_name = target_res.get("name", "Candidate")
                 jd_title_found = f"Job ({active_jd_id})"
                 for j in st.session_state.jds:
                     if j.get("id") == active_jd_id or j.get("backend_id") == active_jd_id:
                         jd_title_found = j.get("title", jd_title_found)
                         break
 
-                res_id_clean = analysis.get("resume_id", "resume")
+                res_id_clean = analysis.get("resume_id", target_res["id"])
                 report_md = generate_markdown_report(analysis, target_res_name, jd_title_found)
                 report_filename = f"gap_analysis_{res_id_clean}_{active_jd_id}.md"
 
@@ -980,10 +1081,44 @@ with tab_detail:
                     file_name=report_filename,
                     mime="text/markdown",
                     use_container_width=True,
-                    key=f"dl_btn_{active_jd_id}"
+                    key=f"dl_btn_insuff_{active_jd_id}"
                 )
+            else:
+                # Top Row: Gauge & Scores
+                score = analysis.get("match_score", 0)
+                score_col, summary_col = st.columns([1, 2])
 
-            st.divider()
+                with score_col:
+                    st.plotly_chart(make_gauge_chart(score), use_container_width=True)
+
+                with summary_col:
+                    st.subheader("Executive Fit Summary")
+                    st.markdown(f"> {analysis.get('summary', 'No summary available.')}")
+                    st.caption(f"JD ID: {active_jd_id} | Resume ID: {analysis.get('resume_id')} | Context Sufficient: True")
+
+                    # Feature 3: Download Report
+                    target_res_name = target_res.get("name", "Candidate")
+
+                    jd_title_found = f"Job ({active_jd_id})"
+                    for j in st.session_state.jds:
+                        if j.get("id") == active_jd_id or j.get("backend_id") == active_jd_id:
+                            jd_title_found = j.get("title", jd_title_found)
+                            break
+
+                    res_id_clean = analysis.get("resume_id", target_res["id"])
+                    report_md = generate_markdown_report(analysis, target_res_name, jd_title_found)
+                    report_filename = f"gap_analysis_{res_id_clean}_{active_jd_id}.md"
+
+                    st.download_button(
+                        label="Download Report (.md)",
+                        data=report_md,
+                        file_name=report_filename,
+                        mime="text/markdown",
+                        use_container_width=True,
+                        key=f"dl_btn_{active_jd_id}"
+                    )
+
+                st.divider()
 
             # Row 2: Strengths & Weaknesses
             st.subheader("Strengths and Qualification Gaps")
@@ -1137,13 +1272,24 @@ with tab_compare:
             if btn_run_comp:
                 # Analyze selected JDs if not already cached
                 for jd_id in selected_ids:
-                    if jd_id not in st.session_state.analyses:
+                    if not get_cached_analysis(target_res["id"], jd_id):
                         with st.spinner(f"Analyzing {jd_id}..."):
-                            analysis_res = api_analyze(target_res["text"], target_res["id"], jd_id)
-                            st.session_state.analyses[jd_id] = analysis_res
+                            try:
+                                analysis_res = api_analyze(target_res["text"], target_res["id"], jd_id)
+                                set_cached_analysis(target_res["id"], jd_id, analysis_res)
+                            except Exception as exc:
+                                err_record = {
+                                    "resume_id": target_res["id"],
+                                    "jd_id": jd_id,
+                                    "context_sufficient": False,
+                                    "error": str(exc),
+                                    "insufficient_reason": f"Analysis failed: {exc}"
+                                }
+                                set_cached_analysis(target_res["id"], jd_id, err_record)
+                                st.error(f"Analysis failed for {jd_id}: {exc}")
 
             # Check if all selected JDs have been analyzed
-            all_analyzed = all(jid in st.session_state.analyses for jid in selected_ids)
+            all_analyzed = all(get_cached_analysis(target_res["id"], jid) is not None for jid in selected_ids)
             if not all_analyzed:
                 st.info("Click 'Compare Selected JDs' to run gap analysis for unanalyzed roles.")
             else:
@@ -1156,13 +1302,13 @@ with tab_compare:
 
                 for lbl in selected_labels:
                     jid = jd_options_map[lbl]
-                    rec = st.session_state.analyses.get(jid, {})
+                    rec = get_cached_analysis(target_res["id"], jid) or {}
                     title_map[jid] = lbl.split("(")[0].strip()
 
-                    if isinstance(rec, dict) and rec.get("context_sufficient", True) and "error" not in rec and "error_code" not in rec:
+                    if isinstance(rec, dict) and rec.get("context_sufficient", True) and "error" not in rec and "error_code" not in rec and "detail" not in rec:
                         valid_analyses[jid] = rec
                     else:
-                        err_msg = rec.get("insufficient_reason") or rec.get("detail") or "Analysis failed or insufficient context"
+                        err_msg = rec.get("insufficient_reason") or rec.get("error") or rec.get("detail") or "Analysis failed or insufficient context"
                         failed_jds[jid] = str(err_msg)
 
                 # 1. Summary Table
@@ -1180,17 +1326,17 @@ with tab_compare:
                     col_name = title_map[jid]
                     if jid in valid_analyses:
                         a = valid_analyses[jid]
-                        sg = a.get("skill_gap", {})
+                        sg = a.get("skill_gap") or {}
                         table_data[col_name] = [
                             f"{a.get('match_score', 0)}%",
-                            str(len(sg.get("matched", []))),
-                            str(len(sg.get("missing_essential", []))),
-                            str(len(sg.get("missing_preferred", []))),
-                            str(len(sg.get("extra", [])))
+                            str(len(sg.get("matched", []) or [])),
+                            str(len(sg.get("missing_essential", []) or [])),
+                            str(len(sg.get("missing_preferred", []) or [])),
+                            str(len(sg.get("extra", []) or []))
                         ]
                     else:
                         table_data[col_name] = [
-                            f"Error: {failed_jds.get(jid, 'Failed')}",
+                            f"Error / Insufficient: {str(failed_jds.get(jid, 'Failed'))[:30]}",
                             "N/A", "N/A", "N/A", "N/A"
                         ]
 
@@ -1278,7 +1424,7 @@ with tab_dashboard:
         target_jd_ids = [c["jd_id"] for c in target_cards]
 
         # Check which JDs are uncompleted
-        uncompleted_ids = [jid for jid in target_jd_ids if jid not in st.session_state.analyses]
+        uncompleted_ids = [jid for jid in target_jd_ids if get_cached_analysis(target_res["id"], jid) is None]
 
         col_act, _ = st.columns([2, 5])
         with col_act:
@@ -1293,18 +1439,36 @@ with tab_dashboard:
         if btn_run_dashboard or (len(uncompleted_ids) == 0 and total_target_count > 0):
             if uncompleted_ids:
                 p_bar = st.progress(0, text="Analyzing target roles...")
+                failed_count = 0
                 for idx, jid in enumerate(uncompleted_ids):
                     card_title = next((c.get("title", jid) for c in target_cards if c.get("jd_id") == jid), jid)
                     p_bar.progress(
                         int((idx / len(uncompleted_ids)) * 100),
                         text=f"Analyzing role {idx+1}/{len(uncompleted_ids)}: {card_title}..."
                     )
-                    analysis_res = api_analyze(target_res["text"], target_res["id"], jid)
-                    st.session_state.analyses[jid] = analysis_res
+                    try:
+                        analysis_res = api_analyze(target_res["text"], target_res["id"], jid)
+                        set_cached_analysis(target_res["id"], jid, analysis_res)
+                    except Exception as exc:
+                        failed_count += 1
+                        err_record = {
+                            "resume_id": target_res["id"],
+                            "jd_id": jid,
+                            "context_sufficient": False,
+                            "error": str(exc),
+                            "insufficient_reason": f"Provider error: {exc}"
+                        }
+                        set_cached_analysis(target_res["id"], jid, err_record)
                 p_bar.progress(100, text="Completed analyzing roles!")
+                if failed_count > 0:
+                    st.warning(f"Note: {failed_count} of {len(uncompleted_ids)} roles encountered errors during analysis and were skipped.")
 
             # Collect analyses for the target JDs
-            collected = [st.session_state.analyses[jid] for jid in target_jd_ids if jid in st.session_state.analyses]
+            collected = [
+                get_cached_analysis(target_res["id"], jid)
+                for jid in target_jd_ids
+                if get_cached_analysis(target_res["id"], jid) is not None
+            ]
             ess_counts, pref_counts, match_counts, success_count = aggregate_skill_gaps(collected)
 
             st.divider()

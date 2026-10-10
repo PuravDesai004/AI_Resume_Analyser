@@ -99,12 +99,14 @@ def clear_jds():
 @app.post("/rank", summary="Tier 1: Rank stored JDs against candidate resume")
 def rank_jds(payload: RankRequest):
     """Calculates cosine similarity of resume against stored JDs with zero Gemini calls."""
+    pref_loc = payload.preferred_location.strip() if payload.preferred_location and payload.preferred_location.strip() else None
+    pref_arr = payload.preferred_arrangement.strip() if payload.preferred_arrangement and payload.preferred_arrangement.strip() else None
     return analyzer.rank(
         resume_text=payload.resume_text,
         resume_id=payload.resume_id,
         top_n=payload.top_n,
-        preferred_location=payload.preferred_location,
-        preferred_arrangement=payload.preferred_arrangement
+        preferred_location=pref_loc,
+        preferred_arrangement=pref_arr
     )
 
 

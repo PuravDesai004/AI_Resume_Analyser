@@ -76,11 +76,17 @@ def rank_jds(
         if rec and rec.location:
             jd_loc_lower = rec.location.lower()
             if preferred_location and preferred_location.strip():
-                if preferred_location.strip().lower() in jd_loc_lower:
+                pref_loc_clean = preferred_location.strip().lower()
+                if pref_loc_clean in jd_loc_lower:
                     boost += 0.05
-            if preferred_arrangement and preferred_arrangement.strip() and preferred_arrangement.strip().lower() != "any":
-                if preferred_arrangement.strip().lower() in jd_loc_lower:
-                    boost += 0.03
+            if preferred_arrangement and preferred_arrangement.strip():
+                pref_arr_clean = preferred_arrangement.strip().lower()
+                if pref_arr_clean != "any":
+                    if pref_arr_clean in ["on-site", "onsite"]:
+                        if any(term in jd_loc_lower for term in ["on-site", "onsite", "in-person", "office"]):
+                            boost += 0.03
+                    elif pref_arr_clean in jd_loc_lower:
+                        boost += 0.03
 
         boosted_sim = sim + boost
         scored.append((j_id, boosted_sim))
