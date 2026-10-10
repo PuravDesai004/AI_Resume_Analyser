@@ -329,6 +329,89 @@ def make_multi_jd_grouped_bar(analyses_map: dict, jd_titles_map: dict) -> go.Fig
     return fig
 
 
+def aggregate_skill_gaps(analyses: list[dict]) -> tuple[dict[str, int], dict[str, int], dict[str, int], int]:
+    """
+    Aggregates essential missing, preferred missing, and matched skills across valid analyses.
+    Returns: (essential_counts, preferred_counts, matched_counts, successful_count)
+    """
+    essential_counts: dict[str, int] = {}
+    preferred_counts: dict[str, int] = {}
+    matched_counts: dict[str, int] = {}
+    successful_count = 0
+
+    for a in analyses:
+        if not isinstance(a, dict) or not a.get("context_sufficient", True) or "error" in a or "error_code" in a:
+            continue
+        successful_count += 1
+        sg = a.get("skill_gap", {})
+        for s in sg.get("missing_essential", []):
+            essential_counts[s] = essential_counts.get(s, 0) + 1
+        for s in sg.get("missing_preferred", []):
+            preferred_counts[s] = preferred_counts.get(s, 0) + 1
+        for m in sg.get("matched", []):
+            s_name = m.get("skill_name", str(m)) if isinstance(m, dict) else str(m)
+            matched_counts[s_name] = matched_counts.get(s_name, 0) + 1
+
+    return essential_counts, preferred_counts, matched_counts, successful_count
+
+
+def make_skill_gap_dashboard_chart(essential_counts: dict[str, int], preferred_counts: dict[str, int]) -> go.Figure:
+    """
+    Horizontal bar chart for most frequently missing skills.
+    Color = red for essential, orange for preferred.
+    Sorted by count descending.
+    """
+    all_missing = list(set(list(essential_counts.keys()) + list(preferred_counts.keys())))
+    if not all_missing:
+        fig = go.Figure()
+        fig.update_layout(
+            title_text="No skill gaps found across analyzed JDs",
+            xaxis=dict(visible=False),
+            yaxis=dict(visible=False),
+            height=200
+        )
+        return fig
+
+    # Sort descending by essential count, then preferred count
+    all_missing.sort(key=lambda s: (essential_counts.get(s, 0), preferred_counts.get(s, 0)), reverse=True)
+    top_missing = all_missing[:15]
+    top_missing_rev = list(reversed(top_missing))
+
+    ess_vals = [essential_counts.get(s, 0) for s in top_missing_rev]
+    pref_vals = [preferred_counts.get(s, 0) for s in top_missing_rev]
+
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        y=top_missing_rev,
+        x=ess_vals,
+        name="Missing (Essential)",
+        orientation="h",
+        marker_color="#e74c3c",
+        text=[str(v) if v > 0 else "" for v in ess_vals],
+        textposition="auto"
+    ))
+    fig.add_trace(go.Bar(
+        y=top_missing_rev,
+        x=pref_vals,
+        name="Missing (Preferred)",
+        orientation="h",
+        marker_color="#f39c12",
+        text=[str(v) if v > 0 else "" for v in pref_vals],
+        textposition="auto"
+    ))
+
+    fig.update_layout(
+        barmode="group",
+        title_text="Most Frequently Missing Skills Across Analyzed Roles",
+        xaxis=dict(title="Number of Job Descriptions", dtick=1),
+        yaxis=dict(title="Skill Name"),
+        height=max(360, len(top_missing_rev) * 32 + 100),
+        margin=dict(l=120, r=20, t=50, b=40),
+        legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5)
+    )
+    return fig
+
+
 # SIDEBAR: System Status & Session Controls
 
 with st.sidebar:
@@ -475,11 +558,12 @@ with st.sidebar:
 
 # MAIN PANEL
 
-tab_upload, tab_results, tab_detail, tab_compare = st.tabs([
+tab_upload, tab_results, tab_detail, tab_compare, tab_dashboard = st.tabs([
     "1. Upload and Manage Documents",
     "2. Ranked Matching Results",
     "3. In-Depth Gap Analysis",
-    "4. Compare JDs"
+    "4. Compare JDs",
+    "5. Skill Gap Dashboard"
 ])
 
 
@@ -1167,3 +1251,123 @@ with tab_compare:
                         st.info(f"Shared Missing Essential Skills across analyzed roles: {', '.join(sorted(common_gaps))}")
                     else:
                         st.caption("No shared missing essential skills between the analyzed roles.")
+
+
+# TAB 5: SKILL GAP DASHBOARD (Feature 5)
+
+with tab_dashboard:
+    st.header("Skill Gap Dashboard")
+    st.markdown("Aggregated analysis across ranked job descriptions highlighting most frequent missing skills and candidate strengths.")
+
+    if not st.session_state.rank_results:
+        st.info("No ranking results available. Run ranking in Tab 1 first.")
+    else:
+        target_res = st.session_state.resumes[st.session_state.selected_resume_idx]
+        st.markdown(f"**Target Candidate:** `{target_res['name']}` ({target_res['words']} words)")
+
+        # Determine target JDs from current Top-N selection (Feature 1)
+        current_top_n = st.session_state.get("top_n_choice", "Top 5")
+        if current_top_n == "Top 5":
+            target_cards = st.session_state.rank_results[:5]
+        elif current_top_n == "Top 10":
+            target_cards = st.session_state.rank_results[:10]
+        else:
+            target_cards = st.session_state.rank_results
+
+        total_target_count = len(target_cards)
+        target_jd_ids = [c["jd_id"] for c in target_cards]
+
+        # Check which JDs are uncompleted
+        uncompleted_ids = [jid for jid in target_jd_ids if jid not in st.session_state.analyses]
+
+        col_act, _ = st.columns([2, 5])
+        with col_act:
+            btn_run_dashboard = st.button(
+                f"Generate Dashboard ({total_target_count} Roles)",
+                type="primary",
+                use_container_width=True,
+                key="btn_run_dashboard"
+            )
+
+        # Run if button clicked or if all are already cached
+        if btn_run_dashboard or (len(uncompleted_ids) == 0 and total_target_count > 0):
+            if uncompleted_ids:
+                p_bar = st.progress(0, text="Analyzing target roles...")
+                for idx, jid in enumerate(uncompleted_ids):
+                    card_title = next((c.get("title", jid) for c in target_cards if c.get("jd_id") == jid), jid)
+                    p_bar.progress(
+                        int((idx / len(uncompleted_ids)) * 100),
+                        text=f"Analyzing role {idx+1}/{len(uncompleted_ids)}: {card_title}..."
+                    )
+                    analysis_res = api_analyze(target_res["text"], target_res["id"], jid)
+                    st.session_state.analyses[jid] = analysis_res
+                p_bar.progress(100, text="Completed analyzing roles!")
+
+            # Collect analyses for the target JDs
+            collected = [st.session_state.analyses[jid] for jid in target_jd_ids if jid in st.session_state.analyses]
+            ess_counts, pref_counts, match_counts, success_count = aggregate_skill_gaps(collected)
+
+            st.divider()
+
+            # Note on analysis count and graceful failures
+            if success_count == total_target_count:
+                st.caption(f"Based on analysis of {total_target_count} job descriptions. ({success_count} of {total_target_count} JDs analyzed successfully.)")
+            else:
+                st.warning(f"Based on analysis of {total_target_count} job descriptions. ({success_count} of {total_target_count} JDs analyzed successfully; {total_target_count - success_count} failed or had insufficient context.)")
+
+            if success_count == 0:
+                st.error("No job descriptions were successfully analyzed.")
+            else:
+                # 1. Horizontal Bar Chart (Plotly)
+                st.subheader("Frequently Missing Skills")
+                chart_fig = make_skill_gap_dashboard_chart(ess_counts, pref_counts)
+                st.plotly_chart(chart_fig, use_container_width=True)
+
+                # 2. Table: Skill name | Times Missing (Essential) | Times Missing (Preferred) | % of JDs
+                st.subheader("Aggregated Skill Gap Summary Table")
+                all_missing_skills = sorted(
+                    list(set(list(ess_counts.keys()) + list(pref_counts.keys()))),
+                    key=lambda s: (ess_counts.get(s, 0), pref_counts.get(s, 0)),
+                    reverse=True
+                )
+
+                if all_missing_skills:
+                    import pandas as pd
+                    table_rows = []
+                    for s in all_missing_skills:
+                        t_ess = ess_counts.get(s, 0)
+                        t_pref = pref_counts.get(s, 0)
+                        pct_jds = f"{round(((t_ess + t_pref) / success_count) * 100, 1)}%"
+                        table_rows.append({
+                            "Skill Name": s,
+                            "Times Missing (Essential)": t_ess,
+                            "Times Missing (Preferred)": t_pref,
+                            "% of JDs": pct_jds
+                        })
+                    df_gaps = pd.DataFrame(table_rows)
+                    st.dataframe(df_gaps, use_container_width=True, hide_index=True)
+                else:
+                    st.info("No skill gaps found across analyzed JDs.")
+
+                st.divider()
+
+                # 3. Strongest skills section
+                st.subheader("Strongest Skills (Most Frequently Matched Across Roles)")
+                sorted_matched = sorted(match_counts.items(), key=lambda x: x[1], reverse=True)
+
+                if sorted_matched:
+                    top_matched = sorted_matched[:8]
+                    cols_m = st.columns(min(len(top_matched), 4))
+                    for idx, (skill_name, count) in enumerate(top_matched):
+                        col_idx = idx % len(cols_m)
+                        with cols_m[col_idx]:
+                            pct_m = int(round((count / success_count) * 100))
+                            st.metric(
+                                label=skill_name,
+                                value=f"{count}/{success_count} JDs",
+                                delta=f"{pct_m}% matched"
+                            )
+                else:
+                    st.info("No matched skills recorded across analyzed roles.")
+        else:
+            st.info(f"Click 'Generate Dashboard ({total_target_count} Roles)' to run batch analysis and view aggregated skills.")

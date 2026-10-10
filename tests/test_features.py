@@ -252,6 +252,61 @@ class TestNewFeatures(unittest.TestCase):
         shared = set_1.intersection(set_2)
         self.assertEqual(shared, {"Docker"})
 
+    def test_feature_5_skill_gap_dashboard(self):
+        """Test aggregation and chart rendering for Skill Gap Dashboard."""
+        from app import aggregate_skill_gaps, make_skill_gap_dashboard_chart
+
+        mock_analyses = [
+            # Successful JD 1
+            {
+                "context_sufficient": True,
+                "skill_gap": {
+                    "matched": [{"skill_name": "Python"}, {"skill_name": "FastAPI"}],
+                    "missing_essential": ["Docker", "Redis"],
+                    "missing_preferred": ["Kubernetes"]
+                }
+            },
+            # Successful JD 2
+            {
+                "context_sufficient": True,
+                "skill_gap": {
+                    "matched": [{"skill_name": "Python"}],
+                    "missing_essential": ["Docker", "PostgreSQL"],
+                    "missing_preferred": ["Kubernetes", "AWS"]
+                }
+            },
+            # Failed / Insufficient JD 3 (should be skipped gracefully)
+            {
+                "context_sufficient": False,
+                "insufficient_reason": "Text too short",
+                "skill_gap": {}
+            }
+        ]
+
+        ess_counts, pref_counts, match_counts, success_count = aggregate_skill_gaps(mock_analyses)
+
+        self.assertEqual(success_count, 2)
+        # Docker is missing in both JD 1 and JD 2
+        self.assertEqual(ess_counts["Docker"], 2)
+        self.assertEqual(ess_counts["Redis"], 1)
+        self.assertEqual(ess_counts["PostgreSQL"], 1)
+        # Kubernetes preferred missing in both
+        self.assertEqual(pref_counts["Kubernetes"], 2)
+        self.assertEqual(pref_counts["AWS"], 1)
+        # Python matched in both
+        self.assertEqual(match_counts["Python"], 2)
+        self.assertEqual(match_counts["FastAPI"], 1)
+
+        # Test chart with data
+        fig_with_data = make_skill_gap_dashboard_chart(ess_counts, pref_counts)
+        self.assertIsNotNone(fig_with_data)
+        self.assertEqual(len(fig_with_data.data), 2)  # Essential and Preferred traces
+
+        # Test chart with 0 missing skills
+        fig_empty = make_skill_gap_dashboard_chart({}, {})
+        self.assertIsNotNone(fig_empty)
+        self.assertEqual(fig_empty.layout.title.text, "No skill gaps found across analyzed JDs")
+
 
 if __name__ == "__main__":
     unittest.main()
