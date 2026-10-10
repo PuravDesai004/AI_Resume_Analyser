@@ -1,3 +1,4 @@
+from typing import Optional
 import numpy as np
 
 import jd_index
@@ -25,11 +26,15 @@ def _cosine_similarity(vec_a: list[float], vec_b: list[float]) -> float:
     return float(np.dot(a, b) / (norm_a * norm_b))
 
 
-def rank_jds(resume_text: str, resume_id: str) -> RankingResult:
+def rank_jds(
+    resume_text: str,
+    resume_id: str,
+    top_n: Optional[int] = 5
+) -> RankingResult:
     """
     Tier 1 Ranking:
     Embeds resume_text once, computes cosine similarity against all stored JDs,
-    and returns top 5 (or fewer) ranked cards.
+    and returns top N (or all) ranked cards.
     Zero Gemini / LLM calls.
     """
     clean_resume = resume_text.strip()
@@ -65,10 +70,13 @@ def rank_jds(resume_text: str, resume_id: str) -> RankingResult:
 
     # Sort descending by cosine similarity, with deterministic jd_id tie-breaker
     scored.sort(key=lambda x: (-x[1], str(x[0])))
-    top_5 = scored[:5]
+    if top_n is not None and top_n > 0:
+        selected_scored = scored[:top_n]
+    else:
+        selected_scored = scored
 
     cards: list[RankingCard] = []
-    for rank_idx, (j_id, sim) in enumerate(top_5, start=1):
+    for rank_idx, (j_id, sim) in enumerate(selected_scored, start=1):
         rec = jd_index.get_jd_record(j_id)
         if rec is None:
             continue

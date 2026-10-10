@@ -1,6 +1,6 @@
 import os
 import json
-from typing import Any
+from typing import Any, Optional
 from dotenv import load_dotenv
 from google import genai
 
@@ -45,12 +45,21 @@ class AnalysisPipeline:
         self.client = genai.Client(api_key=api_key)
         print(f"[AnalysisPipeline] Gemini client initialized (Models: {MODELS_TO_TRY}).")
 
-    def rank(self, resume_text: str, resume_id: str) -> dict[str, Any]:
+    def rank(
+        self,
+        resume_text: str,
+        resume_id: str,
+        top_n: Optional[int] = 5
+    ) -> dict[str, Any]:
         """
         Tier 1: Rank stored JDs against a single resume.
         Guaranteed zero Gemini calls.
         """
-        ranking_res = ranking.rank_jds(resume_text=resume_text, resume_id=resume_id)
+        ranking_res = ranking.rank_jds(
+            resume_text=resume_text,
+            resume_id=resume_id,
+            top_n=top_n
+        )
         return ranking_res.model_dump()
 
     def analyze(self, resume_text: str, resume_id: str, jd_id: str) -> dict[str, Any]:

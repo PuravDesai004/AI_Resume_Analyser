@@ -121,12 +121,20 @@ def api_add_jd(title: str, company: str, location: str, text: str) -> dict:
     return res.model_dump()
 
 
-def api_rank(resume_text: str, resume_id: str) -> dict:
+from typing import Optional
+
+
+def api_rank(resume_text: str, resume_id: str, top_n: Optional[int] = None) -> dict:
     """Ranks stored JDs."""
+    payload = {"resume_text": resume_text, "resume_id": resume_id}
+    if top_n is not None:
+        payload["top_n"] = top_n
+    else:
+        payload["top_n"] = None
     try:
         r = requests.post(
             f"{API_BASE_URL}/rank",
-            json={"resume_text": resume_text, "resume_id": resume_id},
+            json=payload,
             timeout=10.0
         )
         if r.status_code == 200:
@@ -135,7 +143,7 @@ def api_rank(resume_text: str, resume_id: str) -> dict:
         pass
 
     import ranking
-    return ranking.rank_jds(resume_text, resume_id).model_dump()
+    return ranking.rank_jds(resume_text, resume_id, top_n=top_n).model_dump()
 
 
 @st.cache_resource
@@ -595,10 +603,10 @@ with tab_upload:
 
                 # Step 2: Tier 1 Ranking
                 progress_bar.progress(50, text="Step 3/5: Vectorizing Resume and Running Cosine Similarity Matching...")
-                rank_resp = api_rank(target_resume["text"], target_resume["id"])
+                rank_resp = api_rank(target_resume["text"], target_resume["id"], top_n=None)
                 st.session_state.rank_results = rank_resp.get("results", [])
 
-                progress_bar.progress(75, text="Step 4/5: Ranking Top-5 Matches (Zero Gemini Calls)...")
+                progress_bar.progress(75, text="Step 4/5: Ranking Matches (Zero Gemini Calls)...")
                 time.sleep(0.3)
 
                 # Step 3: Trigger Tier 2 analysis on top match if available
@@ -618,21 +626,35 @@ with tab_upload:
                 st.error(f"Analysis failed: {e}")
 
 
-# TAB 2: TOP-5 JD RESULTS
+# TAB 2: RANKED JD RESULTS
 
 with tab_results:
-    st.header("Top-5 Ranked Job Descriptions")
+    st.header("Ranked Job Descriptions")
 
     if not st.session_state.rank_results:
         st.info("No ranking results yet. Go to Tab 1 and click 'Analyze Placement Fit'.")
     else:
         target_res = st.session_state.resumes[st.session_state.selected_resume_idx]
         st.markdown(f"**Target Resume:** `{target_res['name']}` ({target_res['words']} words)")
-        st.caption(f"Showing Top {len(st.session_state.rank_results[:5])} matching roles ranked via deterministic cosine similarity (0 Gemini calls).")
 
-        top_5 = st.session_state.rank_results[:5]
+        top_n_choice = st.radio(
+            "Number of Results to Display",
+            ["Top 5", "Top 10", "All"],
+            index=0,
+            horizontal=True,
+            key="top_n_choice"
+        )
 
-        for card in top_5:
+        if top_n_choice == "Top 5":
+            visible_cards = st.session_state.rank_results[:5]
+        elif top_n_choice == "Top 10":
+            visible_cards = st.session_state.rank_results[:10]
+        else:
+            visible_cards = st.session_state.rank_results
+
+        st.caption(f"Showing {len(visible_cards)} of {len(st.session_state.rank_results)} matching roles ranked via deterministic cosine similarity (0 Gemini calls).")
+
+        for card in visible_cards:
             rank_num = card.get("rank", 1)
             sim_score = card.get("similarity_score", 0)
             rank_label = f"#{rank_num}"

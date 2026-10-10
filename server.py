@@ -38,6 +38,7 @@ class JDCreateRequest(BaseModel):
 class RankRequest(BaseModel):
     resume_text: str = Field(..., description="Candidate resume text")
     resume_id: str = Field(..., description="Candidate identifier")
+    top_n: Optional[int] = Field(5, description="Number of top JDs to return (0 or None for all)")
 
 
 class AnalyzeRequest(BaseModel):
@@ -98,7 +99,8 @@ def rank_jds(payload: RankRequest):
     """Calculates cosine similarity of resume against stored JDs with zero Gemini calls."""
     return analyzer.rank(
         resume_text=payload.resume_text,
-        resume_id=payload.resume_id
+        resume_id=payload.resume_id,
+        top_n=payload.top_n
     )
 
 
