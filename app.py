@@ -685,6 +685,7 @@ with tab_results:
         target_res = st.session_state.resumes[st.session_state.selected_resume_idx]
         st.markdown(f"**Target Resume:** `{target_res['name']}` ({target_res['words']} words)")
 
+        # Feature 1: Top-N Selector
         top_n_choice = st.radio(
             "Number of Results to Display",
             ["Top 5", "Top 10", "All"],
@@ -693,49 +694,122 @@ with tab_results:
             key="top_n_choice"
         )
 
+        # Feature 2: Filters and Sorting
+        with st.expander("Filter and Sort Results", expanded=True):
+            col_f1, col_f2 = st.columns(2)
+            with col_f1:
+                loc_filter = st.text_input(
+                    "Filter by Location",
+                    value="",
+                    placeholder="Search location (e.g. Remote, London)...",
+                    key="loc_filter_input"
+                )
+                st.write("Work Arrangement:")
+                col_w1, col_w2, col_w3 = st.columns(3)
+                chk_remote = col_w1.checkbox("Remote", value=False, key="chk_filter_remote")
+                chk_hybrid = col_w2.checkbox("Hybrid", value=False, key="chk_filter_hybrid")
+                chk_onsite = col_w3.checkbox("On-site", value=False, key="chk_filter_onsite")
+
+            with col_f2:
+                min_score = st.slider(
+                    "Minimum Similarity Score",
+                    min_value=0,
+                    max_value=100,
+                    value=0,
+                    step=1,
+                    key="min_score_filter"
+                )
+                sort_choice = st.radio(
+                    "Sort By",
+                    ["Score (high to low)", "Score (low to high)", "Location (A–Z)"],
+                    index=0,
+                    horizontal=True,
+                    key="sort_choice_filter"
+                )
+
+        # Apply filtering
+        filtered_cards = []
+        for card in st.session_state.rank_results:
+            card_loc = (card.get("location") or "").lower()
+            card_score = card.get("similarity_score", 0)
+
+            # Location filter
+            if loc_filter.strip() and loc_filter.strip().lower() not in card_loc:
+                continue
+
+            # Work arrangement filter
+            arr_selected = []
+            if chk_remote:
+                arr_selected.append("remote")
+            if chk_hybrid:
+                arr_selected.append("hybrid")
+            if chk_onsite:
+                arr_selected.append("on-site")
+            if arr_selected:
+                if not any(arr in card_loc for arr in arr_selected):
+                    continue
+
+            # Minimum similarity filter
+            if card_score < min_score:
+                continue
+
+            filtered_cards.append(card)
+
+        # Apply sorting (deterministic tie-breaking with jd_id)
+        if sort_choice == "Score (high to low)":
+            filtered_cards.sort(key=lambda c: (-c.get("similarity_score", 0), str(c.get("jd_id", ""))))
+        elif sort_choice == "Score (low to high)":
+            filtered_cards.sort(key=lambda c: (c.get("similarity_score", 0), str(c.get("jd_id", ""))))
+        elif sort_choice == "Location (A–Z)":
+            filtered_cards.sort(key=lambda c: (c.get("location", "").lower(), -c.get("similarity_score", 0), str(c.get("jd_id", ""))))
+
+        # Apply Top-N selection
         if top_n_choice == "Top 5":
-            visible_cards = st.session_state.rank_results[:5]
+            visible_cards = filtered_cards[:5]
         elif top_n_choice == "Top 10":
-            visible_cards = st.session_state.rank_results[:10]
+            visible_cards = filtered_cards[:10]
         else:
-            visible_cards = st.session_state.rank_results
+            visible_cards = filtered_cards
 
-        st.caption(f"Showing {len(visible_cards)} of {len(st.session_state.rank_results)} matching roles ranked via deterministic cosine similarity (0 Gemini calls).")
+        st.markdown(f"**Showing {len(visible_cards)} of {len(st.session_state.rank_results)} results**")
 
-        for card in visible_cards:
-            rank_num = card.get("rank", 1)
-            sim_score = card.get("similarity_score", 0)
-            rank_label = f"#{rank_num}"
-            jd_id = card.get("jd_id")
+        if not visible_cards:
+            st.info("No results match your filters.")
+        else:
+            for card in visible_cards:
+                rank_num = card.get("rank", 1)
+                sim_score = card.get("similarity_score", 0)
+                rank_label = f"#{rank_num}"
+                jd_id = card.get("jd_id")
 
-            with st.container():
-                st.markdown(f"### {rank_label} {card.get('title')} - {card.get('company')}")
-                c1, c2, c3 = st.columns([2, 5, 3])
+                with st.container():
+                    st.markdown(f"### {rank_label} {card.get('title')} - {card.get('company')}")
+                    c1, c2, c3 = st.columns([2, 5, 3])
 
-                with c1:
-                    st.metric("Similarity Score", f"{sim_score}%")
-                    st.caption(f"Location: {card.get('location')}")
-                    card_loc = (card.get("location") or "").lower()
-                    if st.session_state.pref_location.strip() and st.session_state.pref_location.strip().lower() in card_loc:
-                        st.markdown("`Location match +5`")
-                    if st.session_state.pref_arrangement in ["Remote", "Hybrid", "On-site"] and st.session_state.pref_arrangement.lower() in card_loc:
-                        st.markdown("`Arrangement match +3`")
+                    with c1:
+                        st.metric("Similarity Score", f"{sim_score}%")
+                        st.caption(f"Location: {card.get('location')}")
+                        card_loc = (card.get("location") or "").lower()
+                        if st.session_state.pref_location.strip() and st.session_state.pref_location.strip().lower() in card_loc:
+                            st.markdown("`Location match +5`")
+                        if st.session_state.pref_arrangement in ["Remote", "Hybrid", "On-site"] and st.session_state.pref_arrangement.lower() in card_loc:
+                            st.markdown("`Arrangement match +3`")
 
-                with c2:
-                    st.markdown("**Overview Snippet:**")
-                    st.write(card.get("snippet", ""))
+                    with c2:
+                        st.markdown("**Overview Snippet:**")
+                        st.write(card.get("snippet", ""))
 
-                with c3:
-                    st.markdown("**Actions:**")
-                    if st.button(f"View Full Gap Analysis", key=f"btn_analyze_{jd_id}"):
-                        if jd_id not in st.session_state.analyses:
-                            with st.spinner(f"Running Gemini Tier 2 analysis on {card.get('title')}..."):
-                                analysis_data = api_analyze(target_res["text"], target_res["id"], jd_id)
-                                st.session_state.analyses[jd_id] = analysis_data
-                        st.session_state.selected_jd_id = jd_id
-                        st.success(f"Loaded analysis for {card.get('title')}! Switch to Tab 3.")
+                    with c3:
+                        st.markdown("**Actions:**")
+                        if st.button(f"View Full Gap Analysis", key=f"btn_analyze_{jd_id}"):
+                            if jd_id not in st.session_state.analyses:
+                                with st.spinner(f"Running Gemini Tier 2 analysis on {card.get('title')}..."):
+                                    analysis_data = api_analyze(target_res["text"], target_res["id"], jd_id)
+                                    st.session_state.analyses[jd_id] = analysis_data
+                            st.session_state.selected_jd_id = jd_id
+                            st.success(f"Loaded analysis for {card.get('title')}! Switch to Tab 3.")
 
-                st.divider()
+                    st.divider()
 
 
 # TAB 3: IN-DEPTH GAP ANALYSIS
