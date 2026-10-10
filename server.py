@@ -39,6 +39,8 @@ class RankRequest(BaseModel):
     resume_text: str = Field(..., description="Candidate resume text")
     resume_id: str = Field(..., description="Candidate identifier")
     top_n: Optional[int] = Field(5, description="Number of top JDs to return (0 or None for all)")
+    preferred_location: Optional[str] = Field(None, description="Preferred location filter/boost")
+    preferred_arrangement: Optional[str] = Field(None, description="Preferred work arrangement (Remote, Hybrid, On-site)")
 
 
 class AnalyzeRequest(BaseModel):
@@ -100,7 +102,9 @@ def rank_jds(payload: RankRequest):
     return analyzer.rank(
         resume_text=payload.resume_text,
         resume_id=payload.resume_id,
-        top_n=payload.top_n
+        top_n=payload.top_n,
+        preferred_location=payload.preferred_location,
+        preferred_arrangement=payload.preferred_arrangement
     )
 
 

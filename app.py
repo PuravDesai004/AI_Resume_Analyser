@@ -43,6 +43,10 @@ if "analyses" not in st.session_state:
     st.session_state.analyses = {} # keyed by jd_id
 if "selected_resume_idx" not in st.session_state:
     st.session_state.selected_resume_idx = 0
+if "pref_location" not in st.session_state:
+    st.session_state.pref_location = ""
+if "pref_arrangement" not in st.session_state:
+    st.session_state.pref_arrangement = "Any"
 
 
 # Helper Functions: Document Parsing
@@ -124,13 +128,23 @@ def api_add_jd(title: str, company: str, location: str, text: str) -> dict:
 from typing import Optional
 
 
-def api_rank(resume_text: str, resume_id: str, top_n: Optional[int] = None) -> dict:
+def api_rank(
+    resume_text: str,
+    resume_id: str,
+    top_n: Optional[int] = None,
+    preferred_location: Optional[str] = None,
+    preferred_arrangement: Optional[str] = None
+) -> dict:
     """Ranks stored JDs."""
     payload = {"resume_text": resume_text, "resume_id": resume_id}
     if top_n is not None:
         payload["top_n"] = top_n
     else:
         payload["top_n"] = None
+    if preferred_location:
+        payload["preferred_location"] = preferred_location
+    if preferred_arrangement:
+        payload["preferred_arrangement"] = preferred_arrangement
     try:
         r = requests.post(
             f"{API_BASE_URL}/rank",
@@ -143,7 +157,13 @@ def api_rank(resume_text: str, resume_id: str, top_n: Optional[int] = None) -> d
         pass
 
     import ranking
-    return ranking.rank_jds(resume_text, resume_id, top_n=top_n).model_dump()
+    return ranking.rank_jds(
+        resume_text,
+        resume_id,
+        top_n=top_n,
+        preferred_location=preferred_location,
+        preferred_arrangement=preferred_arrangement
+    ).model_dump()
 
 
 @st.cache_resource
@@ -309,8 +329,28 @@ with st.sidebar:
         st.session_state.selected_jd_id = None
         st.session_state.analyses = {}
         st.session_state.selected_resume_idx = 0
+        st.session_state.pref_location = ""
+        st.session_state.pref_arrangement = "Any"
         st.success("Session reset! Store cleared.")
         st.rerun()
+
+    # Preferences Section (Feature 6)
+    st.divider()
+    st.subheader("Preferences")
+    st.session_state.pref_location = st.text_input(
+        "Preferred Location",
+        value=st.session_state.pref_location,
+        placeholder="e.g., Remote, New York, London",
+        key="pref_location_input"
+    )
+    arr_options = ["Any", "Remote", "Hybrid", "On-site"]
+    arr_idx = arr_options.index(st.session_state.pref_arrangement) if st.session_state.pref_arrangement in arr_options else 0
+    st.session_state.pref_arrangement = st.selectbox(
+        "Work Arrangement",
+        arr_options,
+        index=arr_idx,
+        key="pref_arrangement_input"
+    )
 
     # Quick Fixture Loader
     st.divider()
@@ -603,7 +643,15 @@ with tab_upload:
 
                 # Step 2: Tier 1 Ranking
                 progress_bar.progress(50, text="Step 3/5: Vectorizing Resume and Running Cosine Similarity Matching...")
-                rank_resp = api_rank(target_resume["text"], target_resume["id"], top_n=None)
+                pref_loc = st.session_state.pref_location.strip() if st.session_state.pref_location.strip() else None
+                pref_arr = st.session_state.pref_arrangement if st.session_state.pref_arrangement != "Any" else None
+                rank_resp = api_rank(
+                    target_resume["text"],
+                    target_resume["id"],
+                    top_n=None,
+                    preferred_location=pref_loc,
+                    preferred_arrangement=pref_arr
+                )
                 st.session_state.rank_results = rank_resp.get("results", [])
 
                 progress_bar.progress(75, text="Step 4/5: Ranking Matches (Zero Gemini Calls)...")
@@ -667,6 +715,11 @@ with tab_results:
                 with c1:
                     st.metric("Similarity Score", f"{sim_score}%")
                     st.caption(f"Location: {card.get('location')}")
+                    card_loc = (card.get("location") or "").lower()
+                    if st.session_state.pref_location.strip() and st.session_state.pref_location.strip().lower() in card_loc:
+                        st.markdown("`Location match +5`")
+                    if st.session_state.pref_arrangement in ["Remote", "Hybrid", "On-site"] and st.session_state.pref_arrangement.lower() in card_loc:
+                        st.markdown("`Arrangement match +3`")
 
                 with c2:
                     st.markdown("**Overview Snippet:**")

@@ -49,7 +49,9 @@ class AnalysisPipeline:
         self,
         resume_text: str,
         resume_id: str,
-        top_n: Optional[int] = 5
+        top_n: Optional[int] = 5,
+        preferred_location: Optional[str] = None,
+        preferred_arrangement: Optional[str] = None
     ) -> dict[str, Any]:
         """
         Tier 1: Rank stored JDs against a single resume.
@@ -58,7 +60,9 @@ class AnalysisPipeline:
         ranking_res = ranking.rank_jds(
             resume_text=resume_text,
             resume_id=resume_id,
-            top_n=top_n
+            top_n=top_n,
+            preferred_location=preferred_location,
+            preferred_arrangement=preferred_arrangement
         )
         return ranking_res.model_dump()
 

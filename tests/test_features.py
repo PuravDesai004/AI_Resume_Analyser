@@ -74,6 +74,94 @@ class TestNewFeatures(unittest.TestCase):
             self.assertEqual(api_resp_all.status_code, 200)
             self.assertEqual(len(api_resp_all.json()["results"]), 7)
 
+    def test_feature_6_preferences_boost(self):
+        """Test additive preference boost and clamping in ranking."""
+        jd_index.clear_store_for_testing()
+
+        # Let vec_a and vec_b have unit norm:
+        # e.g., resume vector [1, 0, ...]
+        # JD 1 vector: [0.72, sqrt(1 - 0.72^2), ...] -> cosine similarity = 0.72
+        # JD 2 vector: [0.99, sqrt(1 - 0.99^2), ...] -> cosine similarity = 0.99 (test clamp)
+        import math
+        vec_resume = [1.0] + [0.0] * 3071
+        vec_jd1 = [0.72, math.sqrt(1 - 0.72**2)] + [0.0] * 3070
+        vec_jd2 = [0.99, math.sqrt(1 - 0.99**2)] + [0.0] * 3070
+
+        with patch.object(jd_index, "_get_embedder") as mock_emb_fn:
+            mock_emb = MagicMock()
+            mock_emb.embed_chunk.side_effect = [vec_jd1, vec_jd2]
+            mock_emb_fn.return_value = mock_emb
+
+            rec1 = jd_index.add_jd(
+                "Software Engineer", "Acme", "Remote, New York", "Some text " * 10
+            )
+            rec2 = jd_index.add_jd(
+                "Senior Engineer", "Beta", "London, On-site", "Some text " * 10
+            )
+
+        with patch.object(ranking, "_get_embedder") as mock_rank_emb_fn:
+            mock_rank_emb = MagicMock()
+            mock_rank_emb.embed_chunk.return_value = vec_resume
+            mock_rank_emb_fn.return_value = mock_rank_emb
+
+            # 1. No preferences: raw similarity
+            # rec1: 0.72 -> 72
+            # rec2: 0.99 -> 99
+            res_no_pref = ranking.rank_jds("Resume text", "res_001")
+            scores_no_pref = {c.jd_id: c.similarity_score for c in res_no_pref.results}
+            self.assertEqual(scores_no_pref[rec1.jd_id], 72)
+            self.assertEqual(scores_no_pref[rec2.jd_id], 99)
+
+            # 2. Location preference: "New York" -> +0.05
+            # rec1 gets 0.72 + 0.05 = 0.77 -> 77
+            res_loc = ranking.rank_jds(
+                "Resume text", "res_001", preferred_location="New York"
+            )
+            scores_loc = {c.jd_id: c.similarity_score for c in res_loc.results}
+            self.assertEqual(scores_loc[rec1.jd_id], 77)
+            self.assertEqual(scores_loc[rec2.jd_id], 99)
+
+            # 3. Work arrangement preference: "Remote" -> +0.03
+            # rec1 gets 0.72 + 0.03 = 0.75 -> 75
+            res_arr = ranking.rank_jds(
+                "Resume text", "res_001", preferred_arrangement="Remote"
+            )
+            scores_arr = {c.jd_id: c.similarity_score for c in res_arr.results}
+            self.assertEqual(scores_arr[rec1.jd_id], 75)
+            self.assertEqual(scores_arr[rec2.jd_id], 99)
+
+            # 4. Both preferences: "New York" (+0.05) and "Remote" (+0.03) -> +0.08
+            # rec1 gets 0.72 + 0.05 + 0.03 = 0.80 -> 80
+            res_both = ranking.rank_jds(
+                "Resume text",
+                "res_001",
+                preferred_location="New York",
+                preferred_arrangement="Remote"
+            )
+            scores_both = {c.jd_id: c.similarity_score for c in res_both.results}
+            self.assertEqual(scores_both[rec1.jd_id], 80)
+
+            # 5. Clamp to 100: rec2 (0.99) with "London" (+0.05) and "On-site" (+0.03) -> 0.99 + 0.08 = 1.07 -> clamped to 100
+            res_clamped = ranking.rank_jds(
+                "Resume text",
+                "res_001",
+                preferred_location="London",
+                preferred_arrangement="On-site"
+            )
+            scores_clamped = {c.jd_id: c.similarity_score for c in res_clamped.results}
+            self.assertEqual(scores_clamped[rec2.jd_id], 100)
+
+            # 6. API call with preferences
+            api_resp = self.client.post("/rank", json={
+                "resume_text": "Resume text",
+                "resume_id": "res_001",
+                "preferred_location": "New York",
+                "preferred_arrangement": "Remote"
+            })
+            self.assertEqual(api_resp.status_code, 200)
+            api_scores = {c["jd_id"]: c["similarity_score"] for c in api_resp.json()["results"]}
+            self.assertEqual(api_scores[rec1.jd_id], 80)
+
 
 if __name__ == "__main__":
     unittest.main()

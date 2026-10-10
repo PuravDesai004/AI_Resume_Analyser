@@ -29,11 +29,14 @@ def _cosine_similarity(vec_a: list[float], vec_b: list[float]) -> float:
 def rank_jds(
     resume_text: str,
     resume_id: str,
-    top_n: Optional[int] = 5
+    top_n: Optional[int] = 5,
+    preferred_location: Optional[str] = None,
+    preferred_arrangement: Optional[str] = None
 ) -> RankingResult:
     """
     Tier 1 Ranking:
     Embeds resume_text once, computes cosine similarity against all stored JDs,
+    applies deterministic preference boosts if specified,
     and returns top N (or all) ranked cards.
     Zero Gemini / LLM calls.
     """
@@ -63,10 +66,24 @@ def rank_jds(
     for i, j_id in enumerate(jd_ids):
         n_jd = float(norms_jd[i])
         if n_jd == 0.0:
-            scored.append((j_id, 0.0))
+            sim = 0.0
         else:
             sim = float(dots[i] / (n_jd * norm_resume))
-            scored.append((j_id, sim))
+
+        # Deterministic preference boost
+        boost = 0.0
+        rec = jd_index.get_jd_record(j_id)
+        if rec and rec.location:
+            jd_loc_lower = rec.location.lower()
+            if preferred_location and preferred_location.strip():
+                if preferred_location.strip().lower() in jd_loc_lower:
+                    boost += 0.05
+            if preferred_arrangement and preferred_arrangement.strip() and preferred_arrangement.strip().lower() != "any":
+                if preferred_arrangement.strip().lower() in jd_loc_lower:
+                    boost += 0.03
+
+        boosted_sim = sim + boost
+        scored.append((j_id, boosted_sim))
 
     # Sort descending by cosine similarity, with deterministic jd_id tie-breaker
     scored.sort(key=lambda x: (-x[1], str(x[0])))
