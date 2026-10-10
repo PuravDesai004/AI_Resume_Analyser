@@ -297,6 +297,38 @@ def make_skill_comparison_bar(skill_gap: dict) -> go.Figure:
     return fig
 
 
+def make_multi_jd_grouped_bar(analyses_map: dict, jd_titles_map: dict) -> go.Figure:
+    """Grouped bar chart for Multi-JD Comparison across requirement categories."""
+    categories = ["Skills", "Experience", "Education", "Responsibilities"]
+    fig = go.Figure()
+    colors = ["#3498db", "#2ecc71", "#e67e22"]
+
+    for idx, (jd_id, analysis) in enumerate(analyses_map.items()):
+        jd_label = jd_titles_map.get(jd_id, jd_id)
+        req_matches = {r.get("category"): r.get("match_percent", 0) for r in analysis.get("requirement_match", [])}
+        y_vals = [req_matches.get(cat, 0) for cat in categories]
+        color = colors[idx % len(colors)]
+        fig.add_trace(go.Bar(
+            name=jd_label,
+            x=categories,
+            y=y_vals,
+            marker_color=color,
+            text=[f"{v}%" for v in y_vals],
+            textposition="auto"
+        ))
+
+    fig.update_layout(
+        barmode="group",
+        title_text="Requirement Alignment Comparison (%)",
+        yaxis=dict(range=[0, 100], title="Match %"),
+        xaxis=dict(title="Category"),
+        height=380,
+        margin=dict(l=20, r=20, t=50, b=20),
+        legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5)
+    )
+    return fig
+
+
 # SIDEBAR: System Status & Session Controls
 
 with st.sidebar:
@@ -443,10 +475,11 @@ with st.sidebar:
 
 # MAIN PANEL
 
-tab_upload, tab_results, tab_detail = st.tabs([
+tab_upload, tab_results, tab_detail, tab_compare = st.tabs([
     "1. Upload and Manage Documents",
-    "2. Top-5 Matching Results",
-    "3. In-Depth Gap Analysis"
+    "2. Ranked Matching Results",
+    "3. In-Depth Gap Analysis",
+    "4. Compare JDs"
 ])
 
 
@@ -973,3 +1006,164 @@ with tab_detail:
             # Raw JSON Inspection
             with st.expander("Raw Backend API Response JSON"):
                 st.json(analysis)
+
+
+# TAB 4: MULTI-JD COMPARISON (Feature 4)
+
+with tab_compare:
+    st.header("Multi-JD Comparison")
+    st.markdown("Select 2 or 3 job descriptions from ranked results to view side-by-side gap analysis, alignment scores, and skill overlap.")
+
+    if not st.session_state.rank_results:
+        st.info("No ranking results available. Run ranking in Tab 1 first.")
+    else:
+        target_res = st.session_state.resumes[st.session_state.selected_resume_idx]
+        st.markdown(f"**Target Candidate:** `{target_res['name']}` ({target_res['words']} words)")
+
+        # Prepare JD options from ranked results
+        jd_options_map = {}
+        for c in st.session_state.rank_results:
+            label = f"#{c.get('rank', 1)} {c.get('title')} @ {c.get('company')} ({c.get('jd_id')})"
+            jd_options_map[label] = c.get("jd_id")
+
+        all_option_keys = list(jd_options_map.keys())
+        default_selected = all_option_keys[:min(2, len(all_option_keys))]
+
+        selected_labels = st.multiselect(
+            "Select 2 or 3 Job Descriptions to Compare",
+            options=all_option_keys,
+            default=default_selected,
+            max_selections=3,
+            key="compare_jd_multiselect"
+        )
+
+        if len(selected_labels) > 3:
+            st.warning("Please select at most 3 JDs. Showing only the first 3 selected.")
+            selected_labels = selected_labels[:3]
+
+        if len(selected_labels) < 2:
+            st.info("Please select at least 2 job descriptions (maximum 3) to view comparison.")
+        else:
+            selected_ids = [jd_options_map[lbl] for lbl in selected_labels]
+
+            col_btn, _ = st.columns([2, 5])
+            with col_btn:
+                btn_run_comp = st.button("Compare Selected JDs", type="primary", use_container_width=True, key="btn_run_compare")
+
+            if btn_run_comp:
+                # Analyze selected JDs if not already cached
+                for jd_id in selected_ids:
+                    if jd_id not in st.session_state.analyses:
+                        with st.spinner(f"Analyzing {jd_id}..."):
+                            analysis_res = api_analyze(target_res["text"], target_res["id"], jd_id)
+                            st.session_state.analyses[jd_id] = analysis_res
+
+            # Check if all selected JDs have been analyzed
+            all_analyzed = all(jid in st.session_state.analyses for jid in selected_ids)
+            if not all_analyzed:
+                st.info("Click 'Compare Selected JDs' to run gap analysis for unanalyzed roles.")
+            else:
+                st.divider()
+
+                # Build data maps
+                valid_analyses = {}
+                failed_jds = {}
+                title_map = {}
+
+                for lbl in selected_labels:
+                    jid = jd_options_map[lbl]
+                    rec = st.session_state.analyses.get(jid, {})
+                    title_map[jid] = lbl.split("(")[0].strip()
+
+                    if isinstance(rec, dict) and rec.get("context_sufficient", True) and "error" not in rec and "error_code" not in rec:
+                        valid_analyses[jid] = rec
+                    else:
+                        err_msg = rec.get("insufficient_reason") or rec.get("detail") or "Analysis failed or insufficient context"
+                        failed_jds[jid] = str(err_msg)
+
+                # 1. Summary Table
+                st.subheader("Comparison Summary Table")
+                rows = [
+                    "Match Score",
+                    "Matched Skills Count",
+                    "Missing Essential Count",
+                    "Missing Preferred Count",
+                    "Extra Skills Count"
+                ]
+
+                table_data = {"Metric": rows}
+                for jid in selected_ids:
+                    col_name = title_map[jid]
+                    if jid in valid_analyses:
+                        a = valid_analyses[jid]
+                        sg = a.get("skill_gap", {})
+                        table_data[col_name] = [
+                            f"{a.get('match_score', 0)}%",
+                            str(len(sg.get("matched", []))),
+                            str(len(sg.get("missing_essential", []))),
+                            str(len(sg.get("missing_preferred", []))),
+                            str(len(sg.get("extra", [])))
+                        ]
+                    else:
+                        table_data[col_name] = [
+                            f"Error: {failed_jds.get(jid, 'Failed')}",
+                            "N/A", "N/A", "N/A", "N/A"
+                        ]
+
+                import pandas as pd
+                df_summary = pd.DataFrame(table_data)
+                st.table(df_summary)
+
+                # 2. Grouped Bar Chart
+                if valid_analyses:
+                    st.subheader("Requirement Alignment Comparison")
+                    fig_grouped = make_multi_jd_grouped_bar(valid_analyses, title_map)
+                    st.plotly_chart(fig_grouped, use_container_width=True)
+
+                # 3. Skills Overlap / Side-by-side View
+                st.subheader("Side-by-Side Skill Gaps and Overlap")
+                cols = st.columns(len(selected_ids))
+
+                for idx, jid in enumerate(selected_ids):
+                    with cols[idx]:
+                        with st.container(border=True):
+                            st.markdown(f"**{title_map[jid]}**")
+                            if jid in failed_jds:
+                                st.error(f"Analysis failed: {failed_jds[jid]}")
+                            else:
+                                a = valid_analyses[jid]
+                                sg = a.get("skill_gap", {})
+                                matched = [m.get("skill_name", str(m)) if isinstance(m, dict) else str(m) for m in sg.get("matched", [])]
+                                miss_ess = sg.get("missing_essential", [])
+                                miss_pref = sg.get("missing_preferred", [])
+
+                                st.markdown(f"**Matched Skills ({len(matched)}):**")
+                                if matched:
+                                    for m in matched:
+                                        st.markdown(f"- {m}")
+                                else:
+                                    st.caption("None")
+
+                                st.markdown(f"**Missing Essential ({len(miss_ess)}):**")
+                                if miss_ess:
+                                    for m in miss_ess:
+                                        st.markdown(f"- {m}")
+                                else:
+                                    st.caption("None")
+
+                                st.markdown(f"**Missing Preferred ({len(miss_pref)}):**")
+                                if miss_pref:
+                                    for m in miss_pref:
+                                        st.markdown(f"- {m}")
+                                else:
+                                    st.caption("None")
+
+                # Shared Missing Skills Callout
+                if len(valid_analyses) >= 2:
+                    sets_missing = [set(a.get("skill_gap", {}).get("missing_essential", [])) for a in valid_analyses.values()]
+                    common_gaps = set.intersection(*sets_missing) if sets_missing else set()
+                    st.divider()
+                    if common_gaps:
+                        st.info(f"Shared Missing Essential Skills across analyzed roles: {', '.join(sorted(common_gaps))}")
+                    else:
+                        st.caption("No shared missing essential skills between the analyzed roles.")

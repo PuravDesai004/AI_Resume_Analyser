@@ -204,6 +204,54 @@ class TestNewFeatures(unittest.TestCase):
         self.assertIn("| Skills | 88% |", md)
         self.assertIn("| Docker | Required for microservice deployments |", md)
 
+    def test_feature_4_multi_jd_comparison(self):
+        """Test Multi-JD Comparison chart generation and overlap metrics."""
+        from app import make_multi_jd_grouped_bar
+
+        analyses_map = {
+            "jd_001": {
+                "match_score": 85,
+                "requirement_match": [
+                    {"category": "Skills", "match_percent": 85},
+                    {"category": "Experience", "match_percent": 80},
+                    {"category": "Education", "match_percent": 100},
+                    {"category": "Responsibilities", "match_percent": 75}
+                ],
+                "skill_gap": {
+                    "matched": [{"skill_name": "Python"}, {"skill_name": "FastAPI"}],
+                    "missing_essential": ["Docker", "Redis"],
+                    "missing_preferred": ["Kubernetes"]
+                }
+            },
+            "jd_002": {
+                "match_score": 70,
+                "requirement_match": [
+                    {"category": "Skills", "match_percent": 70},
+                    {"category": "Experience", "match_percent": 75},
+                    {"category": "Education", "match_percent": 90},
+                    {"category": "Responsibilities", "match_percent": 65}
+                ],
+                "skill_gap": {
+                    "matched": [{"skill_name": "Python"}],
+                    "missing_essential": ["Docker", "PostgreSQL"],
+                    "missing_preferred": ["AWS"]
+                }
+            }
+        }
+        titles_map = {"jd_001": "Backend Dev", "jd_002": "Platform Dev"}
+
+        fig = make_multi_jd_grouped_bar(analyses_map, titles_map)
+        self.assertIsNotNone(fig)
+        self.assertEqual(len(fig.data), 2)
+        self.assertEqual(fig.data[0].name, "Backend Dev")
+        self.assertEqual(fig.data[1].name, "Platform Dev")
+
+        # Test shared missing essential skills computation
+        set_1 = set(analyses_map["jd_001"]["skill_gap"]["missing_essential"])
+        set_2 = set(analyses_map["jd_002"]["skill_gap"]["missing_essential"])
+        shared = set_1.intersection(set_2)
+        self.assertEqual(shared, {"Docker"})
+
 
 if __name__ == "__main__":
     unittest.main()
