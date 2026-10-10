@@ -16,6 +16,7 @@ import docx
 # Optional direct backend imports as resilient fallback
 import jd_index
 from analysis_pipeline import AnalysisPipeline
+from report_generator import generate_markdown_report
 
 # 5MB upload limit
 MAX_FILE_SIZE_MB = 5
@@ -840,6 +841,30 @@ with tab_detail:
                 st.subheader("Executive Fit Summary")
                 st.markdown(f"> {analysis.get('summary', 'No summary available.')}")
                 st.caption(f"JD ID: {active_jd_id} | Resume ID: {analysis.get('resume_id')} | Context Sufficient: True")
+
+                # Feature 3: Download Report
+                target_res_name = "Candidate"
+                if st.session_state.resumes and 0 <= st.session_state.selected_resume_idx < len(st.session_state.resumes):
+                    target_res_name = st.session_state.resumes[st.session_state.selected_resume_idx]["name"]
+
+                jd_title_found = f"Job ({active_jd_id})"
+                for j in st.session_state.jds:
+                    if j.get("id") == active_jd_id or j.get("backend_id") == active_jd_id:
+                        jd_title_found = j.get("title", jd_title_found)
+                        break
+
+                res_id_clean = analysis.get("resume_id", "resume")
+                report_md = generate_markdown_report(analysis, target_res_name, jd_title_found)
+                report_filename = f"gap_analysis_{res_id_clean}_{active_jd_id}.md"
+
+                st.download_button(
+                    label="Download Report (.md)",
+                    data=report_md,
+                    file_name=report_filename,
+                    mime="text/markdown",
+                    use_container_width=True,
+                    key=f"dl_btn_{active_jd_id}"
+                )
 
             st.divider()
 

@@ -162,6 +162,48 @@ class TestNewFeatures(unittest.TestCase):
             api_scores = {c["jd_id"]: c["similarity_score"] for c in api_resp.json()["results"]}
             self.assertEqual(api_scores[rec1.jd_id], 80)
 
+    def test_feature_3_download_report(self):
+        """Test markdown gap analysis report generation."""
+        from report_generator import generate_markdown_report
+
+        mock_analysis = {
+            "resume_id": "res_100",
+            "jd_id": "jd_200",
+            "context_sufficient": True,
+            "match_score": 88,
+            "summary": "Candidate shows exceptional backend alignment.",
+            "strengths": ["Deep Python expertise", "FastAPI architecture experience"],
+            "weaknesses": ["Lacks production Kubernetes operations"],
+            "skill_gap": {
+                "matched": [{"skill_name": "Python", "match_type": "exact"}, {"skill_name": "FastAPI", "match_type": "exact"}],
+                "missing_essential": ["Docker"],
+                "missing_preferred": ["Kubernetes"],
+                "extra": ["Flask"]
+            },
+            "requirement_match": [
+                {"category": "Skills", "match_percent": 88},
+                {"category": "Experience", "match_percent": 85}
+            ],
+            "recommendations": [
+                {"skill": "Docker", "reason": "Required for microservice deployments"}
+            ]
+        }
+
+        md = generate_markdown_report(mock_analysis, "Jane Doe", "Senior Python Engineer")
+
+        # Verify key sections and formatting
+        self.assertIn("# Gap Analysis Report: Jane Doe vs Senior Python Engineer", md)
+        self.assertIn("## Match Score: 88%", md)
+        self.assertIn("Candidate shows exceptional backend alignment.", md)
+        self.assertIn("- Deep Python expertise", md)
+        self.assertIn("- Lacks production Kubernetes operations", md)
+        self.assertIn("| **Matched Skills** | Python, FastAPI |", md)
+        self.assertIn("| **Missing Essential** | Docker |", md)
+        self.assertIn("| **Missing Preferred** | Kubernetes |", md)
+        self.assertIn("| **Candidate Extra** | Flask |", md)
+        self.assertIn("| Skills | 88% |", md)
+        self.assertIn("| Docker | Required for microservice deployments |", md)
+
 
 if __name__ == "__main__":
     unittest.main()
