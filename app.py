@@ -6,6 +6,7 @@ import io
 import json
 import time
 import glob
+from uuid import uuid4
 import requests
 import streamlit as st
 import plotly.graph_objects as go
@@ -17,6 +18,9 @@ import docx
 import jd_index
 from analysis_pipeline import AnalysisPipeline
 from report_generator import generate_markdown_report
+from document_parsing import extract_document
+from document_uploads import prepare_uploads
+from chat_ui import init_chat_state, remove_chat_document, render_chat, reset_chat
 
 # 5MB upload limit
 MAX_FILE_SIZE_MB = 5
@@ -29,7 +33,8 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000")
+API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8010")
+init_chat_state()
 
 # Session State Initialization
 if "resumes" not in st.session_state:
@@ -56,24 +61,11 @@ if "active_ranked_resume_id" not in st.session_state:
 
 def extract_text_from_file(uploaded_file) -> str:
     """Extracts raw text from PDF, DOCX, or TXT uploaded files."""
-    file_bytes = uploaded_file.read()
-    filename = uploaded_file.name.lower()
+    return extract_document(uploaded_file.getvalue(), uploaded_file.name)[0]
 
-    if filename.endswith(".pdf"):
-        with pymupdf.open(stream=file_bytes, filetype="pdf") as doc:
-            text = "\n".join([page.get_text() for page in doc])
-        return text.strip()
 
-    elif filename.endswith(".docx") or filename.endswith(".doc"):
-        doc = docx.Document(io.BytesIO(file_bytes))
-        text = "\n".join([p.text for p in doc.paragraphs])
-        return text.strip()
-
-    elif filename.endswith(".txt"):
-        return file_bytes.decode("utf-8", errors="replace").strip()
-
-    else:
-        raise ValueError(f"Unsupported file format: {uploaded_file.name}")
+def extract_pages_from_file(uploaded_file):
+    return extract_document(uploaded_file.getvalue(), uploaded_file.name)
 
 
 def validate_doc_text(text: str) -> tuple[str, str]:
@@ -88,7 +80,39 @@ def validate_doc_text(text: str) -> tuple[str, str]:
     return "Valid", "Ready for analysis."
 
 
+def add_uploaded_documents(files, kind):
+    state_key = "resumes" if kind == "resume" else "jds"
+    records, notices = prepare_uploads(
+        files, st.session_state[state_key], kind, validate_doc_text, MAX_FILE_SIZE_BYTES,
+    )
+    st.session_state[state_key].extend(records)
+    st.session_state.upload_notices = notices
+    st.rerun()
+
+
+def render_operation_notices(state_key, button_label):
+    notices = st.session_state.get(state_key, [])
+    if notices:
+        for level, message in notices:
+            getattr(st, level)(message)
+        if st.button(button_label, key=f"dismiss_{state_key}"):
+            st.session_state[state_key] = []
+            st.rerun()
+
+
 # Backend Communication (API with Direct Fallback)
+
+def require_success_response(response):
+    if response.status_code == 200:
+        return response.json()
+    try:
+        detail = response.json().get("detail", "")
+        if isinstance(detail, dict):
+            detail = detail.get("message") or detail.get("error_code") or str(detail)
+    except ValueError:
+        detail = ""
+    raise RuntimeError(detail or f"The backend returned an error ({response.status_code}). Check its logs.")
+
 
 def check_backend_alive() -> bool:
     try:
@@ -154,9 +178,8 @@ def api_rank(
             json=payload,
             timeout=10.0
         )
-        if r.status_code == 200:
-            return r.json()
-    except Exception:
+        return require_success_response(r)
+    except requests.RequestException:
         pass
 
     import ranking
@@ -186,7 +209,8 @@ def api_analyze(resume_text: str, resume_id: str, jd_id: str) -> dict:
             return r.json()
         elif r.status_code == 404:
             return {"error": "JD_NOT_FOUND", "detail": r.json().get("detail")}
-    except Exception:
+        return require_success_response(r)
+    except requests.RequestException:
         pass
 
     pipeline = get_local_pipeline()
@@ -547,6 +571,8 @@ with st.sidebar:
 
     # Reset Action
     if st.button("Reset Session and Clear Store", use_container_width=True, type="secondary"):
+        if not reset_chat(API_BASE_URL):
+            st.stop()
         api_reset_jds()
         st.session_state.resumes = []
         st.session_state.jds = []
@@ -583,6 +609,8 @@ with st.sidebar:
 
     # Load from Sample PDFs
     if st.button("Load 5 PDF Resumes and 5 PDF JDs", use_container_width=True):
+        if not reset_chat(API_BASE_URL):
+            st.stop()
         resume_pdfs = sorted(glob.glob("sample_pdfs/resumes/*.pdf"))
         jd_pdfs = sorted(glob.glob("sample_pdfs/job_descriptions/*.pdf"))
 
@@ -591,12 +619,14 @@ with st.sidebar:
             for path in resume_pdfs[:10]:
                 with pymupdf.open(path) as doc:
                     raw_text = "\n".join([page.get_text() for page in doc]).strip()
+                    pages = [{"text": page.get_text(), "page": i} for i, page in enumerate(doc, 1) if page.get_text().strip()]
                 status, warn = validate_doc_text(raw_text)
                 name = os.path.basename(path).replace(".pdf", "").replace("_", " ")
                 st.session_state.resumes.append({
                     "id": f"res_{int(time.time()*1000)%100000}_{len(st.session_state.resumes)}",
                     "name": name,
                     "text": raw_text,
+                    "pages": pages,
                     "words": len(raw_text.split()),
                     "status": status,
                     "warning": warn
@@ -607,14 +637,17 @@ with st.sidebar:
             for path in jd_pdfs[:10]:
                 with pymupdf.open(path) as doc:
                     raw_text = "\n".join([page.get_text() for page in doc]).strip()
+                    pages = [{"text": page.get_text(), "page": i} for i, page in enumerate(doc, 1) if page.get_text().strip()]
                 status, warn = validate_doc_text(raw_text)
                 title = os.path.basename(path).replace(".pdf", "").replace("JD_", "").replace("_", " ")
                 st.session_state.jds.append({
                     "id": f"jd_{int(time.time()*1000)%100000}_{len(st.session_state.jds)}",
                     "title": title,
+                    "source": os.path.basename(path),
                     "company": "Partner Company",
                     "location": "Bengaluru / Remote",
                     "text": raw_text,
+                    "pages": pages,
                     "words": len(raw_text.split()),
                     "status": status,
                     "warning": warn,
@@ -626,6 +659,8 @@ with st.sidebar:
             st.error("Sample PDF directory not found. Please run the PDF generator.")
 
     if st.button("Load JSON Fixtures (5 Resumes / 5 JDs)", use_container_width=True):
+        if not reset_chat(API_BASE_URL):
+            st.stop()
         if os.path.exists("tests/fixtures/sample_data.json"):
             with open("tests/fixtures/sample_data.json", "r", encoding="utf-8") as f:
                 fixtures = json.load(f)
@@ -667,12 +702,13 @@ with st.sidebar:
 
 # MAIN PANEL
 
-tab_upload, tab_results, tab_detail, tab_compare, tab_dashboard = st.tabs([
+tab_upload, tab_results, tab_detail, tab_compare, tab_dashboard, tab_chat = st.tabs([
     "1. Upload and Manage Documents",
     "2. Ranked Matching Results",
     "3. In-Depth Gap Analysis",
     "4. Compare JDs",
-    "5. Skill Gap Dashboard"
+    "5. Skill Gap Dashboard",
+    "6. Chat with Resume and JD"
 ])
 
 
@@ -681,6 +717,7 @@ tab_upload, tab_results, tab_detail, tab_compare, tab_dashboard = st.tabs([
 with tab_upload:
     st.header("Upload and Document Management Panel")
     st.markdown("Upload candidate resumes and job descriptions (Max 10 documents each, **5MB max file size**).")
+    render_operation_notices("upload_notices", "Dismiss upload messages")
 
     col_res, col_jd = st.columns(2)
 
@@ -692,32 +729,12 @@ with tab_upload:
         if res_upload_mode == "Files (PDF / DOCX / TXT)":
             res_files = st.file_uploader(
                 "Select Resume Files (Max 5MB each)",
-                type=["pdf", "docx", "doc", "txt"],
+                type=["pdf", "docx", "txt"],
                 accept_multiple_files=True,
                 key="res_file_input"
             )
             if res_files and st.button("Add Uploaded Resumes"):
-                for f in res_files:
-                    if len(st.session_state.resumes) >= 10:
-                        st.warning("Resume cap reached (10 max).")
-                        break
-                    if f.size > MAX_FILE_SIZE_BYTES:
-                        st.error(f"File '{f.name}' exceeds the 5MB size limit ({f.size / (1024*1024):.2f}MB). Upload rejected.")
-                        continue
-                    try:
-                        raw_text = extract_text_from_file(f)
-                        status, warn = validate_doc_text(raw_text)
-                        st.session_state.resumes.append({
-                            "id": f"res_{int(time.time()*1000)%100000}",
-                            "name": f.name,
-                            "text": raw_text,
-                            "words": len(raw_text.split()),
-                            "status": status,
-                            "warning": warn
-                        })
-                    except Exception as e:
-                        st.error(f"Error reading {f.name}: {e}")
-                st.rerun()
+                add_uploaded_documents(res_files, "resume")
 
         else:
             with st.form("manual_resume_form"):
@@ -732,7 +749,7 @@ with tab_upload:
                     else:
                         status, warn = validate_doc_text(m_res_text)
                         st.session_state.resumes.append({
-                            "id": f"res_{int(time.time()*1000)%100000}",
+                            "id": f"res_{uuid4().hex}",
                             "name": m_res_name,
                             "text": m_res_text,
                             "words": len(m_res_text.split()),
@@ -753,8 +770,9 @@ with tab_upload:
                     st.warning(f"Status: {r['status']} - {r['warning']}")
                 st.text_area("Content Preview", r['text'][:400] + ("..." if len(r['text']) > 400 else ""), height=100, key=f"prev_r_{idx}")
                 if st.button("Remove Resume", key=f"del_r_{idx}"):
-                    st.session_state.resumes.pop(idx)
-                    st.rerun()
+                    if remove_chat_document(API_BASE_URL, r["id"]):
+                        st.session_state.resumes.pop(idx)
+                        st.rerun()
 
     # Right Column: Job Descriptions
     with col_jd:
@@ -764,36 +782,12 @@ with tab_upload:
         if jd_upload_mode == "Files (PDF / DOCX / TXT)":
             jd_files = st.file_uploader(
                 "Select JD Files (Max 5MB each)",
-                type=["pdf", "docx", "doc", "txt"],
+                type=["pdf", "docx", "txt"],
                 accept_multiple_files=True,
                 key="jd_file_input"
             )
             if jd_files and st.button("Add Uploaded JDs"):
-                for f in jd_files:
-                    if len(st.session_state.jds) >= 10:
-                        st.warning("JD cap reached (10 max).")
-                        break
-                    if f.size > MAX_FILE_SIZE_BYTES:
-                        st.error(f"File '{f.name}' exceeds the 5MB size limit ({f.size / (1024*1024):.2f}MB). Upload rejected.")
-                        continue
-                    try:
-                        raw_text = extract_text_from_file(f)
-                        status, warn = validate_doc_text(raw_text)
-                        title = f.name.replace(".pdf", "").replace(".docx", "").replace(".txt", "")
-                        st.session_state.jds.append({
-                            "id": f"jd_{int(time.time()*1000)%100000}",
-                            "title": title.title(),
-                            "company": "Partner Company",
-                            "location": "Remote / Hybrid",
-                            "text": raw_text,
-                            "words": len(raw_text.split()),
-                            "status": status,
-                            "warning": warn,
-                            "backend_id": None
-                        })
-                    except Exception as e:
-                        st.error(f"Error reading {f.name}: {e}")
-                st.rerun()
+                add_uploaded_documents(jd_files, "jd")
 
         else:
             with st.form("manual_jd_form"):
@@ -810,7 +804,7 @@ with tab_upload:
                     else:
                         status, warn = validate_doc_text(m_jd_text)
                         st.session_state.jds.append({
-                            "id": f"jd_{int(time.time()*1000)%100000}",
+                            "id": f"jd_{uuid4().hex}",
                             "title": m_jd_title,
                             "company": m_jd_company,
                             "location": m_jd_location,
@@ -834,12 +828,14 @@ with tab_upload:
                     st.warning(f"Status: {j['status']} - {j['warning']}")
                 st.text_area("Content Preview", j['text'][:400] + ("..." if len(j['text']) > 400 else ""), height=100, key=f"prev_j_{idx}")
                 if st.button("Remove JD", key=f"del_j_{idx}"):
-                    st.session_state.jds.pop(idx)
-                    st.rerun()
+                    if remove_chat_document(API_BASE_URL, j["id"]):
+                        st.session_state.jds.pop(idx)
+                        st.rerun()
 
     # Action Bar: Analysis Trigger
     st.divider()
     st.subheader("Run Alignment Analysis")
+    render_operation_notices("analysis_notices", "Dismiss analysis messages")
 
     if not st.session_state.resumes:
         st.info("Upload at least one resume to run analysis.")
@@ -854,6 +850,7 @@ with tab_upload:
         target_resume = st.session_state.resumes[selected_idx]
 
         if st.button("Analyze Placement Fit (Embed and Rank)", type="primary", use_container_width=True):
+            st.session_state.analysis_notices = []
             progress_bar = st.progress(0, text="Step 1/5: Uploading and Parsing Documents...")
             time.sleep(0.3)
 
@@ -866,7 +863,7 @@ with tab_upload:
                     if "jd_id" in res:
                         j["backend_id"] = res["jd_id"]
                     elif "error" in res:
-                        st.error(f"Error adding JD '{j['title']}': {res.get('detail')}")
+                        raise RuntimeError(f"Error adding JD '{j['title']}': {res.get('detail')}")
 
                 # Step 2: Tier 1 Ranking
                 progress_bar.progress(50, text="Step 3/5: Vectorizing Resume and Running Cosine Similarity Matching...")
@@ -895,14 +892,20 @@ with tab_upload:
                         set_cached_analysis(target_resume["id"], top_id, analysis_res)
                         st.session_state.selected_jd_id = top_id
                     except Exception as exc:
-                        st.warning(f"Could not automatically analyze #1 match: {exc}")
+                        st.session_state.analysis_notices.append((
+                            "warning", f"Ranked results are ready, but detailed analysis is unavailable: {exc}",
+                        ))
 
                 progress_bar.progress(100, text="Complete! Results ready.")
-                st.success("Analysis complete! View the results in Tab 2 and Tab 3.")
+                if not st.session_state.analysis_notices:
+                    st.session_state.analysis_notices.append((
+                        "success", "Analysis complete! View the results in Tab 2 and Tab 3.",
+                    ))
                 time.sleep(0.5)
                 st.rerun()
             except Exception as e:
-                st.error(f"Analysis failed: {e}")
+                st.session_state.analysis_notices = [("error", f"Analysis failed: {e}")]
+                st.rerun()
 
 
 # TAB 2: RANKED JD RESULTS
@@ -1535,3 +1538,7 @@ with tab_dashboard:
                     st.info("No matched skills recorded across analyzed roles.")
         else:
             st.info(f"Click 'Generate Dashboard ({total_target_count} Roles)' to run batch analysis and view aggregated skills.")
+
+
+with tab_chat:
+    render_chat(API_BASE_URL, st.session_state.resumes, st.session_state.jds, get_cached_analysis)
