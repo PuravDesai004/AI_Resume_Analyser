@@ -15,3 +15,5 @@ numpy
 streamlit
 python-docx
 plotly
+requests
+groq
