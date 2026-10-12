@@ -116,7 +116,13 @@ def require_success_response(response):
 
 def check_backend_alive() -> bool:
     try:
-        r = requests.get(f"{API_BASE_URL}/jds/count", timeout=1.5)
+        r = requests.get(f"{API_BASE_URL}/health", timeout=2.0)
+        if r.status_code == 200:
+            return True
+    except Exception:
+        pass
+    try:
+        r = requests.get(f"{API_BASE_URL}/jds/count", timeout=2.0)
         return r.status_code == 200
     except Exception:
         return False
@@ -555,7 +561,7 @@ with st.sidebar:
     # Backend status badge
     backend_ok = check_backend_alive()
     if backend_ok:
-        st.success("[Connected] FastAPI Backend (127.0.0.1:8000)")
+        st.success(f"[Connected] FastAPI Backend ({API_BASE_URL})")
     else:
         st.warning("[Offline] Backend Server - using Direct Pipeline fallback")
 
