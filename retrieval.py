@@ -4,10 +4,13 @@ from rank_bm25 import BM25Okapi
 
 # this performs vector search
 def query_collection(query_text, embedder, n_results):
+    count = collection.count()
+    if not count:
+        return {"ids": [[]], "documents": [[]], "metadatas": [[]]}
     query_embedding = embedder.embed_chunk(query_text)
     results = collection.query( # actual similarity search
         query_embeddings = [query_embedding],
-        n_results = n_results
+        n_results = min(n_results, count)
     )
     return results # type = dict
 
@@ -15,11 +18,13 @@ def query_collection(query_text, embedder, n_results):
 def get_all_chunks_from_db():
     data = collection.get()
     result = []
-    for document, metadata in zip( # zip() pairs each document with its corresponding metadata
+    for chunk_id, document, metadata in zip( # zip() pairs each document with its corresponding metadata
+            data['ids'],
             data['documents'],
             data['metadatas']
     ):
         result.append({
+            "id": chunk_id,
             "document": document,
             "metadata": metadata
         })
@@ -37,6 +42,8 @@ def build_bm25_index(chunk_list):
     if not chunk_list:
         return None
     tokenized = [c["document"].lower().split() for c in chunk_list]
+    if not any(tokenized):
+        return None
     return BM25Okapi(tokenized) # this returns the weights for the chunks
 
 # this is the main keyword search
@@ -56,15 +63,17 @@ def merge_rrf(vector_results, bm25_results, k=60):
     # Loop 1: go through vector_results
     for rank, chunk in enumerate(vector_results):
         # add 1/(k + rank + 1) to scores[chunk]
-        scores[chunk["document"]] = scores.get(chunk["document"], 0) + 1 / (k + rank + 1)
-        vect_retainer[chunk["document"]] = chunk
+        identity = chunk.get("id", chunk["document"])
+        scores[identity] = scores.get(identity, 0) + 1 / (k + rank + 1)
+        vect_retainer[identity] = chunk
         # use scores.get(chunk, 0) + ... so it doesn't crash on a new chunk
 
     # Loop 2: go through bm25_results — remember these are (chunk, score) tuples
     for rank, (chunk, _) in enumerate(bm25_results):
         # same idea — add 1/(k + rank + 1) to scores[chunk]
-        scores[chunk["document"]] = scores.get(chunk["document"], 0) + 1 / (k + rank + 1)
-        bm25_retainer[chunk["document"]] = chunk
+        identity = chunk.get("id", chunk["document"])
+        scores[identity] = scores.get(identity, 0) + 1 / (k + rank + 1)
+        bm25_retainer[identity] = chunk
         # if this chunk was already scored in Loop 1, this should ADD to it, not overwrite
 
     # sort `scores` by value, descending

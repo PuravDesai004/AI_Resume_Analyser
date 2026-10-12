@@ -4,18 +4,23 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 from langchain_community.document_loaders import DirectoryLoader, TextLoader, PyMuPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 import tiktoken
+from pathlib import Path
+from importlib.util import find_spec
 
 # CONFIG
-FOLDER_PATH = "./Pdfs"
+FOLDER_PATH = str(Path(__file__).resolve().parent / "Pdfs")
 CHUNK_SIZE = 300      # in tokens
 CHUNK_OVERLAP = 50    # in tokens
 
 # Local fast tokenizer (runs in memory, zero API calls)
-tokenizer = tiktoken.get_encoding("cl100k_base")
+tokenizer = None
 
 def count_tokens(text: str) -> int:
     """Returns local token count instantly without network calls."""
-    return len(tokenizer.encode(text))
+    global tokenizer
+    if tokenizer is None:
+        tokenizer = tiktoken.get_encoding("cl100k_base")
+    return len(tokenizer.encode(text, disallowed_special=()))
 
 # DOCUMENT LOADING
 def read_documents(folder_path):
@@ -35,7 +40,7 @@ def read_documents(folder_path):
         loader_cls=PyMuPDFLoader,
         loader_kwargs={
             "extract_tables": "markdown",  # Formats tables into clear markdown
-            "extract_images": True  # Extracts text from images inside the PDF
+            "extract_images": find_spec("rapidocr") is not None  # OCR is optional
         }
     )
     pdf_docs = pdf_loader.load()

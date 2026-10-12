@@ -95,6 +95,10 @@ def render_chat(api_url, resumes, jds, get_analysis):
     if not resumes:
         st.info("Upload a resume in the first tab to start chatting.")
         return
+    if st.session_state.get("chat_resume_selection", 0) not in range(len(resumes)):
+        st.session_state.chat_resume_selection = 0
+    if st.session_state.get("chat_jd_selection", -1) not in [-1] + list(range(len(jds))):
+        st.session_state.chat_jd_selection = -1
     resume_index = st.selectbox(
         "Resume for this conversation", range(len(resumes)),
         format_func=lambda i: resumes[i]["name"], key="chat_resume_selection",

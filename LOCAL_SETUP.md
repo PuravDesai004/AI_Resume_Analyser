@@ -72,8 +72,8 @@ the selected resume/JD conversation. The backend loads the analysis pipeline laz
 
 ## Verification
 
-Run the 32 review checks with fake AI calls and isolated test storage. This does not
-require provider keys or installing ESCO, and does not reset application data:
+Run the complete review suite with fake AI calls and isolated test storage. It uses
+the bundled ESCO CSV, requires no provider keys, and does not reset application data:
 
 ```powershell
 .\.venv\Scripts\python.exe tests/run_review_checks.py

@@ -12,7 +12,7 @@ from schemas import (
     Recommendation,
     ErrorResponse
 )
-from esco_loader import SkillIndex
+from esco_loader import PROJECT_ROOT, SkillIndex
 from skill_grounding import ground_candidates
 from skill_comparison import compare_skills
 from sufficiency_check import check_sufficiency, build_insufficient_response
@@ -31,8 +31,8 @@ class AnalysisPipeline:
 
     def __init__(
         self,
-        esco_csv_path: str = "data/skills_en.csv",
-        custom_json_path: str = "data/custom_skills.json"
+        esco_csv_path: str = str(PROJECT_ROOT / "data/skills_en.csv"),
+        custom_json_path: str = str(PROJECT_ROOT / "data/custom_skills.json")
     ):
         print("[AnalysisPipeline] Initializing unified SkillIndex...")
         self.skill_index = SkillIndex(
@@ -153,6 +153,11 @@ class AnalysisPipeline:
             grounded_resume = ground_candidates(raw_resume_skills, self.skill_index)
             grounded_essential = ground_candidates(raw_jd_essential, self.skill_index)
             grounded_preferred = ground_candidates(raw_jd_preferred, self.skill_index)
+            if not grounded_essential and not grounded_preferred:
+                return build_insufficient_response(
+                    clean_resume_id, clean_jd_id,
+                    "No job requirement skills could be verified against the taxonomy.",
+                ).model_dump()
 
             # Step 5: Deterministic comparison & score calculation
             skill_gap, match_score = compare_skills(
@@ -190,8 +195,8 @@ class AnalysisPipeline:
 
             # Step 7: Merge into final DetailAnalysis
             detail = DetailAnalysis(
-                resume_id=resume_id,
-                jd_id=jd_id,
+                resume_id=clean_resume_id,
+                jd_id=clean_jd_id,
                 context_sufficient=True,
                 insufficient_reason=None,
                 match_score=match_score,
@@ -207,8 +212,8 @@ class AnalysisPipeline:
 
         except Exception as exc:
             fallback = build_insufficient_response(
-                resume_id=resume_id,
-                jd_id=jd_id,
+                resume_id=clean_resume_id,
+                jd_id=clean_jd_id,
                 reason=f"Pipeline processing failed: {str(exc)}"
             )
             return fallback.model_dump()

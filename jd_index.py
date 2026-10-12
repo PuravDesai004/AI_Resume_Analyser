@@ -1,4 +1,6 @@
 import uuid
+from functools import wraps
+from threading import RLock
 from typing import Optional, Union
 
 import chroma_db
@@ -17,6 +19,15 @@ _embedder = None
 _RECORD_CACHE: dict[str, JDRecord] = {}
 _EMBEDDING_CACHE: dict[str, list[float]] = {}
 _CACHE_INITIALIZED = False
+_LOCK = RLock()
+
+
+def _synchronized(operation):
+    @wraps(operation)
+    def run(*args, **kwargs):
+        with _LOCK:
+            return operation(*args, **kwargs)
+    return run
 
 
 def _get_collection():
@@ -35,44 +46,40 @@ def _get_embedder() -> EmbeddingManager:
 
 
 def _ensure_cache_synced():
-    """Populates in-memory cache from ChromaDB on startup if needed."""
+    """Refresh on additions/deletions by another process; never cache a failed read."""
     global _CACHE_INITIALIZED
-    if not _CACHE_INITIALIZED:
-        try:
-            coll = _get_collection()
-            data = coll.get(include=["metadatas", "documents", "embeddings"])
-            ids = data.get("ids", [])
-            metas = data.get("metadatas", []) or []
-            docs = data.get("documents", []) or []
-            embs = data.get("embeddings", [])
-
-            _RECORD_CACHE.clear()
-            _EMBEDDING_CACHE.clear()
-
-            for i, j_id in enumerate(ids):
-                meta = metas[i] if i < len(metas) else {}
-                doc = docs[i] if i < len(docs) else ""
-                _RECORD_CACHE[j_id] = JDRecord(
-                    jd_id=j_id,
-                    title=str(meta.get("title", "")),
-                    company=str(meta.get("company", "")),
-                    location=str(meta.get("location", "")),
-                    snippet=str(meta.get("snippet", "")),
-                    full_text=doc
-                )
-                if embs is not None and i < len(embs):
-                    _EMBEDDING_CACHE[j_id] = list(embs[i])
-        except Exception:
-            pass
-        _CACHE_INITIALIZED = True
+    coll = _get_collection()
+    if _CACHE_INITIALIZED and set(coll.get(include=[])["ids"]) == set(_RECORD_CACHE):
+        return
+    data = coll.get(include=["metadatas", "documents", "embeddings"])
+    records, embeddings = {}, {}
+    metas = data.get("metadatas") or []
+    docs = data.get("documents") or []
+    embs = data.get("embeddings")
+    for i, j_id in enumerate(data["ids"]):
+        meta = (metas[i] or {}) if i < len(metas) else {}
+        records[j_id] = JDRecord(
+            jd_id=j_id, title=str(meta.get("title", "")),
+            company=str(meta.get("company", "")), location=str(meta.get("location", "")),
+            snippet=str(meta.get("snippet", "")), full_text=(docs[i] or "") if i < len(docs) else "",
+        )
+        if embs is not None and i < len(embs):
+            embeddings[j_id] = list(embs[i])
+    _RECORD_CACHE.clear()
+    _RECORD_CACHE.update(records)
+    _EMBEDDING_CACHE.clear()
+    _EMBEDDING_CACHE.update(embeddings)
+    _CACHE_INITIALIZED = True
 
 
+@_synchronized
 def count() -> int:
     """Current number of stored job descriptions."""
     _ensure_cache_synced()
     return len(_RECORD_CACHE)
 
 
+@_synchronized
 def add_jd(
     title: str,
     company: str,
@@ -84,6 +91,17 @@ def add_jd(
     Embeds jd_text once and stores vector + metadata in ChromaDB and memory cache.
     """
     _ensure_cache_synced()
+    clean_text = str(jd_text or "").strip()
+    if not clean_text:
+        return ErrorResponse(error_code="EMPTY_JD", message="Job description text cannot be empty.", stage="jd_store")
+    metadata = {
+        "title": str(title or "").strip(),
+        "company": str(company or "").strip(),
+        "location": str(location or "").strip(),
+    }
+    for record in _RECORD_CACHE.values():
+        if record.full_text == clean_text and all(getattr(record, key) == value for key, value in metadata.items()):
+            return record
     current_count = len(_RECORD_CACHE)
     if current_count >= JD_STORE_CAP:
         return ErrorResponse(
@@ -92,7 +110,6 @@ def add_jd(
             stage="jd_store"
         )
 
-    clean_text = str(jd_text or "").strip()
     snippet = clean_text[:150].strip()
     if len(clean_text) > 150:
         snippet += "..."
@@ -103,12 +120,7 @@ def add_jd(
     jd_id = f"jd_{uuid.uuid4().hex[:8]}"
 
     # Ensure strict ChromaDB primitive types (str, int, float, bool)
-    metadata = {
-        "title": str(title or "").strip(),
-        "company": str(company or "").strip(),
-        "location": str(location or "").strip(),
-        "snippet": snippet
-    }
+    metadata["snippet"] = snippet
 
     _get_collection().add(
         ids=[jd_id],
@@ -132,6 +144,7 @@ def add_jd(
     return record
 
 
+@_synchronized
 def get_all_jd_embeddings() -> list[tuple[str, list[float]]]:
     """Fetch all stored JD ids and their vectors for Tier 1 ranking from memory cache."""
     _ensure_cache_synced()
@@ -148,50 +161,44 @@ def get_all_jd_embeddings() -> list[tuple[str, list[float]]]:
     return list(zip(ids, embeddings))
 
 
+@_synchronized
 def get_jd_record(jd_id: str) -> Optional[JDRecord]:
     """Fetch one JD's full text and metadata for Tier 2 analysis with in-memory lookup."""
     _ensure_cache_synced()
-    if jd_id in _RECORD_CACHE:
-        return _RECORD_CACHE[jd_id]
-
-    data = _get_collection().get(ids=[jd_id], include=["metadatas", "documents"])
-    ids = data.get("ids", [])
-    if not ids:
-        return None
-
-    meta = data["metadatas"][0] if data.get("metadatas") else {}
-    doc = data["documents"][0] if data.get("documents") else ""
-    record = JDRecord(
-        jd_id=jd_id,
-        title=str(meta.get("title", "")),
-        company=str(meta.get("company", "")),
-        location=str(meta.get("location", "")),
-        snippet=str(meta.get("snippet", "")),
-        full_text=doc
-    )
-    _RECORD_CACHE[jd_id] = record
-    return record
+    return _RECORD_CACHE.get(jd_id)
 
 
+@_synchronized
+def get_jd_ids() -> list[str]:
+    _ensure_cache_synced()
+    return list(_RECORD_CACHE)
+
+
+@_synchronized
+def get_ranking_snapshot() -> list[tuple[JDRecord, list[float]]]:
+    _ensure_cache_synced()
+    return [(record, _EMBEDDING_CACHE[j_id]) for j_id, record in _RECORD_CACHE.items() if j_id in _EMBEDDING_CACHE]
+
+
+@_synchronized
+def delete_jd(jd_id: str) -> None:
+    _get_collection().delete(ids=[jd_id])
+    _RECORD_CACHE.pop(jd_id, None)
+    _EMBEDDING_CACHE.pop(jd_id, None)
+
+
+@_synchronized
 def clear_store_for_testing() -> None:
     """Clears all stored records in ChromaDB and memory caches."""
-    global _collection, _CACHE_INITIALIZED
+    global _CACHE_INITIALIZED
+    coll = _get_collection()
+    ids = coll.get(include=[])["ids"]
+    if ids:
+        coll.delete(ids=ids)
     _RECORD_CACHE.clear()
     _EMBEDDING_CACHE.clear()
     _CACHE_INITIALIZED = True
 
-    coll = _get_collection()
-    try:
-        data = coll.get()
-        ids = data.get("ids", [])
-        if ids:
-            coll.delete(ids=ids)
-    except Exception:
-        try:
-            _client.delete_collection(name="job_descriptions")
-        except Exception:
-            pass
-        _collection = _client.get_or_create_collection(name="job_descriptions")
 
 
 if __name__ == "__main__":

@@ -1,17 +1,17 @@
 import os
 import csv
 import json
-import re
+from pathlib import Path
 from typing import Optional
 
 from rapidfuzz import process, fuzz
 
 
 from collections import defaultdict
-from functools import lru_cache
 
 # In-memory singleton cache to prevent redundant CSV reads across pipeline/test instances
-_TAXONOMY_CACHE: dict[tuple[str, str], dict] = {}
+_TAXONOMY_CACHE: dict[tuple, dict] = {}
+PROJECT_ROOT = Path(__file__).resolve().parent
 
 
 def normalize_label(label: str) -> str:
@@ -26,8 +26,8 @@ class SkillIndex:
 
     def __init__(
         self,
-        esco_csv_path: str = "data/skills_en.csv",
-        custom_json_path: str = "data/custom_skills.json"
+        esco_csv_path: str = str(PROJECT_ROOT / "data/skills_en.csv"),
+        custom_json_path: str = str(PROJECT_ROOT / "data/custom_skills.json")
     ):
         if not os.path.exists(esco_csv_path):
             raise FileNotFoundError(
@@ -47,7 +47,8 @@ class SkillIndex:
         self._exact_cache: dict[str, Optional[dict]] = {}
 
         # Check singleton taxonomy cache
-        cache_key = (os.path.abspath(esco_csv_path), os.path.abspath(custom_json_path))
+        paths = (os.path.abspath(esco_csv_path), os.path.abspath(custom_json_path))
+        cache_key = paths + tuple((os.stat(p).st_mtime_ns, os.stat(p).st_size) for p in paths)
         if cache_key in _TAXONOMY_CACHE:
             cached = _TAXONOMY_CACHE[cache_key]
             self.by_label = cached["by_label"]
@@ -64,6 +65,9 @@ class SkillIndex:
         self._load_sources()
 
         # Cache for instant subsequent initializations
+        for old_key in list(_TAXONOMY_CACHE):
+            if old_key[:2] == paths:
+                del _TAXONOMY_CACHE[old_key]
         _TAXONOMY_CACHE[cache_key] = {
             "by_label": self.by_label,
             "all_labels": self.all_labels,

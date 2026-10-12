@@ -39,6 +39,8 @@ def build_bm25_index(chunk_list):
     if not chunk_list:
         return None
     tokenized = [c["document"].lower().split() for c in chunk_list]
+    if not any(tokenized):
+        return None
     return BM25Okapi(tokenized) # this returns the weights for the chunks
 
 # this is the main keyword search

@@ -4,6 +4,7 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 from langchain_community.document_loaders import DirectoryLoader, TextLoader, PyMuPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 import tiktoken
+from importlib.util import find_spec
 
 from rag_engine.paths import DOCUMENTS_DIR
 
@@ -40,7 +41,7 @@ def read_documents(folder_path):
         loader_cls=PyMuPDFLoader,
         loader_kwargs={
             "extract_tables": "markdown",  # Formats tables into clear markdown
-            "extract_images": True  # Extracts text from images inside the PDF
+            "extract_images": find_spec("rapidocr") is not None  # OCR is optional
         }
     )
     pdf_docs = pdf_loader.load()

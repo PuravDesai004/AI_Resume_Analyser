@@ -2,17 +2,12 @@ import os
 from dotenv import load_dotenv
 load_dotenv(override=True)
 
-import io
 import json
-import time
-import glob
 from uuid import uuid4
+from pathlib import Path
 import requests
 import streamlit as st
 import plotly.graph_objects as go
-import plotly.express as px
-import pymupdf
-import docx
 
 # Optional direct backend imports as resilient fallback
 import jd_index
@@ -33,7 +28,8 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8010")
+API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8010").rstrip("/")
+PROJECT_ROOT = Path(__file__).resolve().parent
 init_chat_state()
 
 # Session State Initialization
@@ -86,6 +82,8 @@ def add_uploaded_documents(files, kind):
         files, st.session_state[state_key], kind, validate_doc_text, MAX_FILE_SIZE_BYTES,
     )
     st.session_state[state_key].extend(records)
+    if records:
+        invalidate_placement_results()
     st.session_state.upload_notices = notices
     st.rerun()
 
@@ -98,6 +96,21 @@ def render_operation_notices(state_key, button_label):
         if st.button(button_label, key=f"dismiss_{state_key}"):
             st.session_state[state_key] = []
             st.rerun()
+
+
+def invalidate_placement_results(clear_analyses=False):
+    st.session_state.rank_results = None
+    st.session_state.selected_jd_id = None
+    st.session_state.active_ranked_resume_id = None
+    st.session_state.selected_resume_idx = 0
+    st.session_state.pop("compare_jd_multiselect", None)
+    if clear_analyses:
+        st.session_state.analyses = {}
+
+
+def reusable_analysis(analysis):
+    return bool(analysis and analysis.get("context_sufficient", True)
+                and "error" not in analysis and "error_code" not in analysis)
 
 
 # Backend Communication (API with Direct Fallback)
@@ -131,9 +144,26 @@ def check_backend_alive() -> bool:
 def api_reset_jds():
     """Resets JDs on backend."""
     try:
-        requests.delete(f"{API_BASE_URL}/jds", timeout=3.0)
-    except Exception:
+        require_success_response(requests.delete(f"{API_BASE_URL}/jds", timeout=3.0))
+    except requests.RequestException:
         jd_index.clear_store_for_testing()
+    for record in st.session_state.jds:
+        record["backend_id"] = None
+    invalidate_placement_results(clear_analyses=True)
+
+
+def api_jd_ids():
+    try:
+        return set(require_success_response(requests.get(f"{API_BASE_URL}/jds/ids", timeout=3.0)).get("ids", []))
+    except requests.RequestException:
+        return set(jd_index.get_jd_ids())
+
+
+def api_delete_jd(jd_id):
+    try:
+        require_success_response(requests.delete(f"{API_BASE_URL}/jds/{jd_id}", timeout=3.0))
+    except requests.RequestException:
+        jd_index.delete_jd(jd_id)
 
 
 def api_add_jd(title: str, company: str, location: str, text: str) -> dict:
@@ -144,11 +174,8 @@ def api_add_jd(title: str, company: str, location: str, text: str) -> dict:
             json={"title": title, "company": company, "location": location, "jd_text": text},
             timeout=15.0
         )
-        if r.status_code == 200:
-            return r.json()
-        elif r.status_code == 409:
-            return {"error": "STORE_CAP_REACHED", "detail": r.json().get("detail")}
-    except Exception:
+        return require_success_response(r)
+    except requests.RequestException:
         pass
 
     # Direct fallback
@@ -213,14 +240,15 @@ def api_analyze(resume_text: str, resume_id: str, jd_id: str) -> dict:
         )
         if r.status_code == 200:
             return r.json()
-        elif r.status_code == 404:
-            return {"error": "JD_NOT_FOUND", "detail": r.json().get("detail")}
         return require_success_response(r)
     except requests.RequestException:
         pass
 
     pipeline = get_local_pipeline()
-    return pipeline.analyze(resume_text, resume_id, jd_id)
+    result = pipeline.analyze(resume_text, resume_id, jd_id)
+    if "error_code" in result:
+        raise RuntimeError(result.get("message", "Analysis failed."))
+    return result
 
 
 # Charting Helpers
@@ -381,12 +409,11 @@ def get_cached_analysis(resume_id: str, jd_id: str) -> Optional[dict]:
 
 
 def set_cached_analysis(resume_id: str, jd_id: str, analysis: dict):
-    """Caches analysis using composite key and keeps active pointer."""
+    """Cache analyses under the candidate/JD pair that produced them."""
     if "analyses" not in st.session_state:
         st.session_state.analyses = {}
     key = get_analysis_cache_key(resume_id, jd_id)
     st.session_state.analyses[key] = analysis
-    st.session_state.analyses[jd_id] = analysis
 
 
 def matches_work_arrangement(location: str, chk_remote: bool, chk_hybrid: bool, chk_onsite: bool) -> bool:
@@ -579,7 +606,11 @@ with st.sidebar:
     if st.button("Reset Session and Clear Store", use_container_width=True, type="secondary"):
         if not reset_chat(API_BASE_URL):
             st.stop()
-        api_reset_jds()
+        try:
+            api_reset_jds()
+        except Exception as exc:
+            st.error(f"Could not clear the store: {exc}")
+            st.stop()
         st.session_state.resumes = []
         st.session_state.jds = []
         st.session_state.rank_results = None
@@ -588,6 +619,8 @@ with st.sidebar:
         st.session_state.selected_resume_idx = 0
         st.session_state.pref_location = ""
         st.session_state.pref_arrangement = "Any"
+        st.session_state.pop("pref_location_input", None)
+        st.session_state.pop("pref_arrangement_input", None)
         st.success("Session reset! Store cleared.")
         st.rerun()
 
@@ -617,19 +650,22 @@ with st.sidebar:
     if st.button("Load 5 PDF Resumes and 5 PDF JDs", use_container_width=True):
         if not reset_chat(API_BASE_URL):
             st.stop()
-        resume_pdfs = sorted(glob.glob("sample_pdfs/resumes/*.pdf"))
-        jd_pdfs = sorted(glob.glob("sample_pdfs/job_descriptions/*.pdf"))
+        resume_pdfs = sorted((PROJECT_ROOT / "sample_pdfs/resumes").glob("*.pdf"))
+        jd_pdfs = sorted((PROJECT_ROOT / "sample_pdfs/job_descriptions").glob("*.pdf"))
 
         if resume_pdfs and jd_pdfs:
+            try:
+                api_reset_jds()
+            except Exception as exc:
+                st.error(f"Could not clear the store: {exc}")
+                st.stop()
             st.session_state.resumes = []
             for path in resume_pdfs[:10]:
-                with pymupdf.open(path) as doc:
-                    raw_text = "\n".join([page.get_text() for page in doc]).strip()
-                    pages = [{"text": page.get_text(), "page": i} for i, page in enumerate(doc, 1) if page.get_text().strip()]
+                raw_text, pages = extract_document(path.read_bytes(), path.name)
                 status, warn = validate_doc_text(raw_text)
                 name = os.path.basename(path).replace(".pdf", "").replace("_", " ")
                 st.session_state.resumes.append({
-                    "id": f"res_{int(time.time()*1000)%100000}_{len(st.session_state.resumes)}",
+                    "id": f"res_{uuid4().hex}",
                     "name": name,
                     "text": raw_text,
                     "pages": pages,
@@ -638,16 +674,13 @@ with st.sidebar:
                     "warning": warn
                 })
 
-            api_reset_jds()
             st.session_state.jds = []
             for path in jd_pdfs[:10]:
-                with pymupdf.open(path) as doc:
-                    raw_text = "\n".join([page.get_text() for page in doc]).strip()
-                    pages = [{"text": page.get_text(), "page": i} for i, page in enumerate(doc, 1) if page.get_text().strip()]
+                raw_text, pages = extract_document(path.read_bytes(), path.name)
                 status, warn = validate_doc_text(raw_text)
                 title = os.path.basename(path).replace(".pdf", "").replace("JD_", "").replace("_", " ")
                 st.session_state.jds.append({
-                    "id": f"jd_{int(time.time()*1000)%100000}_{len(st.session_state.jds)}",
+                    "id": f"jd_{uuid4().hex}",
                     "title": title,
                     "source": os.path.basename(path),
                     "company": "Partner Company",
@@ -667,9 +700,14 @@ with st.sidebar:
     if st.button("Load JSON Fixtures (5 Resumes / 5 JDs)", use_container_width=True):
         if not reset_chat(API_BASE_URL):
             st.stop()
-        if os.path.exists("tests/fixtures/sample_data.json"):
-            with open("tests/fixtures/sample_data.json", "r", encoding="utf-8") as f:
+        if (PROJECT_ROOT / "tests/fixtures/sample_data.json").exists():
+            with open(PROJECT_ROOT / "tests/fixtures/sample_data.json", "r", encoding="utf-8") as f:
                 fixtures = json.load(f)
+            try:
+                api_reset_jds()
+            except Exception as exc:
+                st.error(f"Could not clear the store: {exc}")
+                st.stop()
 
             # Load Resumes
             st.session_state.resumes = []
@@ -686,7 +724,6 @@ with st.sidebar:
                 })
 
             # Load JDs
-            api_reset_jds()
             st.session_state.jds = []
             for j in fixtures.get("jds", []):
                 text = j["text"]
@@ -761,6 +798,7 @@ with tab_upload:
                             "status": status,
                             "warning": warn
                         })
+                        invalidate_placement_results()
                         st.rerun()
 
         # Preview Resumes
@@ -777,6 +815,7 @@ with tab_upload:
                 if st.button("Remove Resume", key=f"del_r_{idx}"):
                     if remove_chat_document(API_BASE_URL, r["id"]):
                         st.session_state.resumes.pop(idx)
+                        invalidate_placement_results()
                         st.rerun()
 
     # Right Column: Job Descriptions
@@ -819,6 +858,7 @@ with tab_upload:
                             "warning": warn,
                             "backend_id": None
                         })
+                        invalidate_placement_results()
                         st.rerun()
 
         # Preview JDs
@@ -834,7 +874,14 @@ with tab_upload:
                 st.text_area("Content Preview", j['text'][:400] + ("..." if len(j['text']) > 400 else ""), height=100, key=f"prev_j_{idx}")
                 if st.button("Remove JD", key=f"del_j_{idx}"):
                     if remove_chat_document(API_BASE_URL, j["id"]):
+                        try:
+                            if j.get("backend_id"):
+                                api_delete_jd(j["backend_id"])
+                        except Exception as exc:
+                            st.error(f"Could not remove the stored JD: {exc}")
+                            st.stop()
                         st.session_state.jds.pop(idx)
+                        invalidate_placement_results(clear_analyses=True)
                         st.rerun()
 
     # Action Bar: Analysis Trigger
@@ -857,13 +904,18 @@ with tab_upload:
         if st.button("Analyze Placement Fit (Embed and Rank)", type="primary", use_container_width=True):
             st.session_state.analysis_notices = []
             progress_bar = st.progress(0, text="Step 1/5: Uploading and Parsing Documents...")
-            time.sleep(0.3)
 
             try:
                 # Step 1: Upload / Ingest JDs to Backend
                 progress_bar.progress(25, text="Step 2/5: Ingesting and Embedding Job Descriptions...")
-                api_reset_jds()
+                stored_ids = api_jd_ids()
+                st.session_state.rank_results = None
+                st.session_state.selected_jd_id = None
+                st.session_state.pop("compare_jd_multiselect", None)
                 for j in st.session_state.jds:
+                    if j.get("backend_id") in stored_ids:
+                        continue
+                    j["backend_id"] = None
                     res = api_add_jd(j["title"], j["company"], j["location"], j["text"])
                     if "jd_id" in res:
                         j["backend_id"] = res["jd_id"]
@@ -885,7 +937,6 @@ with tab_upload:
                 st.session_state.active_ranked_resume_id = target_resume["id"]
 
                 progress_bar.progress(75, text="Step 4/5: Ranking Matches (Zero Gemini Calls)...")
-                time.sleep(0.3)
 
                 # Step 3: Trigger Tier 2 analysis on top match if available
                 if st.session_state.rank_results:
@@ -893,9 +944,13 @@ with tab_upload:
                     top_id = top_jd["jd_id"]
                     progress_bar.progress(90, text=f"Step 5/5: Running Gemini Deep Analysis on #1 match ({top_jd['title']})...")
                     try:
-                        analysis_res = api_analyze(target_resume["text"], target_resume["id"], top_id)
+                        analysis_res = get_cached_analysis(target_resume["id"], top_id)
+                        if not reusable_analysis(analysis_res):
+                            analysis_res = api_analyze(target_resume["text"], target_resume["id"], top_id)
                         set_cached_analysis(target_resume["id"], top_id, analysis_res)
                         st.session_state.selected_jd_id = top_id
+                        if not analysis_res.get("context_sufficient", True):
+                            st.session_state.analysis_notices.append(("warning", analysis_res.get("insufficient_reason") or "Analysis has insufficient context."))
                     except Exception as exc:
                         st.session_state.analysis_notices.append((
                             "warning", f"Ranked results are ready, but detailed analysis is unavailable: {exc}",
@@ -906,7 +961,6 @@ with tab_upload:
                     st.session_state.analysis_notices.append((
                         "success", "Analysis complete! View the results in Tab 2 and Tab 3.",
                     ))
-                time.sleep(0.5)
                 st.rerun()
             except Exception as e:
                 st.session_state.analysis_notices = [("error", f"Analysis failed: {e}")]
@@ -914,14 +968,16 @@ with tab_upload:
 
 
 # TAB 2: RANKED JD RESULTS
+ranked_resume = next((r for r in st.session_state.resumes
+                      if r["id"] == st.session_state.active_ranked_resume_id), None)
 
 with tab_results:
     st.header("Ranked Job Descriptions")
 
-    if not st.session_state.rank_results:
+    if not st.session_state.rank_results or ranked_resume is None:
         st.info("No ranking results yet. Go to Tab 1 and click 'Analyze Placement Fit'.")
     else:
-        target_res = st.session_state.resumes[st.session_state.selected_resume_idx]
+        target_res = ranked_resume
         st.markdown(f"**Target Resume:** `{target_res['name']}` ({target_res['words']} words)")
 
         # Feature 1: Top-N Selector
@@ -1034,7 +1090,7 @@ with tab_results:
                         st.markdown("**Actions:**")
                         if st.button(f"View Full Gap Analysis", key=f"btn_analyze_{jd_id}"):
                             cached_data = get_cached_analysis(target_res["id"], jd_id)
-                            if not cached_data:
+                            if not reusable_analysis(cached_data):
                                 with st.spinner(f"Running Gemini Tier 2 analysis on {card.get('title')}..."):
                                     try:
                                         analysis_data = api_analyze(target_res["text"], target_res["id"], jd_id)
@@ -1055,10 +1111,10 @@ with tab_results:
 with tab_detail:
     st.header("Detailed Match and Skill Gap Analysis")
 
-    if not st.session_state.resumes or not (0 <= st.session_state.selected_resume_idx < len(st.session_state.resumes)):
+    if ranked_resume is None:
         st.info("Upload a candidate resume and run placement fit in Tab 1.")
     else:
-        target_res = st.session_state.resumes[st.session_state.selected_resume_idx]
+        target_res = ranked_resume
         active_jd_id = st.session_state.selected_jd_id
         analysis = get_cached_analysis(target_res["id"], active_jd_id) if active_jd_id else None
 
@@ -1241,10 +1297,10 @@ with tab_compare:
     st.header("Multi-JD Comparison")
     st.markdown("Select 2 or 3 job descriptions from ranked results to view side-by-side gap analysis, alignment scores, and skill overlap.")
 
-    if not st.session_state.rank_results:
+    if not st.session_state.rank_results or ranked_resume is None:
         st.info("No ranking results available. Run ranking in Tab 1 first.")
     else:
-        target_res = st.session_state.resumes[st.session_state.selected_resume_idx]
+        target_res = ranked_resume
         st.markdown(f"**Target Candidate:** `{target_res['name']}` ({target_res['words']} words)")
 
         # Prepare JD options from ranked results
@@ -1280,7 +1336,7 @@ with tab_compare:
             if btn_run_comp:
                 # Analyze selected JDs if not already cached
                 for jd_id in selected_ids:
-                    if not get_cached_analysis(target_res["id"], jd_id):
+                    if not reusable_analysis(get_cached_analysis(target_res["id"], jd_id)):
                         with st.spinner(f"Analyzing {jd_id}..."):
                             try:
                                 analysis_res = api_analyze(target_res["text"], target_res["id"], jd_id)

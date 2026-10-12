@@ -1,4 +1,5 @@
 from typing import Optional
+from functools import lru_cache
 import numpy as np
 
 import jd_index
@@ -13,6 +14,11 @@ def _get_embedder() -> EmbeddingManager:
     if _embedder is None:
         _embedder = EmbeddingManager()
     return _embedder
+
+
+@lru_cache(maxsize=32)
+def _embed_resume(embedder, text):
+    return tuple(embedder.embed_chunk(text))
 
 
 def _cosine_similarity(vec_a: list[float], vec_b: list[float]) -> float:
@@ -44,12 +50,12 @@ def rank_jds(
     if not clean_resume:
         return RankingResult(resume_id=resume_id, results=[])
 
-    all_jds = jd_index.get_all_jd_embeddings()
+    all_jds = jd_index.get_ranking_snapshot()
     if not all_jds:
         return RankingResult(resume_id=resume_id, results=[])
 
     embedder = _get_embedder()
-    resume_embedding = embedder.embed_chunk(clean_resume)
+    resume_embedding = _embed_resume(embedder, clean_resume)
 
     resume_arr = np.array(resume_embedding, dtype=np.float32)
     norm_resume = float(np.linalg.norm(resume_arr))
@@ -58,7 +64,8 @@ def rank_jds(
 
     scored: list[tuple[str, float]] = []
     # Vectorized cosine computation across stored JD vectors
-    jd_ids = [j_id for j_id, _ in all_jds]
+    records = {record.jd_id: record for record, _ in all_jds}
+    jd_ids = list(records)
     jd_matrix = np.array([j_vec for _, j_vec in all_jds], dtype=np.float32)
     dots = np.dot(jd_matrix, resume_arr)
     norms_jd = np.linalg.norm(jd_matrix, axis=1)
@@ -72,7 +79,7 @@ def rank_jds(
 
         # Deterministic preference boost
         boost = 0.0
-        rec = jd_index.get_jd_record(j_id)
+        rec = records[j_id]
         if rec and rec.location:
             jd_loc_lower = rec.location.lower()
             if preferred_location and preferred_location.strip():
@@ -100,7 +107,7 @@ def rank_jds(
 
     cards: list[RankingCard] = []
     for rank_idx, (j_id, sim) in enumerate(selected_scored, start=1):
-        rec = jd_index.get_jd_record(j_id)
+        rec = records[j_id]
         if rec is None:
             continue
 

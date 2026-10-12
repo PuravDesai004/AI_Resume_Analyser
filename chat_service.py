@@ -45,6 +45,8 @@ class ChatService:
     def __init__(self, collection=None, embedder=None, generator=None, splitter=split_pages):
         self.model = os.getenv("RAG_EMBEDDING_MODEL", "gemini-embedding-001")
         self._collection = collection
+        self._injected_collection = collection is not None
+        self._collection_space = None
         self._embedder = embedder
         self._generator = generator
         self._splitter = splitter
@@ -54,15 +56,23 @@ class ChatService:
 
     @property
     def collection(self):
-        if self._collection is None:
+        if self._injected_collection:
+            return self._collection
+        space = self.embedding_space
+        if self._collection is None or self._collection_space != space:
             import chromadb
             path = Path(__file__).resolve().parent / "my_local_db"
             client = chromadb.PersistentClient(path=str(path))
-            suffix = hashlib.sha256(self.model.encode()).hexdigest()[:12]
+            suffix = hashlib.sha256(("v2:" + space).encode()).hexdigest()[:12]
             self._collection = client.get_or_create_collection(
                 name=f"resume_chat_{suffix}", metadata={"hnsw:space": "cosine"},
             )
+            self._collection_space = space
         return self._collection
+
+    @property
+    def embedding_space(self):
+        return getattr(self.embedder, "embedding_space", self.model)
 
     @property
     def embedder(self):
@@ -89,15 +99,17 @@ class ChatService:
         ]}
 
     def prepare(self, request: ChatContextRequest):
-        encoded = json.dumps({
-            "version": 1, "embedding_model": self.model,
-            "context": request.model_dump(mode="json"),
-        }, sort_keys=True, ensure_ascii=False)
-        context_id = hashlib.sha256(encoded.encode()).hexdigest()
-        scope = self.scope(request.session_id, context_id)
         with self._lock:
+            space = self.embedding_space
+            encoded = json.dumps({
+                "version": 2, "embedding_model": space,
+                "context": request.model_dump(mode="json"),
+            }, sort_keys=True, ensure_ascii=False)
+            context_id = hashlib.sha256(encoded.encode()).hexdigest()
+            scope = self.scope(request.session_id, context_id)
             existing = self.collection.get(where=scope, include=["metadatas"])
             if existing["ids"]:
+                self._bind_embeddings(space)
                 return ChatContextResponse(
                     context_id=context_id, chunk_count=len(existing["ids"]), reused=True,
                 )
@@ -122,6 +134,8 @@ class ChatService:
             if cached.get("embeddings") is not None:
                 for meta, vector in zip(cached["metadatas"], cached["embeddings"]):
                     vectors[meta["text_hash"]] = list(vector)
+            if vectors:
+                self._bind_embeddings(space)
             missing = dict((h, text) for h, text in zip(text_hashes, texts) if h not in vectors)
             # Obtain all embeddings before storing, so a remote failure cannot expose
             # a partially indexed context. Typical resume/JD contexts are small.
@@ -132,6 +146,10 @@ class ChatService:
                     new_vectors.extend(self.embedder.embed_chunks_batch(missing_texts[start:start + 90]))
                 if len(new_vectors) != len(missing_texts):
                     raise RuntimeError("Embedding count does not match document chunks.")
+                if self.embedding_space != space:
+                    # Initial provider fallback selected a different model. Restart
+                    # against its own collection, without reusing incompatible vectors.
+                    return self.prepare(request)
                 vectors.update(zip(missing_hashes, new_vectors))
                 embeddings = [vectors[h] for h in text_hashes]
             except ChatServiceError:
@@ -167,6 +185,11 @@ class ChatService:
                 pass
         return chunks
 
+    def _bind_embeddings(self, space):
+        bind = getattr(self.embedder, "bind_embedding_space", None)
+        if bind is not None:
+            bind(space)
+
     def ask(self, request: ChatRequest):
         with self._lock:
             scope = self.scope(request.session_id, request.context_id)
@@ -175,6 +198,7 @@ class ChatService:
             corpus = get_all_chunks_from_db(self.collection, scope)
             if not corpus:
                 raise ChatServiceError(404, "Chat context was not found. Prepare the selected documents again.")
+            self._bind_embeddings(self.embedding_space)
             history = request.history[-6:]
             search_text = "\n".join([m.content[:2_000] for m in history] + [request.message])
             try:
@@ -233,14 +257,14 @@ class ChatService:
         # Source cards are assigned numbers here, never from model-generated
         # numbering. Discard leftover inline markers from either provider.
         answer = re.sub(r"\s*\[\d+\]", "", generated.answer).strip()
+        if not answer:
+            raise ChatServiceError(502, "The model returned an empty answer. Please retry.")
         return ChatResponse(answer=answer, context_sufficient=True, citations=citations)
 
     def delete_session(self, session_id):
         with self._lock:
             where = {"session_id": {"$eq": str(session_id)}}
-            count = len(self.collection.get(where=where, include=["metadatas"])["ids"])
-            self.collection.delete(where=where)
-            return count
+            return self._delete_contexts(where)
 
     def delete_document(self, session_id, document_id):
         with self._lock:
@@ -248,6 +272,21 @@ class ChatService:
                 {"session_id": {"$eq": str(session_id)}},
                 {"$or": [{"resume_id": {"$eq": document_id}}, {"jd_id": {"$eq": document_id}}]},
             ]}
-            count = len(self.collection.get(where=where, include=["metadatas"])["ids"])
-            self.collection.delete(where=where)
-            return count
+            return self._delete_contexts(where)
+
+    def _delete_contexts(self, where):
+        # A session may have indexed contexts with more than one model/fallback.
+        if self._injected_collection:
+            collections = [self._collection]
+        else:
+            import chromadb
+            client = chromadb.PersistentClient(path=str(Path(__file__).resolve().parent / "my_local_db"))
+            collections = [client.get_collection(c.name) for c in client.list_collections()
+                           if c.name.startswith("resume_chat_")]
+        count = 0
+        for collection in collections:
+            ids = collection.get(where=where, include=[])["ids"]
+            if ids:
+                collection.delete(ids=ids)
+                count += len(ids)
+        return count

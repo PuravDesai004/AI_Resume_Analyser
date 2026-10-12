@@ -122,8 +122,21 @@ def add_job_description(payload: JDCreateRequest):
         jd_text=payload.jd_text
     )
     if isinstance(result, ErrorResponse):
-        raise HTTPException(status_code=409, detail=result.model_dump())
+        raise HTTPException(status_code=422 if result.error_code == "EMPTY_JD" else 409, detail=result.model_dump())
     return result.model_dump()
+
+
+@app.get("/jds/ids")
+def get_jd_ids():
+    import jd_index
+    return {"ids": jd_index.get_jd_ids()}
+
+
+@app.delete("/jds/{jd_id}")
+def delete_job_description(jd_id: str):
+    import jd_index
+    jd_index.delete_jd(jd_id)
+    return {"jd_id": jd_id, "deleted": True}
 
 
 @app.get("/jds/count", summary="Get stored JD count and cap")

@@ -1,9 +1,10 @@
 import os
 import chromadb
+from pathlib import Path
 
 # 1. Provide the exact path to your database directory
 # (Use absolute paths if running into empty database issues)
-DB_PATH = "./my_local_db"
+DB_PATH = str(Path(__file__).resolve().parent / "my_local_db")
 COLLECTION_NAME = "my_documents"
 
 def display_all_records():

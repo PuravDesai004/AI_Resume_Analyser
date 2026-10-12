@@ -9,11 +9,11 @@ def extract_document(file_bytes: bytes, filename: str):
     extension = Path(filename).suffix.lower()
     if extension == ".pdf":
         with pymupdf.open(stream=file_bytes, filetype="pdf") as pdf:
-            pages = [
-                {"text": page.get_text().strip(), "page": index}
-                for index, page in enumerate(pdf, 1)
-                if page.get_text().strip()
-            ]
+            pages = []
+            for index, page in enumerate(pdf, 1):
+                text = page.get_text().strip()
+                if text:
+                    pages.append({"text": text, "page": index})
     elif extension == ".docx":
         document = docx.Document(io.BytesIO(file_bytes))
         text = "\n".join(
@@ -23,7 +23,7 @@ def extract_document(file_bytes: bytes, filename: str):
         ).strip()
         pages = [{"text": text, "page": None}] if text else []
     elif extension == ".txt":
-        text = file_bytes.decode("utf-8").strip()
+        text = file_bytes.decode("utf-8-sig").strip()
         pages = [{"text": text, "page": None}] if text else []
     else:
         raise ValueError("Please use PDF, DOCX, or UTF-8 TXT files.")

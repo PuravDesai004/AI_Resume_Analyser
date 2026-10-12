@@ -1,13 +1,19 @@
 import chromadb
+import hashlib
+import json
+from pathlib import Path
 
 # Creates the './my_local_db' directory automatically if it doesn't exist
-client = chromadb.PersistentClient(path="./my_local_db")
+client = chromadb.PersistentClient(path=str(Path(__file__).resolve().parent / "my_local_db"))
 
 # Safer method: Fetches 'my_documents' if it exists, or creates it if it's new
 collection = client.get_or_create_collection(name="my_documents")
 
 def add_chunks_to_collection(chunks, embeddings):
-    ids = [f"chunk_{i}" for i in range(len(chunks))]
+    if len(chunks) != len(embeddings):
+        raise ValueError("Embedding count does not match document chunks.")
+    if not chunks:
+        return
     documents = [chunk.page_content for chunk in chunks]
     metadatas = []
     for chunk in chunks:
@@ -17,7 +23,13 @@ def add_chunks_to_collection(chunks, embeddings):
             "page": (page + 1) if page is not None else -1,
         })
 
-    collection.add(
+    ids, occurrences = [], {}
+    for text, meta in zip(documents, metadatas):
+        content_key = json.dumps([text, meta], sort_keys=True)
+        ordinal = occurrences.get(content_key, 0)
+        occurrences[content_key] = ordinal + 1
+        ids.append(hashlib.sha256(json.dumps([content_key, ordinal]).encode()).hexdigest())
+    collection.upsert(
         ids = ids,
         embeddings = embeddings,
         documents = documents,

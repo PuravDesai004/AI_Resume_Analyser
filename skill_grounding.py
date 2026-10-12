@@ -1,6 +1,6 @@
 from typing import Optional
 from schemas import GroundedSkill
-from esco_loader import SkillIndex
+from esco_loader import SkillIndex, normalize_label
 
 
 def ground_candidates(skill_names: list[str], index: SkillIndex) -> list[GroundedSkill]:
@@ -20,11 +20,8 @@ def ground_candidates(skill_names: list[str], index: SkillIndex) -> list[Grounde
         if not clean_name:
             continue
 
-        cache_key = clean_name.lower()
+        cache_key = normalize_label(clean_name)
         if cache_key in seen_memo:
-            cached_skill = seen_memo[cache_key]
-            if cached_skill is not None:
-                grounded.append(cached_skill)
             continue
 
         # Step 1: Exact normalized match

@@ -15,7 +15,7 @@ def compare_skills(
     resume_map: dict[str, GroundedSkill] = {}
     for s in grounded_resume:
         key = s.standardized_name.strip().lower()
-        if key not in resume_map:
+        if key not in resume_map or s.match_type == "exact":
             resume_map[key] = s
 
     # Deduplicate and key JD essential skills
@@ -50,7 +50,7 @@ def compare_skills(
             matched.append(
                 MatchedSkill(
                     skill_name=jd_skill.standardized_name,
-                    match_type=res_skill.match_type
+                    match_type="exact" if res_skill.match_type == jd_skill.match_type == "exact" else "close"
                 )
             )
         else:
@@ -65,7 +65,7 @@ def compare_skills(
             matched.append(
                 MatchedSkill(
                     skill_name=jd_skill.standardized_name,
-                    match_type=res_skill.match_type
+                    match_type="exact" if res_skill.match_type == jd_skill.match_type == "exact" else "close"
                 )
             )
         else:
@@ -84,7 +84,7 @@ def compare_skills(
     essential_ratio = (matched_essential_count / essential_total) if essential_total > 0 else 1.0
     preferred_ratio = (matched_preferred_count / preferred_total) if preferred_total > 0 else 1.0
 
-    match_score = round(100 * (0.8 * essential_ratio + 0.2 * preferred_ratio))
+    match_score = round(100 * (0.8 * essential_ratio + 0.2 * preferred_ratio)) if essential_total + preferred_total else 0
     # Clamp to [0, 100]
     match_score = max(0, min(100, match_score))
 

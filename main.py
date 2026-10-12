@@ -22,6 +22,9 @@ if __name__ == "__main__": # this code only runs when the file is executed direc
     # Step 2: split documents into token-based chunks
     chunks = split_documents(documents, CHUNK_SIZE, CHUNK_OVERLAP)
     print(f"Total chunks created: {len(chunks)}")
+    if not chunks:
+        print("No readable documents found. Add documents to the configured folder first.")
+        raise SystemExit(0)
 
     # Step 3: embed all chunks
     embedder = EmbeddingManager()

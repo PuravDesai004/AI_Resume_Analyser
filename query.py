@@ -71,13 +71,18 @@ class RAGPipeline:
         return self._client
 
     def run(self, query_text):
+        # Refresh snapshots so uploads after the first query reach both searches.
+        latest_chunks = get_all_chunks_from_db()
+        if latest_chunks != self._all_chunks:
+            self._all_chunks = latest_chunks
+            self._bm25_index = build_bm25_index(latest_chunks)
         if not self.all_chunks:
             return "No documents found in the database. Please add documents first."
 
         vector_search = query_collection(query_text, self.embedder, 3) # gives the format of the chroma db
         vector_chunks = [
-            {"document": doc, "metadata": meta}
-            for doc, meta in zip(vector_search["documents"][0], vector_search["metadatas"][0])
+            {"id": cid, "document": doc, "metadata": meta}
+            for cid, doc, meta in zip(vector_search["ids"][0], vector_search["documents"][0], vector_search["metadatas"][0])
         ]
 
         bm25_results_keyword_search = bm25_search(query_text, self.bm25_index, self.all_chunks, 10)
@@ -85,8 +90,6 @@ class RAGPipeline:
         final_results = merge_rrf(vector_chunks, bm25_results_keyword_search)
 
         reranked_results = rerank(query_text, final_results, self.cross_encoder, top_n=4)
-
-        print(f"This are the {reranked_results}")
 
         prompt = build_prompt(query_text, reranked_results)
 
@@ -99,13 +102,15 @@ class RAGPipeline:
                         model=model_name,
                         contents=prompt
                     )
-                    return response.text # send the actual required resp.
+                    if response.text and response.text.strip():
+                        return response.text
+                    last_err = RuntimeError("Generation failed: empty model response")
                 except Exception as e:
                     last_err = e
-                    if "503" in str(e):
+                    if any(code in str(e) for code in ("503", "429")) and attempt == 0:
                         time.sleep(1)
                         continue
-                    raise e
+                    break
         raise last_err
 
 if __name__ == "__main__":
