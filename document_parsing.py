@@ -28,3 +28,15 @@ def extract_document(file_bytes: bytes, filename: str):
     else:
         raise ValueError("Please use PDF, DOCX, or UTF-8 TXT files.")
     return "\n".join(p["text"] for p in pages).strip(), pages
+
+
+def validate_doc_text(text: str) -> tuple[str, str]:
+    """Returns (status, warning_msg). Status: 'Valid', 'Empty', 'Short', 'Excessive'."""
+    word_count = len((text or "").split())
+    if word_count == 0:
+        return "Empty", "Document contains no text."
+    elif word_count < 30:
+        return "Short", f"Only {word_count} words (<30). May trigger Insufficient Context gate."
+    elif word_count > 4000:
+        return "Excessive", f"Document has {word_count} words (>4000). May increase latency."
+    return "Valid", "Ready for analysis."

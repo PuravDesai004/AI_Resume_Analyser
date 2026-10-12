@@ -209,7 +209,10 @@ class EmbeddingRegressionTests(unittest.TestCase):
         self.assertEqual(manager.embedding_space, "sentence-transformers:all-MiniLM-L6-v2")
 
     def test_chat_fallback_uses_separate_collection_and_all_vectors(self):
-        from test_chat import context
+        try:
+            from test_chat import context
+        except ImportError:
+            from tests.test_chat import context
         db = chromadb.EphemeralClient()
         prefix = "fallback_" + uuid4().hex
         collections = {}
