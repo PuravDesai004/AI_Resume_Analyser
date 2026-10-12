@@ -42,7 +42,7 @@ def ground_candidates(skill_names: list[str], index: SkillIndex) -> list[Grounde
             continue
 
         # Step 2: Fuzzy match (threshold >= 85)
-        fuzzy = index.fuzzy_match(clean_name, threshold=85)
+        fuzzy = index.fuzzy_match(clean_name, threshold=87)
         if fuzzy:
             skill = GroundedSkill(
                 original_name=clean_name,
