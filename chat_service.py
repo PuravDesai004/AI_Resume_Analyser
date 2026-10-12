@@ -5,6 +5,9 @@ import os
 import re
 from pathlib import Path
 from threading import RLock
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
 
 from chat_schemas import (
     ChatCitation, ChatContextRequest, ChatContextResponse, ChatRequest, ChatResponse,
