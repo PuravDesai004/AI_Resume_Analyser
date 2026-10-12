@@ -708,13 +708,12 @@ with st.sidebar:
 
 # MAIN PANEL
 
-tab_upload, tab_results, tab_detail, tab_compare, tab_dashboard, tab_chat = st.tabs([
+tab_upload, tab_results, tab_detail, tab_compare, tab_chat = st.tabs([
     "1. Upload and Manage Documents",
     "2. Ranked Matching Results",
     "3. In-Depth Gap Analysis",
     "4. Compare JDs",
-    "5. Skill Gap Dashboard",
-    "6. Chat with Resume and JD"
+    "5. Chat with Resume and JD"
 ])
 
 
@@ -1408,143 +1407,7 @@ with tab_compare:
                         st.caption("No shared missing essential skills between the analyzed roles.")
 
 
-# TAB 5: SKILL GAP DASHBOARD (Feature 5)
-
-with tab_dashboard:
-    st.header("Skill Gap Dashboard")
-    st.markdown("Aggregated analysis across ranked job descriptions highlighting most frequent missing skills and candidate strengths.")
-
-    if not st.session_state.rank_results:
-        st.info("No ranking results available. Run ranking in Tab 1 first.")
-    else:
-        target_res = st.session_state.resumes[st.session_state.selected_resume_idx]
-        st.markdown(f"**Target Candidate:** `{target_res['name']}` ({target_res['words']} words)")
-
-        # Determine target JDs from current Top-N selection (Feature 1)
-        current_top_n = st.session_state.get("top_n_choice", "Top 5")
-        if current_top_n == "Top 5":
-            target_cards = st.session_state.rank_results[:5]
-        elif current_top_n == "Top 10":
-            target_cards = st.session_state.rank_results[:10]
-        else:
-            target_cards = st.session_state.rank_results
-
-        total_target_count = len(target_cards)
-        target_jd_ids = [c["jd_id"] for c in target_cards]
-
-        # Check which JDs are uncompleted
-        uncompleted_ids = [jid for jid in target_jd_ids if get_cached_analysis(target_res["id"], jid) is None]
-
-        col_act, _ = st.columns([2, 5])
-        with col_act:
-            btn_run_dashboard = st.button(
-                f"Generate Dashboard ({total_target_count} Roles)",
-                type="primary",
-                use_container_width=True,
-                key="btn_run_dashboard"
-            )
-
-        # Run if button clicked or if all are already cached
-        if btn_run_dashboard or (len(uncompleted_ids) == 0 and total_target_count > 0):
-            if uncompleted_ids:
-                p_bar = st.progress(0, text="Analyzing target roles...")
-                failed_count = 0
-                for idx, jid in enumerate(uncompleted_ids):
-                    card_title = next((c.get("title", jid) for c in target_cards if c.get("jd_id") == jid), jid)
-                    p_bar.progress(
-                        int((idx / len(uncompleted_ids)) * 100),
-                        text=f"Analyzing role {idx+1}/{len(uncompleted_ids)}: {card_title}..."
-                    )
-                    try:
-                        analysis_res = api_analyze(target_res["text"], target_res["id"], jid)
-                        set_cached_analysis(target_res["id"], jid, analysis_res)
-                    except Exception as exc:
-                        failed_count += 1
-                        err_record = {
-                            "resume_id": target_res["id"],
-                            "jd_id": jid,
-                            "context_sufficient": False,
-                            "error": str(exc),
-                            "insufficient_reason": f"Provider error: {exc}"
-                        }
-                        set_cached_analysis(target_res["id"], jid, err_record)
-                p_bar.progress(100, text="Completed analyzing roles!")
-                if failed_count > 0:
-                    st.warning(f"Note: {failed_count} of {len(uncompleted_ids)} roles encountered errors during analysis and were skipped.")
-
-            # Collect analyses for the target JDs
-            collected = [
-                get_cached_analysis(target_res["id"], jid)
-                for jid in target_jd_ids
-                if get_cached_analysis(target_res["id"], jid) is not None
-            ]
-            ess_counts, pref_counts, match_counts, success_count = aggregate_skill_gaps(collected)
-
-            st.divider()
-
-            # Note on analysis count and graceful failures
-            if success_count == total_target_count:
-                st.caption(f"Based on analysis of {total_target_count} job descriptions. ({success_count} of {total_target_count} JDs analyzed successfully.)")
-            else:
-                st.warning(f"Based on analysis of {total_target_count} job descriptions. ({success_count} of {total_target_count} JDs analyzed successfully; {total_target_count - success_count} failed or had insufficient context.)")
-
-            if success_count == 0:
-                st.error("No job descriptions were successfully analyzed.")
-            else:
-                # 1. Horizontal Bar Chart (Plotly)
-                st.subheader("Frequently Missing Skills")
-                chart_fig = make_skill_gap_dashboard_chart(ess_counts, pref_counts)
-                st.plotly_chart(chart_fig, use_container_width=True)
-
-                # 2. Table: Skill name | Times Missing (Essential) | Times Missing (Preferred) | % of JDs
-                st.subheader("Aggregated Skill Gap Summary Table")
-                all_missing_skills = sorted(
-                    list(set(list(ess_counts.keys()) + list(pref_counts.keys()))),
-                    key=lambda s: (ess_counts.get(s, 0), pref_counts.get(s, 0)),
-                    reverse=True
-                )
-
-                if all_missing_skills:
-                    import pandas as pd
-                    table_rows = []
-                    for s in all_missing_skills:
-                        t_ess = ess_counts.get(s, 0)
-                        t_pref = pref_counts.get(s, 0)
-                        pct_jds = f"{round(((t_ess + t_pref) / success_count) * 100, 1)}%"
-                        table_rows.append({
-                            "Skill Name": s,
-                            "Times Missing (Essential)": t_ess,
-                            "Times Missing (Preferred)": t_pref,
-                            "% of JDs": pct_jds
-                        })
-                    df_gaps = pd.DataFrame(table_rows)
-                    st.dataframe(df_gaps, use_container_width=True, hide_index=True)
-                else:
-                    st.info("No skill gaps found across analyzed JDs.")
-
-                st.divider()
-
-                # 3. Strongest skills section
-                st.subheader("Strongest Skills (Most Frequently Matched Across Roles)")
-                sorted_matched = sorted(match_counts.items(), key=lambda x: x[1], reverse=True)
-
-                if sorted_matched:
-                    top_matched = sorted_matched[:8]
-                    cols_m = st.columns(min(len(top_matched), 4))
-                    for idx, (skill_name, count) in enumerate(top_matched):
-                        col_idx = idx % len(cols_m)
-                        with cols_m[col_idx]:
-                            pct_m = int(round((count / success_count) * 100))
-                            st.metric(
-                                label=skill_name,
-                                value=f"{count}/{success_count} JDs",
-                                delta=f"{pct_m}% matched"
-                            )
-                else:
-                    st.info("No matched skills recorded across analyzed roles.")
-        else:
-            st.info(f"Click 'Generate Dashboard ({total_target_count} Roles)' to run batch analysis and view aggregated skills.")
-
+# TAB 5: CHAT WITH RESUME AND JD
 
 with tab_chat:
     render_chat(API_BASE_URL, st.session_state.resumes, st.session_state.jds, get_cached_analysis)
