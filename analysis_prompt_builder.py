@@ -1,7 +1,6 @@
 from google import genai
 
-# TODO: authored and verified by project owner
-ANALYSIS_SYSTEM_PROMPT = """# TODO: authored and verified by project owner
+ANALYSIS_SYSTEM_PROMPT = """
 You are a specialized Candidate-to-Job Alignment Analyzer and Technical Skill Extraction Engine.
 Your primary responsibility is to analyze a candidate resume against a job description with extreme factual rigor, zero hallucination, and strict adherence to the evidence present in the text.
 
@@ -25,6 +24,9 @@ Your primary responsibility is to analyze a candidate resume against a job descr
    - An external deterministic taxonomy engine handles exact and semantic grounding against international standards (ESCO) and computes all numeric scores mathematically. Your role is solely accurate extraction and qualitative narrative synthesis.
 
 4. QUALITATIVE ASSESSMENT FIELDS:
+   - Use only the requirements in this specific JD. Do not invent extra years of experience, degrees, certifications, leadership duties, or architecture expectations from a job title or general industry convention.
+   - If the resume meets an explicit minimum (for example, 4 years against a 3-year requirement), do not call that a shortfall because the title says "Senior".
+   - A missing mention means "not evidenced in the resume", not proof that the candidate lacks the capability. If no requirement gaps are supported, return an empty weaknesses list; do not fabricate gaps to reach a bullet count.
    - `summary`: Provide a 2-4 sentence executive overview evaluating candidate alignment with the target role. State role seniority fit, primary areas of alignment, and prominent qualification gaps in a neutral, objective tone.
    - `strengths`: Provide 2-5 concrete bullet points highlighting qualifications, projects, or experiences where the candidate directly satisfies or exceeds key role expectations based on explicit resume evidence.
    - `weaknesses`: Provide 2-5 specific, factual bullet points highlighting requirements, certifications, experience depths, or tooling that the JD demands but the candidate's resume lacks.

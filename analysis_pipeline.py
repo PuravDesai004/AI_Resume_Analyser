@@ -50,10 +50,10 @@ class AnalysisPipeline:
         self.clients = []
         for key in self.api_keys:
             try:
-                self.clients.append(genai.Client(api_key=key.strip()))
+                self.clients.append(genai.Client(api_key=key.strip(), http_options={"timeout": 30000, "retry_options": {"attempts": 1}}))
             except Exception as e:
                 print(f"[AnalysisPipeline] Notice initializing client: {e}")
-        self.client = self.clients[0] if self.clients else genai.Client(api_key="placeholder_key")
+        self.client = self.clients[0] if self.clients else genai.Client(api_key="placeholder_key", http_options={"timeout": 30000, "retry_options": {"attempts": 1}})
         print(f"[AnalysisPipeline] Gemini client initialized with {len(self.clients)} key(s) (Models: {MODELS_TO_TRY}).")
 
     def rank(
@@ -176,9 +176,11 @@ class AnalysisPipeline:
             response = None
             last_err = None
             clients_to_try = self.clients if self.clients else [self.client]
+            configured_model = os.getenv("RAG_GENERATION_MODEL", "").strip()
+            models_to_try = list(dict.fromkeys(([configured_model] if configured_model else []) + MODELS_TO_TRY))
 
             for active_client in clients_to_try:
-                for model_name in MODELS_TO_TRY:
+                for model_name in models_to_try:
                     for attempt in range(2):
                         try:
                             response = active_client.models.generate_content(

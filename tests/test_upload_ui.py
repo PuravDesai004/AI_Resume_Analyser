@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def response(status=200, body=None):
-    return SimpleNamespace(status_code=status, json=lambda: body or {"count": 0, "cap": 15})
+    return SimpleNamespace(status_code=status, json=lambda: body or {"count": 0, "cap": None})
 
 
 class UploadUITests(unittest.TestCase):

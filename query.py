@@ -67,7 +67,7 @@ class RAGPipeline:
     @property
     def client(self):
         if self._client is None:
-            self._client = genai.Client(api_key=GEMINI_API_KEY)
+            self._client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY", GEMINI_API_KEY), http_options={"timeout": 30000, "retry_options": {"attempts": 1}})
         return self._client
 
     def run(self, query_text):
@@ -93,7 +93,7 @@ class RAGPipeline:
 
         prompt = build_prompt(query_text, reranked_results)
 
-        models_to_try = ["gemini-3.6-flash", "gemini-3.5-flash"]
+        models_to_try = list(dict.fromkeys([os.getenv("RAG_GENERATION_MODEL", "gemini-3.6-flash"), "gemini-3.6-flash", "gemini-3.5-flash"]))
         last_err = None
         for model_name in models_to_try:
             for attempt in range(2):

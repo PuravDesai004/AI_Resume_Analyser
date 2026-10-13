@@ -421,6 +421,8 @@
             font-weight: 800
         }
 
+        .candidate-chip[hidden] { display:none; }
+
         .candidate-chip strong {
             display: block;
             font-size: 12px
@@ -578,6 +580,9 @@
             text-align: left;
             background: #fff
         }
+
+        .preference-note { display:block; font-size:11px; color:var(--muted); margin-top:4px; }
+        .gap-action { display:block; margin-top:12px; font-size:12px; font-weight:600; white-space:nowrap; }
 
         .role-card+.role-card {
             margin-top: 9px
@@ -1107,11 +1112,11 @@
         }
 
         /* Added: views, forms, upload lists, gap grid, recs, json */
-        .view {
+        .view, .placement-step {
             display: none
         }
 
-        .view.active {
+        .view.active, .placement-step.active {
             display: block
         }
 
@@ -1701,45 +1706,12 @@
         }
 
         /* ── AI Chatbot Styles ── */
-        .chat-fab {
-            position: fixed;
-            bottom: 28px;
-            right: 28px;
-            width: 58px;
-            height: 58px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #22262b 0%, #3a3f45 100%);
-            color: #fff;
-            border: 0;
-            box-shadow: 0 8px 28px rgba(0,0,0,.28), 0 0 0 3px rgba(255,255,255,.08);
-            display: grid;
-            place-items: center;
-            font-size: 22px;
-            cursor: pointer;
-            z-index: 100;
-            transition: transform .2s ease, box-shadow .2s ease;
-        }
-        .chat-fab:hover {
-            transform: scale(1.07);
-            box-shadow: 0 12px 38px rgba(0,0,0,.35), 0 0 0 4px rgba(255,255,255,.12);
-        }
-        .chat-fab .fab-badge {
-            position: absolute;
-            top: 3px; right: 3px;
-            width: 14px; height: 14px;
-            background: #4caf6d;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            display: none;
-        }
-        .chat-fab .fab-badge.show { display: block; }
-
         .chat-panel {
             position: fixed;
-            bottom: 100px;
-            right: 28px;
-            width: min(420px, calc(100vw - 40px));
-            height: min(640px, calc(100vh - 140px));
+            bottom: 24px;
+            right: 24px;
+            width: min(480px, calc(100vw - 40px));
+            height: min(640px, calc(100dvh - 48px));
             background: #fff;
             border-radius: 20px;
             box-shadow: 0 24px 80px rgba(0,0,0,.22), 0 0 0 1px rgba(0,0,0,.07);
@@ -1757,6 +1729,7 @@
             opacity: 1;
             pointer-events: all;
         }
+        .chat-panel[hidden] { display:none; }
         .chat-panel-head {
             background: linear-gradient(135deg, #22262b 0%, #353a40 100%);
             color: #fff;
@@ -1828,6 +1801,7 @@
 
         .chat-messages {
             flex: 1;
+            min-height: 0;
             overflow-y: auto;
             padding: 16px;
             display: flex;
@@ -1841,6 +1815,7 @@
 
         .chat-msg {
             max-width: 88%;
+            flex-shrink: 0;
             animation: chatMsgIn .18s ease;
         }
         @keyframes chatMsgIn {
@@ -2002,8 +1977,44 @@
         .chat-status-bar.error { color: #b3261e; }
 
         /* Chatbot nav button in sidebar */
-        .nav button#nav-chat .ico { color: #7ecba5; }
-        .nav button#nav-chat.active .ico { color: #fff; }
+
+        .control-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin:16px 0; text-align:left; }
+        #settings-form .control-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+        .control-grid label, .field-label, .chat-document-controls label { display:block; font-size:12px; font-weight:600; }
+        .control-grid input, .control-grid select { margin-top:6px; }
+        input[type="password"], input[type="number"] { width:100%; border:1px solid #d9dde1; border-radius:9px; padding:11px; background:#fff; color:#22262b; font:inherit; box-sizing:border-box; }
+        .side-btn:disabled, .quiet-link:disabled { opacity:.6; cursor:wait; }
+        .feature-actions { display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+        .feature-note { color:#737982; font-size:12px; margin:10px 0; }
+        .report-actions { justify-content:flex-end; margin-bottom:18px; }
+        .check-label { display:flex!important; align-items:center; gap:8px; font-size:12px; margin:12px 0; }
+        .check-label input { width:auto; margin:0; }
+        .side-field { font-size:10px; color:#b9bdc2; margin:12px 0 5px; }
+        .side-select { font-size:11px; color:#f4f5f6; background:#2b2f34; border-color:#41464d; padding:8px; }
+        .shell.collapsed .side-field, .shell.collapsed .side-select { display:none; }
+        .compare-options { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:10px; margin:18px 0; }
+        .compare-options label { padding:12px; border:1px solid #e1e4e8; border-radius:10px; display:flex; gap:10px; align-items:flex-start; }
+        .table-scroll { overflow:auto; }
+        .comparison-table { width:100%; border-collapse:collapse; font-size:12px; }
+        .comparison-table th, .comparison-table td { padding:14px; text-align:left; border-bottom:1px solid #e1e4e8; vertical-align:top; min-width:140px; }
+        .comparison-table th { background:#f4f5f6; }
+        .notice { padding:12px 16px; margin:10px 0; border-radius:9px; background:#f4f5f6; font-size:12px; }
+        .notice.error { color:#993e3e; background:#fff1f1; }
+        .notice.success { color:#2b614c; background:#edf7f1; }
+        .document-context { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:end; gap:18px; margin-bottom:28px; }
+        .document-context label { display:block; margin-bottom:7px; font-size:12px; font-weight:600; color:var(--muted); }
+        .document-context select { width:100%; min-width:0; }
+        .document-context .quiet-link { margin-bottom:12px; white-space:nowrap; }
+        .chat-tools { padding:8px 14px; border-bottom:1px solid #e2e4e7; }
+        .chat-tools button { font-size:11px; }
+        @media(max-width:850px) { .document-context { gap:12px; } }
+        @media(max-width:550px) { .document-context { grid-template-columns:minmax(0,1fr); } .document-context .quiet-link { justify-self:start; margin:0; } .chat-panel { right:12px; bottom:12px; width:calc(100vw - 24px); height:min(640px,calc(100dvh - 24px)); } }
+        .chat-citations details { margin-top:8px; }
+        .chat-citations summary { cursor:pointer; font-size:11px; }
+        .sr-label { display:block; font-size:12px; color:#737982; margin-bottom:8px; }
+        #settings-form label { font-size:12px; font-weight:600; }
+        #settings-form input[type="password"] { font-family:inherit; }
+        @media(max-width:650px) { .control-grid, #settings-form .control-grid { grid-template-columns:1fr; } .feature-actions { align-items:flex-start; } }
     </style>
 </head>
 
@@ -2018,26 +2029,21 @@
 
             <div class="nav-label">Workspace</div>
             <nav class="nav" aria-label="Main navigation">
-                <button class="active" data-view="upload" id="nav-upload"><span class="ico">⌘</span><span
-                        class="nav-text">Upload &amp; manage</span></button>
-                <button data-view="matches" id="nav-matches"><span class="ico">◫</span><span
-                        class="nav-text">Top matches</span></button>
-                <button data-view="gap" id="nav-gap"><span class="ico">≈</span><span class="nav-text">Gap
-                        analysis</span></button>
-                <button data-view="chat" id="nav-chat" onclick="openChatView()"><span class="ico">✦</span><span class="nav-text">AI Assistant</span></button>
+                <button class="active" data-view="placement" id="nav-placement"><span class="ico">◫</span><span class="nav-text">Placement fit</span></button>
+                <button data-view="upload" id="nav-upload"><span class="ico">⌘</span><span
+                        class="nav-text">Resumes</span></button>
+                <button data-view="jobs" id="nav-jobs"><span class="ico">▤</span><span class="nav-text">Jobs</span></button>
+                <button data-view="compare" id="nav-compare"><span class="ico">⇄</span><span class="nav-text">Compare roles</span></button>
+                <button data-view="settings" id="nav-settings"><span class="ico">⚙</span><span class="nav-text">Settings</span></button>
             </nav>
 
             <div class="nav-label">Session</div>
             <div class="side-metric">
-                <small>Resumes uploaded</small><b id="resume-count">0 / 10</b>
-                <div class="side-progress"><i id="resume-progress" style="width:0%"></i></div>
+                <small>Resumes uploaded</small><b id="resume-count">0 resumes</b>
             </div>
             <div class="side-metric">
-                <small>JDs uploaded</small><b id="jd-count">0 / 10</b>
-                <div class="side-progress"><i id="jd-progress" style="width:0%"></i></div>
+                <small>Jobs saved</small><b id="jd-count">0 jobs</b>
             </div>
-            <button class="side-btn" onclick="loadSampleData()"><span class="btn-text">Load 5 sample resumes &amp;
-                    JDs</span></button>
             <button class="side-btn danger" onclick="resetSession()"><span class="btn-text">Reset session &amp; clear
                     store</span></button>
 
@@ -2046,8 +2052,7 @@
                 <small>Connection status</small>
                 <b style="display:flex;align-items:center;gap:7px"><span class="status-dot"
                         id="backend-dot"></span><span id="backend-status-label">Connected</span></b>
-                <div style="font-size:10px;color:#9ea2a8;margin-top:7px" id="backend-source-note">Data source:
-                    sampleAnalysis (mock backend JSON) · 5 records</div>
+                <div style="font-size:10px;color:#9ea2a8;margin-top:7px" id="backend-source-note">Checking connection…</div>
             </div>
             <div class="sidebar-bottom"><span class="conn-dot" id="conn-dot" title="Connected to server"
                     aria-label="Server connected"></span></div>
@@ -2055,31 +2060,31 @@
 
         <main>
             <div class="topline">
-                <div class="crumb">Placement analyzer&nbsp; / &nbsp;<span id="crumb-view">Upload &amp; manage</span>
+                <div class="crumb">Placement analyzer&nbsp; / &nbsp;<span id="crumb-view">Placement fit</span>
                 </div>
                 <div class="top-actions"><span class="session"><b></b> <span id="backend-status">Backend
                             connected</span></span></div>
             </div>
 
+            <div id="upload-notices" role="status" aria-live="polite"></div>
+
             <div class="title-row">
                 <div>
-                    <div class="eyebrow">Your match report</div>
+                    <div class="eyebrow" id="page-eyebrow">Placement setup</div>
                     <h1 id="page-h1">Find your next best fit.</h1>
-                    <p class="subhead" id="page-sub">Upload resumes and job descriptions, then run the analysis to see
-                        ranked matches.</p>
+                    <p class="subhead" id="page-sub">Choose your resume and preferences, then run matching against your saved jobs.</p>
                 </div>
-                <div class="candidate-chip">
+                <div class="candidate-chip" id="candidate-chip" hidden>
                     <div class="avatar" id="candidate-initials">PD</div>
                     <div><strong id="candidate-name">Python Developer</strong><small id="candidate-meta">Resume · 48 words</small></div>
                 </div>
             </div>
 
-            <div class="status-banner" id="status-banner"><b id="status-banner-tag">Info</b><span
+            <div class="status-banner" id="status-banner" role="status" aria-live="polite"><b id="status-banner-tag">Info</b><span
                     id="status-banner-msg"></span></div>
 
-            <!-- ===================== VIEW 1: UPLOAD & MANAGE ===================== -->
-            <div class="view active" id="view-upload">
-                <div class="two-col-grid">
+            <!-- ===================== RESUMES & MATCHING ===================== -->
+            <div class="view" id="view-upload">
                     <section class="panel">
                         <h2 class="block-title">Resumes</h2>
                         <div class="radio-group">
@@ -2105,8 +2110,16 @@
                         </div>
                     </section>
 
+
+            </div>
+
+            <!-- ===================== JOB UPLOADS & MANAGEMENT ===================== -->
+            <div class="view" id="view-jobs">
                     <section class="panel">
-                        <h2 class="block-title">Job descriptions</h2>
+                        <div class="panel-head"><h2 class="block-title">Upload job descriptions</h2><button class="quiet-link" id="load-fixtures-btn" onclick="loadSampleData()">Load dataset</button></div>
+                        <label class="sr-label" for="sample-dataset">Demo dataset</label>
+                        <select id="sample-dataset"><option value="sample">Original 5 jobs + 5 resumes</option><option value="india">India dataset · 100 jobs + 100 resumes</option></select>
+                        <p class="feature-note">Fictional demo data. Loading adds records and keeps your existing jobs and resumes.</p>
                         <div class="radio-group">
                             <label><input type="radio" name="jdMode" value="file" checked onchange="toggleMode('jd')">
                                 Files (PDF/DOCX)</label>
@@ -2116,7 +2129,7 @@
                         <div id="jd-file-mode" class="drag-drop-zone" onclick="document.getElementById('jd-file-input').click()">
                             <div class="dz-ico">💼</div>
                             <div><b>Click to upload</b> or drag &amp; drop job descriptions (PDF/DOCX/TXT)</div>
-                            <small style="display:block;margin-top:4px;color:#8a8f96">Ingested into backend ChromaDB vector store</small>
+                            <small style="display:block;margin-top:4px;color:#8a8f96">Jobs are saved and available for matching</small>
                             <input type="file" id="jd-file-input" accept=".pdf,.docx,.txt" multiple style="display:none" onchange="handleFileSelect('jd', this.files)">
                         </div>
                         <div id="jd-manual-mode" class="manual-form hidden">
@@ -2126,135 +2139,77 @@
                             <textarea id="jd-text-input" placeholder="Paste full JD text here…"></textarea>
                             <button class="primary" onclick="addManualJD()">Add manual JD</button>
                         </div>
-                        <h4 class="list-heading">Uploaded JDs</h4>
+                        <h4 class="list-heading">Saved jobs</h4>
                         <div id="jd-list">
-                            <div class="empty-note">No job descriptions yet. Load sample data or add one manually.</div>
+                            <div class="empty-note">No job descriptions yet. Load sample jobs or add one manually.</div>
                         </div>
                     </section>
-                </div>
-
-                <section class="panel" style="text-align:center">
-                    <h2 class="block-title" style="margin-bottom:16px">Select candidate resume for analysis</h2>
-                    <select id="target-resume-select" style="max-width:360px;margin:0 auto 18px auto" onchange="onCandidateSelected(this.value)">
-                        <option value="res_python_dev" selected>Python Developer</option>
-                        <option value="res_frontend_eng">Frontend Engineer</option>
-                        <option value="res_data_scientist">Data Scientist</option>
-                        <option value="res_devops_eng">Devops Engineer</option>
-                        <option value="res_fullstack_eng">Fullstack Engineer</option>
-                    </select><br>
-                    <button class="primary" style="font-size:13.5px;padding:13px 30px" onclick="runAnalysis()">Analyze
-                        placement fit (embed &amp; rank)</button>
-                </section>
 
                 <section class="panel">
                     <div class="panel-head">
                         <div>
-                            <h2>Backend dataset</h2>
-                            <p>Pre-computed gap-analysis records bundled with this prototype — this is the mock backend
-                                file the app reads from.</p>
-                        </div><button class="quiet-link" onclick="toggleBackendJSON()" id="backend-json-toggle">View raw
-                            JSON →</button>
+                            <h2>Stored job descriptions</h2>
+                            <p id="store-summary">Checking the job store…</p>
+                        </div><div class="feature-actions"><button class="quiet-link" id="refresh-store-btn" onclick="refreshDataset()">Refresh jobs</button><button class="quiet-link" onclick="toggleBackendJSON()" id="backend-json-toggle">View raw
+                            JSON →</button></div>
                     </div>
                     <div class="json-view" id="backend-json-view"></div>
                 </section>
             </div>
 
-            <!-- ===================== VIEW 2: TOP MATCHES ===================== -->
-            <div class="view" id="view-matches">
-                <div class="back-row">
-                    <button class="back-btn" onclick="switchView('upload')"><span class="chev">‹</span> Back to Upload
-                        &amp; Manage</button>
-                    <span class="crumb-trail"><button onclick="switchView('upload')">Upload &amp; manage</button><span
-                            class="sep">/</span><span class="current">Top matches</span></span>
-                </div>
+            <!-- ===================== PLACEMENT FIT: MATCHES & GAP ANALYSIS ===================== -->
+            <div class="view active" id="view-placement">
+            <div class="placement-step active" id="view-setup">
+                <section class="panel">
+                    <h2 class="block-title" style="margin-bottom:16px">Choose your resume and preferences</h2>
+            <section class="document-context" aria-label="Selected documents">
+                <div><label for="target-resume-select">Selected resume</label><select id="target-resume-select" onchange="onCandidateSelected(this.value)"></select></div>
+                <button class="quiet-link" onclick="switchView('jobs')">Manage jobs →</button>
+            </section>
+
+                    <div class="control-grid ranking-preferences">
+                        <label>Preferred location<input id="preferred-location" type="text" placeholder="e.g. Mumbai, India"></label>
+                        <div><label for="preferred-arrangement">Preferred work arrangement</label><select id="preferred-arrangement"><option value="">Any</option><option>Remote</option><option>Hybrid</option><option>On-site</option></select></div>
+                        <div><label for="rank-top-n">Results</label><select id="rank-top-n"><option value="5">Top 5</option><option value="10">Top 10</option><option value="25">Top 25</option><option value="0">All jobs</option></select></div>
+                    </div>
+                    <p class="feature-note">Location bonus: preferred city +5 · within 100 km +4 · within 200 km +3 · within 300 km +2 · farther away +0. Distances are approximate and straight-line. Matching work arrangement adds +3.</p>
+                    <button id="run-ranking-btn" class="primary" style="font-size:13.5px;padding:13px 30px" onclick="runAnalysis()">Run placement fit</button><p id="placement-status" role="status" aria-live="polite"></p>
+                </section>
+            </div>
+
+            <div class="placement-step" id="view-matches">
+                <div class="back-row"><button class="back-btn" onclick="switchView('setup')"><span class="chev">‹</span> Back to setup</button></div>
                 <section class="panel">
                     <div class="panel-head">
                         <div>
-                            <h2 id="matches-header">Target resume: Python Developer (48 words)</h2>
-                            <p>Ranking based on deterministic cosine similarity of vector embeddings.</p>
+                            <h2 id="matches-header">Matching jobs</h2>
+                            <p>Jobs ranked for your selected resume. Open a job to run its gap analysis.</p>
                         </div>
                     </div>
-                    <div id="role-list">
-                        <button class="role-card" onclick="loadAnalysis('res_python_dev', 'jd_python_backend')">
-                            <div class="rank">01</div>
-                            <div class="role-info">
-                                <h3>Senior Python Backend Engineer</h3>
-                                <p>San Francisco, CA (Remote)</p>
-                                <p class="role-desc">Strong alignment with Python, FastAPI, PostgreSQL, and Docker microservice development.</p>
-                            </div>
-                            <div class="role-side">
-                                <span class="company-badge" title="CloudScale Inc">CloudScale Inc</span>
-                                <div class="match"><strong>92%</strong><small>match</small></div>
-                            </div>
-                        </button>
-                        <button class="role-card" onclick="loadAnalysis('res_python_dev', 'jd_ai_ml_engineer')">
-                            <div class="rank">02</div>
-                            <div class="role-info">
-                                <h3>AI / Machine Learning Engineer</h3>
-                                <p>Austin, TX (Hybrid)</p>
-                                <p class="role-desc">High relevance with Python backend pipelines, PyTorch integration, and vector retrieval.</p>
-                            </div>
-                            <div class="role-side">
-                                <span class="company-badge" title="NeuralEdge Technologies">NeuralEdge Technologies</span>
-                                <div class="match"><strong>84%</strong><small>match</small></div>
-                            </div>
-                        </button>
-                        <button class="role-card" onclick="loadAnalysis('res_python_dev', 'jd_devops_cloud')">
-                            <div class="rank">03</div>
-                            <div class="role-info">
-                                <h3>DevOps &amp; Cloud Engineer</h3>
-                                <p>Remote</p>
-                                <p class="role-desc">Good overlap in Docker containerization, Linux infrastructure, and GitHub Actions CI/CD.</p>
-                            </div>
-                            <div class="role-side">
-                                <span class="company-badge" title="SaaS Matrix">SaaS Matrix</span>
-                                <div class="match"><strong>78%</strong><small>match</small></div>
-                            </div>
-                        </button>
-                        <button class="role-card" onclick="loadAnalysis('res_python_dev', 'jd_fullstack_node_py')">
-                            <div class="rank">04</div>
-                            <div class="role-info">
-                                <h3>Full Stack Software Engineer</h3>
-                                <p>Seattle, WA</p>
-                                <p class="role-desc">Demonstrated Python backend API foundation, PostgreSQL schemas, and Docker microservices.</p>
-                            </div>
-                            <div class="role-side">
-                                <span class="company-badge" title="Innovate Digital">Innovate Digital</span>
-                                <div class="match"><strong>75%</strong><small>match</small></div>
-                            </div>
-                        </button>
-                        <button class="role-card" onclick="loadAnalysis('res_python_dev', 'jd_react_frontend')">
-                            <div class="rank">05</div>
-                            <div class="role-info">
-                                <h3>React Frontend Developer</h3>
-                                <p>New York, NY</p>
-                                <p class="role-desc">Complementary web software experience; core backend focus with REST API integration.</p>
-                            </div>
-                            <div class="role-side">
-                                <span class="company-badge" title="PixelCraft Labs">PixelCraft Labs</span>
-                                <div class="match"><strong>62%</strong><small>match</small></div>
-                            </div>
-                        </button>
+                    <div class="control-grid result-filters">
+                        <label>Search location<input id="filter-location" type="text" placeholder="Filter ranked roles" oninput="renderRankings()"></label>
+                        <div><label for="filter-arrangement">Work arrangement</label><select id="filter-arrangement" onchange="renderRankings()"><option value="">All arrangements</option><option>Remote</option><option>Hybrid</option><option>On-site</option></select></div>
+                        <label><span id="minimum-score-label">Minimum fit</span><input id="filter-score" type="number" min="0" max="100" value="0" oninput="renderRankings()"></label>
+                        <div><label for="rank-sort">Sort by</label><select id="rank-sort" onchange="renderRankings()"><option value="score">Best fit</option><option value="similarity">Highest similarity</option><option value="title">Job title</option><option value="company">Company</option></select></div>
                     </div>
-                    <div class="section-foot"><span>Similarity and requirement fit</span><span class="dot">●&nbsp;
-                            Updated just now</span></div>
+                    <p class="feature-note" id="rank-result-count"></p>
+                    <div id="ranking-status" role="status" aria-live="polite"></div>
+                    <div id="role-list"><div class="empty-note">Run placement fit above to see matching jobs, then choose a job for gap analysis.</div></div>
+                    <div class="section-foot"><span id="ranking-score-explanation">Role fit is a model rating. AI reviews up to 25 shortlisted jobs; the rest show similarity. Bonuses affect order separately.</span><span id="ranking-updated">Awaiting analysis</span></div>
                 </section>
             </div>
 
             <!-- ===================== VIEW 3: GAP ANALYSIS ===================== -->
-            <div class="view" id="view-gap">
+            <div class="placement-step" id="view-gap">
+                <div class="feature-actions report-actions"><button class="primary" id="ask-ai-btn" onclick="openChatView()" disabled>Ask AI about this match</button><button class="back-btn" id="download-report-btn" onclick="downloadReport()">Download report (.md)</button><span id="report-status" role="status"></span></div>
                 <div class="back-row">
-                    <button class="back-btn" onclick="switchView('matches')"><span class="chev">‹</span> Back to Top
-                        Matches</button>
-                    <button class="back-btn" onclick="switchView('upload')">Back to Upload &amp; Manage</button>
-                    <span class="crumb-trail"><button onclick="switchView('upload')">Upload &amp; manage</button><span
-                            class="sep">/</span><button onclick="switchView('matches')">Top matches</button><span
-                            class="sep">/</span><span class="current">Gap analysis</span></span>
+                    <button class="back-btn" onclick="switchView('matches')"><span class="chev">‹</span> Back to matching jobs</button>
+                    <span class="crumb-trail"><button onclick="switchView('matches')">Placement fit</button><span class="sep">/</span><span class="current">Gap analysis</span></span>
                 </div>
                 <section class="summary-grid" aria-label="Match summary">
                     <div class="summary-card">
                         <div class="score-ring big" id="gap-score-ring"><strong id="gap-score-text">0</strong></div>
-                        <div><small>Overall match score</small><b id="gap-score-label">—</b></div>
+                        <div><small>Skill coverage score</small><b id="gap-score-label">—</b><small>80% essential · 20% preferred</small></div>
                     </div>
                     <div class="summary-card">
                         <div><small>Skills aligned</small><span class="large" id="skills-aligned-frac">0 <span
@@ -2392,7 +2347,7 @@
                             <div class="panel-head">
                                 <div>
                                     <h2>Requirement alignment</h2>
-                                    <p>Breakdown by category</p>
+                                    <p>Skills use computed coverage. Other categories are AI estimates from the documents.</p>
                                 </div>
                             </div>
                             <div class="breakdown" id="requirement-breakdown"></div>
@@ -2426,26 +2381,32 @@
                     </div>
                 </div>
             </div>
-            <!-- ===================== VIEW 4: AI CHAT ===================== -->
-            <div class="view" id="view-chat">
-                <div class="back-row">
-                    <button class="back-btn" onclick="switchView('upload')"><span class="chev">‹</span> Back to Upload &amp; Manage</button>
-                    <span class="crumb-trail"><button onclick="switchView('upload')">Upload &amp; manage</button><span class="sep">/</span><span class="current">AI Assistant</span></span>
-                </div>
-                <section class="panel" style="max-width:760px;margin:0 auto">
-                    <div class="panel-head" style="margin-bottom:8px">
-                        <div>
-                            <h2>AI Resume &amp; JD Assistant</h2>
-                            <p>Ask anything about your resume, job descriptions, skill gaps, or career advice.</p>
+            </div>
+            <div class="view" id="view-compare">
+                <section class="panel">
+                    <h2>Compare roles for your resume</h2><p class="feature-note" id="compare-candidate">Choose a resume in Placement fit.</p>
+                    <div id="compare-options" class="compare-options"></div>
+                    <div class="feature-actions"><button class="primary" id="compare-btn" onclick="compareRoles()">Compare selected roles</button><span id="compare-status" role="status" aria-live="polite">Choose two or three roles.</span></div>
+                </section>
+                <div id="compare-results"></div>
+            </div>
+            <div class="view" id="view-settings">
+                <section class="panel" style="max-width:900px">
+                    <div class="panel-head"><div><h2>AI settings</h2><p>Update your providers and answer preferences.</p></div><button class="quiet-link" id="settings-refresh-btn" onclick="loadSettings()">Refresh settings</button></div>
+                    <p id="settings-status" role="status" aria-live="polite">Loading settings…</p>
+                    <form id="settings-form" onsubmit="event.preventDefault(); saveSettings()">
+                        <div class="control-grid">
+                            <div><label for="settings-gemini-key">Gemini API key</label><p class="feature-note" id="gemini-key-status"></p><input id="settings-gemini-key" type="password" autocomplete="off" placeholder="Leave blank to keep the current key"><label class="check-label"><input id="remove-gemini-key" type="checkbox">Remove current Gemini key</label></div>
+                            <div><label for="settings-groq-key">Groq fallback API key</label><p class="feature-note" id="groq-key-status"></p><input id="settings-groq-key" type="password" autocomplete="off" placeholder="Leave blank to keep the current key"><label class="check-label"><input id="remove-groq-key" type="checkbox">Remove current Groq key</label></div>
+                            <div><label for="settings-openrouter-key">OpenRouter API key · Mercury ranking</label><p class="feature-note" id="openrouter-key-status"></p><input id="settings-openrouter-key" type="password" autocomplete="off" placeholder="Leave blank to keep the current key"><label class="check-label"><input id="remove-openrouter-key" type="checkbox">Remove current OpenRouter key</label></div>
+                            <div><span class="field-label">Decision model</span><p id="settings-decision-model" class="feature-note"></p><p class="feature-note">Checks role requirements to rerank the embedding shortlist. Gap analysis and chat use Gemini.</p></div>
+                            <label>Generation model<input id="settings-model" type="text" placeholder="Model name" required></label>
+                            <div><span class="field-label">Embedding model</span><p id="settings-embedding" class="feature-note"></p></div>
                         </div>
-                    </div>
-                    <div id="chat-view-container" style="border:1.5px solid #e2e4e7;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;height:520px">
-                        <!-- Reuses the shared chat panel internals dynamically -->
-                        <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#9ea2a8;font-size:13px;flex-direction:column;gap:10px">
-                            <span style="font-size:30px">✦</span>
-                            <span>Click the <b style="color:#22262b">✦ chat button</b> (bottom-right) to open the AI assistant.</span>
-                        </div>
-                    </div>
+                        <label class="check-label"><input id="settings-rerank" type="checkbox">Improve chat search precision by reranking source passages</label>
+                        <p class="feature-note">Keys are saved locally. Blank fields keep existing keys. Saving clears cached answers so your next request uses the new settings.</p>
+                        <button class="primary" id="settings-save-btn" type="submit" disabled>Save settings</button>
+                    </form>
                 </section>
             </div>
         </main>
@@ -2462,12 +2423,7 @@
     <div class="toast" id="toast" role="status"></div>
 
     <!-- ── Floating AI Chat Panel ── -->
-    <button class="chat-fab" id="chat-fab" onclick="toggleChatPanel()" title="AI Assistant" aria-label="Open AI chat">
-        ✦
-        <span class="fab-badge" id="chat-fab-badge"></span>
-    </button>
-
-    <div class="chat-panel" id="chat-panel" role="dialog" aria-label="AI Assistant Chat" aria-modal="true">
+    <div class="chat-panel" id="chat-panel" role="dialog" aria-label="AI Assistant Chat" aria-modal="false" hidden>
         <div class="chat-panel-head">
             <div class="chat-ai-avatar">✦</div>
             <div>
@@ -2483,6 +2439,9 @@
             <span class="chat-ctx-chip jd" id="ctx-chip-jd">No JD</span>
         </div>
 
+        <div class="chat-tools">
+            <button class="quiet-link" id="clear-chat-btn" onclick="clearChat()">Clear conversation &amp; indexed data</button>
+        </div>
         <div class="chat-messages" id="chat-messages" role="log" aria-live="polite"></div>
 
         <div class="chat-suggestions" id="chat-suggestions"></div>
@@ -2498,7 +2457,7 @@
 
     <script>
         /* ---------------------------------------------------------------
-           Sample Data (Pre-bundled for immediate display & fallback)
+           Starter resumes and offline test fixtures
         --------------------------------------------------------------- */
         const sampleResumes = [
             { id: 'res_python_dev', name: 'Python Developer', text: 'Experienced Python Developer with 4 years building web applications. Expert in Python, FastAPI, Django, PostgreSQL, and Redis. Built REST APIs and microservices deployed with Docker on AWS (EC2, S3). Strong testing skills with Pytest and CI/CD automation via GitHub Actions. Bachelor of Science in Computer Science.' },
@@ -2508,26 +2467,6 @@
             { id: 'res_fullstack_eng', name: 'Fullstack Engineer', text: 'Full Stack Developer proficient in Python, Node.js, Express.js, and React. Built relational database schemas in PostgreSQL and MySQL, as well as document stores in MongoDB. Deployed fullstack systems on Google Cloud Platform using Docker containerization and Nginx reverse proxies.' }
         ];
 
-        const sampleJDs = [
-            { id: 'jd_python_backend', title: 'Senior Python Backend Engineer', company: 'CloudScale Inc', location: 'San Francisco, CA (Remote)', text: 'We are looking for a Senior Python Backend Engineer. Required (Essential): Strong experience with Python, FastAPI, PostgreSQL, and Docker. Must have at least 3 years building REST APIs and microservices. Preferred: Redis caching, AWS cloud deployment, and CI/CD pipelines with GitHub Actions. Bachelor\'s degree in Computer Science or equivalent experience required.' },
-            { id: 'jd_react_frontend', title: 'React Frontend Developer', company: 'PixelCraft Labs', location: 'New York, NY', text: 'Seeking a talented Frontend Developer. Requirements (Essential): Proficiency in React, TypeScript, JavaScript, HTML5, and CSS3. Experience with state management using Redux. Preferred: Next.js framework, Tailwind CSS, Jest testing, and working in an Agile Scrum environment.' },
-            { id: 'jd_ai_ml_engineer', title: 'AI / Machine Learning Engineer', company: 'NeuralEdge Technologies', location: 'Austin, TX (Hybrid)', text: 'Join our AI team! Essential Requirements: Strong Python programming, PyTorch or TensorFlow, and Scikit-learn. Experience with vector embeddings, ChromaDB or Pinecone, and building RAG pipelines with LLMs. Preferred: Model fine-tuning, LangChain, Streamlit for rapid prototyping, and Docker.' },
-            { id: 'jd_devops_cloud', title: 'DevOps & Cloud Engineer', company: 'SaaS Matrix', location: 'Remote', text: 'Looking for an infrastructure engineer. Essential Skills: Docker containerization, Kubernetes orchestration, Terraform Infrastructure as Code, and Linux administration. Preferred Skills: AWS or Azure cloud certifications, Jenkins or GitLab CI/CD, Ansible, and Bash scripting.' },
-            { id: 'jd_fullstack_node_py', title: 'Full Stack Software Engineer', company: 'Innovate Digital', location: 'Seattle, WA', text: 'We need a versatile Full Stack Software Engineer. Essential Qualifications: Experience with Node.js or Python backend services, React on the frontend, and relational databases like PostgreSQL. Preferred Qualifications: MongoDB, Nginx configuration, Google Cloud Platform (GCP), and microservices architecture.' }
-        ];
-
-        const sampleAnalysis = {
-            "res_python_dev_jd_python_backend": {
-                "resume_id": "res_python_dev", "jd_id": "jd_python_backend", "context_sufficient": true, "match_score": 92,
-                "summary": "Strong alignment between this Python Developer candidate and the Senior Python Backend Engineer role at CloudScale Inc. The candidate demonstrates direct experience with all essential technologies (Python, FastAPI, PostgreSQL, Docker) and several preferred qualifications (Redis, AWS, GitHub Actions CI/CD).",
-                "strengths": ["Direct hands-on experience with Python, FastAPI, and PostgreSQL", "Proven REST API and microservices development track record", "Docker containerization experience for deployment workflows", "AWS cloud deployment and GitHub Actions CI/CD"],
-                "weaknesses": ["System architecture at scale could be highlighted in greater detail", "Redis caching experience depth not fully elaborated"],
-                "skill_gap": { "matched": [{ "skill_name": "Python", "match_type": "exact" }, { "skill_name": "FastAPI", "match_type": "exact" }, { "skill_name": "PostgreSQL", "match_type": "exact" }, { "skill_name": "Docker", "match_type": "exact" }, { "skill_name": "REST APIs", "match_type": "exact" }, { "skill_name": "Redis", "match_type": "exact" }, { "skill_name": "AWS", "match_type": "close" }], "missing_essential": [], "missing_preferred": ["System Design"], "extra": ["Django", "Pytest"] },
-                "requirement_match": [{ "category": "Skills", "match_percent": 92 }, { "category": "Experience", "match_percent": 85 }, { "category": "Education", "match_percent": 100 }, { "category": "Responsibilities", "match_percent": 78 }],
-                "recommendations": [{ "skill": "System Design", "reason": "Highlight architecture decisions and distributed microservices experience." }]
-            }
-        };
-
         /* ---------------------------------------------------------------
            Configuration & State Initialization
         --------------------------------------------------------------- */
@@ -2535,12 +2474,45 @@
             ? window.location.origin 
             : 'http://127.0.0.1:8010';
 
+        const RESUME_STORAGE_KEY = 'resume-analyzer-resumes-v1';
+        function restoreResumeState() {
+            try {
+                const saved = JSON.parse(window.localStorage?.getItem(RESUME_STORAGE_KEY) || 'null');
+                if (saved && Array.isArray(saved.resumes) && saved.resumes.every(r =>
+                    typeof r.id === 'string' && typeof r.name === 'string' && typeof r.text === 'string')) {
+                    return { resumes: saved.resumes, selected: saved.resumes.some(r => r.id === saved.selected) ? saved.selected : saved.resumes[0]?.id || null,
+                        importedDemoDatasets: Array.isArray(saved.importedDemoDatasets) ? saved.importedDemoDatasets.filter(id => ['sample', 'india'].includes(id)) : [] };
+                }
+            } catch (_) {}
+            return { resumes: [...sampleResumes], selected: sampleResumes[0].id, importedDemoDatasets: [] };
+        }
+        function saveResumeState() {
+            try {
+                window.localStorage?.setItem(RESUME_STORAGE_KEY, JSON.stringify({ resumes, selected: currentResumeId, importedDemoDatasets }));
+            } catch (_) {
+                showBanner('error', 'Browser storage is unavailable or full. Keep a copy of your resumes; they may not survive a refresh.');
+            }
+        }
+        const restoredResumeState = restoreResumeState();
+
         let isServerOnline = false;
-        let resumes = [...sampleResumes];
-        let jds = [...sampleJDs];
-        let currentResumeId = 'res_python_dev';
+        let resumes = restoredResumeState.resumes;
+        let importedDemoDatasets = restoredResumeState.importedDemoDatasets;
+        let jds = [];
+        let currentResumeId = restoredResumeState.selected;
         let currentJdData = null;
+        let selectedJdId = null;
+        let analysisRequestVersion = 0;
         let activityLog = [];
+        let lastRankings = [];
+        let rankedResumeId = null;
+        let rankingRequestVersion = 0;
+        let jdCap = null;
+        let serverJDCount = 0;
+        let storedJobIds = [];
+        let savedSettings = null;
+        let analysisCache = new Map();
+        let configurationRevision = 0;
 
         const toast = document.getElementById('toast');
         const showToast = (message) => { 
@@ -2558,7 +2530,7 @@
             tag.textContent = type === 'success' ? 'Success' : type === 'error' ? 'Notice' : 'Info';
             msg.textContent = message;
             clearTimeout(window.__bannerTimeout);
-            window.__bannerTimeout = setTimeout(() => { el.classList.remove('show'); }, 5000);
+            if (type !== 'error') window.__bannerTimeout = setTimeout(() => { el.classList.remove('show'); }, 7000);
         }
 
         function logActivity(type, message) {
@@ -2603,8 +2575,8 @@
                     }
                     if (backendDot) backendDot.classList.remove('err');
                     if (statusLabel) statusLabel.textContent = 'Connected';
-                    if (sourceNote) sourceNote.textContent = `FastAPI backend active (${data.model || 'Gemini 3.8 Flash'})`;
-                    if (headerStatus) headerStatus.textContent = 'Backend connected (Port 8010)';
+                    if (sourceNote) sourceNote.textContent = data.gemini_configured ? `AI configured · ${data.model}` : 'Add a Gemini key in Settings to enable embeddings and analysis.';
+                    if (headerStatus) headerStatus.textContent = data.gemini_configured ? 'Backend connected · AI configured' : 'Backend connected · AI setup needed';
 
                     if (wasOffline) {
                         logActivity('success', 'Backend connected to server.');
@@ -2640,12 +2612,20 @@
         setInterval(checkServerConnection, 3500);
 
         function onCandidateSelected(id) {
-            if (!id) return;
-            currentResumeId = id;
-            generateRankings(id, false);
+            currentResumeId = id || null;
+            saveResumeState();
+            selectedJdId = null;
+            clearAnalysisSelection();
+            updateChatContext();
+            invalidateRankings();
+            renderCompareOptions();
+            if (document.getElementById('view-placement').classList.contains('active') && !document.getElementById('view-setup').classList.contains('active')) switchView('setup');
             const r = resumes.find(item => item.id === id);
+            document.getElementById('candidate-name').textContent = r?.name || 'No candidate selected';
+            document.getElementById('candidate-meta').textContent = r ? `Resume · ${r.text.split(/\s+/).filter(Boolean).length} words` : 'Choose a resume';
+            document.getElementById('candidate-initials').textContent = r ? r.name.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase() : '–';
             if (r) {
-                logActivity('info', `Selected candidate "${r.name}". Top matches updated.`);
+                logActivity('info', `Selected candidate "${r.name}". Run matching to update results.`);
             }
         }
 
@@ -2653,19 +2633,25 @@
            Navigation & View Switching
         --------------------------------------------------------------- */
         function switchView(view) {
+            if (view === 'gap' && !currentJdData) {
+                logActivity('info', 'Open a ranked role to run its detailed analysis first.');
+                return;
+            }
+            closeChatPanel();
+            if (view === 'matches' && (!rankedResumeId || rankedResumeId !== currentResumeId)) view = 'setup';
+            const step = view === 'gap' ? 'gap' : view === 'matches' ? 'matches' : 'setup';
+            if (['placement', 'setup', 'matches', 'gap'].includes(view)) {
+                view = 'placement';
+                document.querySelectorAll('.placement-step').forEach(section => section.classList.remove('active'));
+                document.getElementById('view-' + step).classList.add('active');
+                if (step === 'setup') setNotice('placement-status', '');
+                window.scrollTo?.({ top: 0, behavior: 'instant' });
+            }
             const btn = document.getElementById('nav-' + view);
             if (btn) btn.disabled = false;
-
-            // When user switches to matches, ensure results exist!
-            if (view === 'matches') {
-                const roleList = document.getElementById('role-list');
-                if (!roleList || roleList.children.length === 0) {
-                    const targetSelect = document.getElementById('target-resume-select');
-                    const targetId = (targetSelect && targetSelect.value) || currentResumeId || (resumes[0] ? resumes[0].id : 'res_python_dev');
-                    generateRankings(targetId, false);
-                }
-            }
-
+            if (view === 'settings') loadSettings();
+            if (view === 'compare') renderCompareOptions();
+            // Display only completed backend rankings.
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
             const targetView = document.getElementById('view-' + view);
@@ -2673,13 +2659,22 @@
             if (btn) btn.classList.add('active');
 
             const crumb = document.getElementById('crumb-view');
-            if (crumb) crumb.textContent = btn ? btn.textContent.trim() : view;
+            if (crumb) crumb.textContent = btn?.querySelector?.('.nav-text')?.textContent.trim() || view;
 
             const titles = {
-                upload: ['Find your next best fit.', 'Upload resumes and job descriptions, then run the analysis to see ranked matches.'],
-                matches: ['Your closest role matches.', 'Ranked by cosine similarity between resume and job-description embeddings.'],
-                gap: ['A focused view of where your experience meets the role.', 'Full grounded gap analysis for the selected match.']
+                upload: ['Keep your resumes ready.', 'Upload or paste resumes, then use Placement fit to choose a resume and find matching jobs.'],
+                jobs: ['Keep your target jobs in one place.', 'Upload, paste or remove job descriptions. Saved jobs are available for matching and chat.'],
+                placement: step === 'gap'
+                    ? ['See where you fit this role.', 'Gap analysis for your selected resume and job. Return to matching jobs to explore another role.']
+                    : step === 'matches'
+                        ? ['Your matching jobs.', 'Choose a ranked job to run its gap analysis.']
+                        : ['Find your next best fit.', 'Choose your resume and preferences, then run matching against your saved jobs.'],
+                compare: ['Find the role that fits you best.', 'Compare requirements and skill gaps across two or three jobs.'],
+                settings: ['Make the assistant work your way.', 'Manage providers, models and search preferences.'],
             };
+            document.getElementById('candidate-chip').hidden = !(view === 'compare' || (view === 'placement' && step !== 'setup'));
+            const eyebrows = { upload:'Resumes', jobs:'Jobs', compare:'Role comparison', settings:'Settings', placement:step === 'setup' ? 'Placement setup' : step === 'matches' ? 'Matching jobs' : 'Gap report' };
+            document.getElementById('page-eyebrow').textContent = eyebrows[view] || '';
             if (titles[view]) {
                 document.getElementById('page-h1').textContent = titles[view][0];
                 document.getElementById('page-sub').textContent = titles[view][1];
@@ -2705,22 +2700,9 @@
 
         function toggleBackendJSON() {
             const el = document.getElementById('backend-json-view');
-            const link = document.getElementById('backend-json-toggle');
             el.classList.toggle('open');
-            if (el.classList.contains('open')) {
-                const info = {
-                    backend_connected: isServerOnline,
-                    api_base: API_BASE,
-                    resumes_loaded: resumes.length,
-                    jds_loaded: jds.length,
-                    current_candidate: currentResumeId,
-                    stored_jds: jds.map(j => ({ id: j.id, title: j.title, company: j.company, location: j.location }))
-                };
-                el.innerText = JSON.stringify(info, null, 2);
-                link.textContent = 'Hide raw JSON ↑';
-            } else {
-                link.textContent = 'View raw JSON →';
-            }
+            renderBackendJSON();
+            document.getElementById('backend-json-toggle').textContent = el.classList.contains('open') ? 'Hide raw JSON ↑' : 'View raw JSON →';
         }
 
         /* ---------------------------------------------------------------
@@ -2740,81 +2722,46 @@
         });
 
         async function handleFileSelect(type, fileList) {
-            if (!fileList || fileList.length === 0) return;
-            const files = Array.from(fileList);
-
+            const files = Array.from(fileList || []);
+            if (!files.length) return;
+            const notices = document.getElementById('upload-notices');
+            notices.innerHTML = '';
             for (const file of files) {
-                showBanner('info', `Uploading & extracting text from ${file.name}...`);
-                const formData = new FormData();
-                formData.append('file', file);
-
                 try {
-                    const res = await fetch(`${API_BASE}/api/upload-document`, {
-                        method: 'POST',
-                        body: formData
-                    });
-
-                    if (res.ok) {
-                        const doc = await res.json();
-                        if (type === 'res') {
-                            const candidateName = doc.name.replace(/\.[^/.]+$/, '').replace(/John_Doe_/i, '').replace(/_/g, ' ');
-                            resumes.push({
-                                id: 'res_' + Date.now() + Math.random().toString(36).substr(2, 4),
-                                name: candidateName,
-                                text: doc.text
-                            });
-                            renderList('res');
-                            logActivity('success', `Resume "${candidateName}" parsed successfully (${doc.words} words).`);
-                        } else {
-                            const title = doc.name.replace(/\.[^/.]+$/, '').replace(/JD_/i, '').replace(/_/g, ' ');
-                            let backendId = null;
-                            try {
-                                const jdRes = await fetch(`${API_BASE}/jds`, {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({
-                                        title,
-                                        company: 'Uploaded Document',
-                                        location: 'Remote',
-                                        jd_text: doc.text
-                                    })
-                                });
-                                if (jdRes.ok) {
-                                    const rec = await jdRes.json();
-                                    backendId = rec.jd_id;
-                                }
-                            } catch (e) {}
-
-                            jds.push({
-                                id: backendId || ('jd_' + Date.now()),
-                                title,
-                                company: 'Uploaded Document',
-                                location: 'Remote',
-                                text: doc.text
-                            });
-                            renderList('jd');
-                            logActivity('success', `Job Description "${title}" parsed & embedded (${doc.words} words).`);
-                        }
-                    } else {
-                        throw new Error(`Upload failed with status ${res.status}`);
-                    }
-                } catch (err) {
-                    // Client-side text file fallback
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const rawText = e.target.result;
-                        if (type === 'res') {
-                            resumes.push({ id: 'res_' + Date.now(), name: file.name.replace(/\.[^/.]+$/, ''), text: rawText });
-                            renderList('res');
-                        } else {
-                            jds.push({ id: 'jd_' + Date.now(), title: file.name.replace(/\.[^/.]+$/, ''), company: 'Local', location: 'Remote', text: rawText });
-                            renderList('jd');
-                        }
-                        logActivity('info', `Read text file "${file.name}".`);
+                    if (file.size > 5 * 1024 * 1024) throw new Error('The file exceeds the 5 MB upload limit.');
+                    if (!/\.(pdf|docx|txt)$/i.test(file.name)) throw new Error('Use PDF, DOCX or UTF-8 TXT files.');
+                    const form = new FormData();
+                    form.append('file', file);
+                    const doc = await apiRequest('/api/upload-document', { method: 'POST', body: form });
+                    if (!doc.text?.trim()) throw new Error(doc.warning || 'No readable text was found. Scanned PDFs need OCR.');
+                    const list = type === 'res' ? resumes : jds;
+                    if (list.some(d => d.text?.trim() === doc.text.trim())) throw new Error('This document is already loaded.');
+                    const record = {
+                        id: `${type}_${crypto.randomUUID()}`, text: doc.text, pages: doc.pages,
+                        status: doc.status, warning: doc.warning
                     };
-                    reader.readAsText(file);
+                    const title = doc.name.replace(/\.[^/.]+$/, '').replace(/^(John_Doe_|JD_)/i, '').replace(/_/g, ' ');
+                    if (type === 'res') { record.name = title; resumes.push(record); }
+                    else {
+                        Object.assign(record, { title, company: 'Uploaded Document', location: 'Unspecified' });
+                        await ensureJobStored(record);
+                        jds.push(record);
+                    }
+                    renderList(type);
+                    if (type === 'res') onCandidateSelected(record.id);
+                    invalidateRankings();
+                    const note = document.createElement('div');
+                    note.className = 'notice success';
+                    note.textContent = `${file.name}: uploaded (${doc.words} words). ${doc.status !== 'Valid' ? doc.warning : ''}`;
+                    notices.appendChild(note);
+                } catch (error) {
+                    const note = document.createElement('div');
+                    note.className = 'notice error';
+                    note.textContent = `${file.name}: ${error.message}`;
+                    notices.appendChild(note);
                 }
             }
+            document.getElementById(type === 'res' ? 'res-file-input' : 'jd-file-input').value = '';
         }
 
         /* ---------------------------------------------------------------
@@ -2829,16 +2776,16 @@
         }
 
         function updateCounts() {
-            document.getElementById('resume-count').innerText = `${resumes.length} / 15`;
-            document.getElementById('resume-progress').style.width = `${Math.min((resumes.length / 15) * 100, 100)}%`;
-            document.getElementById('jd-count').innerText = `${jds.length} / 15`;
-            document.getElementById('jd-progress').style.width = `${Math.min((jds.length / 15) * 100, 100)}%`;
+            saveResumeState();
+            document.getElementById('resume-count').innerText = `${resumes.length} resumes`;
+            document.getElementById('jd-count').innerText = `${serverJDCount} jobs`;
+            document.getElementById('store-summary').textContent = `${serverJDCount} job descriptions stored. Refresh to load the latest jobs.`;
             updateTargetSelect();
         }
 
         function updateTargetSelect() {
             const sel = document.getElementById('target-resume-select');
-            const prev = sel.value;
+            const prev = currentResumeId || "";
             sel.innerHTML = '<option value="">— Select a resume —</option>';
             resumes.forEach(r => {
                 const opt = document.createElement('option');
@@ -2847,8 +2794,8 @@
             });
             if (resumes.some(r => r.id === prev)) {
                 sel.value = prev;
-            } else if (resumes[0]) {
-                sel.value = resumes[0].id;
+            } else {
+                sel.value = '';
             }
         }
 
@@ -2856,24 +2803,25 @@
             const list = type === 'res' ? resumes : jds;
             const container = document.getElementById(type === 'res' ? 'resume-list' : 'jd-list');
             container.innerHTML = '';
-            if (list.length === 0) {
-                container.innerHTML = `<div class="empty-note">No ${type === 'res' ? 'resumes' : 'job descriptions'} yet. Upload files or load sample data.</div>`;
-                updateCounts();
-                return;
-            }
+            if (!list.length) container.innerHTML = `<div class="empty-note">No ${type === 'res' ? 'resumes' : 'job descriptions'} yet. Upload a document or load samples.</div>`;
             list.forEach(item => {
-                const words = (item.text || '').split(/\s+/).filter(w => w.length > 0).length;
+                const words = (item.text || '').split(/\s+/).filter(Boolean).length;
                 const badge = getWordCountBadge(item.text);
-                const titleStr = type === 'res' ? item.name : `${item.title} — ${item.company}`;
                 const div = document.createElement('div');
                 div.className = 'item-row';
-                div.innerHTML = `
-                    <div style="min-width:0">
-                        <div class="item-title">${titleStr} <span class="tag ${badge.class}">${badge.text}</span> <span class="item-meta">${words} words</span></div>
-                        <div class="item-preview">${(item.text || '').substring(0, 200)}${(item.text || '').length > 200 ? '…' : ''}</div>
-                    </div>
-                    <button class="btn-remove" title="Remove" onclick="removeItem('${type}','${item.id}')">Remove</button>
-                `;
+                div.innerHTML = `<div style="min-width:0"><div class="item-title">${escapeHtml(type === 'res' ? item.name : `${item.title} — ${item.company}`)} <span class="tag ${badge.class}">${badge.text}</span> <span class="item-meta">${words} words</span></div><div class="item-preview">${escapeHtml((item.text || '').substring(0, 200))}${item.text?.length > 200 ? '…' : ''}</div>${item.warning && item.status !== 'Valid' ? `<p class="feature-note">${escapeHtml(item.warning)}</p>` : ''}</div>`;
+                const button = document.createElement('button');
+                if (type === 'res') {
+                    const useButton = document.createElement('button');
+                    useButton.className = 'quiet-link';
+                    useButton.textContent = 'Use this resume';
+                    useButton.onclick = () => { onCandidateSelected(item.id); switchView('setup'); };
+                    div.appendChild(useButton);
+                }
+                button.className = 'btn-remove';
+                button.textContent = 'Remove';
+                button.onclick = async () => { button.disabled = true; await removeItem(type, item.id); button.disabled = false; };
+                div.appendChild(button);
                 container.appendChild(div);
             });
             updateCounts();
@@ -2882,364 +2830,224 @@
         function addManualResume() {
             const name = document.getElementById('res-name-input').value.trim();
             const text = document.getElementById('res-text-input').value.trim();
-            if (!name || !text) return logActivity('error', 'Please fill in both the candidate name and resume text.');
-            resumes.push({ id: 'res_' + Date.now(), name, text });
+            if (!name || !text) return logActivity('error', 'Fill in the candidate name and resume text.');
+            if (resumes.some(r => r.text.trim() === text)) return logActivity('error', 'This resume is already loaded.');
+            resumes.push({ id: 'res_' + crypto.randomUUID(), name, text });
             document.getElementById('res-name-input').value = '';
             document.getElementById('res-text-input').value = '';
             renderList('res');
+            onCandidateSelected(resumes.at(-1).id);
+            invalidateRankings();
             logActivity('success', `Resume "${name}" added.`);
         }
 
         async function addManualJD() {
             const title = document.getElementById('jd-title-input').value.trim();
             const company = document.getElementById('jd-company-input').value.trim();
-            const location = document.getElementById('jd-location-input').value.trim() || 'Remote';
+            const location = document.getElementById('jd-location-input').value.trim() || 'Unspecified';
             const text = document.getElementById('jd-text-input').value.trim();
             if (!title || !company || !text) return logActivity('error', 'Job title, company, and JD text are required.');
-
-            let backendId = null;
+            if (jds.some(j => j.text.trim() === text)) return logActivity('error', 'This job description is already loaded.');
             try {
-                const res = await fetch(`${API_BASE}/jds`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ title, company, location, jd_text: text })
-                });
-                if (res.ok) {
-                    const rec = await res.json();
-                    backendId = rec.jd_id;
-                }
-            } catch (e) {}
-
-            jds.push({ id: backendId || ('jd_' + Date.now()), title, company, location, text });
-            document.getElementById('jd-title-input').value = '';
-            document.getElementById('jd-company-input').value = '';
-            document.getElementById('jd-location-input').value = '';
-            document.getElementById('jd-text-input').value = '';
-            renderList('jd');
-            logActivity('success', `Job description "${title}" added.`);
+                const jd = { id: 'jd_' + crypto.randomUUID(), title, company, location, text };
+                await ensureJobStored(jd);
+                jds.push(jd);
+                ['jd-title-input', 'jd-company-input', 'jd-location-input', 'jd-text-input'].forEach(id => document.getElementById(id).value = '');
+                renderList('jd');
+                invalidateRankings();
+                logActivity('success', `Job description "${title}" stored.`);
+            } catch (error) { logActivity('error', `Job could not be saved: ${error.message}`); }
         }
 
         async function removeItem(type, id) {
-            if (type === 'res') {
-                resumes = resumes.filter(r => r.id !== id);
-            } else {
-                jds = jds.filter(j => j.id !== id);
-                try {
-                    await fetch(`${API_BASE}/jds/${id}`, { method: 'DELETE' });
-                } catch (e) {}
-            }
-            renderList(type);
-            logActivity('info', `${type === 'res' ? 'Resume' : 'Job description'} removed.`);
+            try {
+                await apiRequest(`/chat/documents/${encodeURIComponent(id)}?session_id=${CHAT_SESSION_ID}`, { method: 'DELETE' });
+                const jd = type === 'jd' ? jds.find(j => j.id === id) : null;
+                if (jd?.backend_id) await apiRequest(`/jds/${encodeURIComponent(jd.backend_id)}`, { method: 'DELETE' });
+                if (type === 'res') resumes = resumes.filter(r => r.id !== id);
+                else {
+                    jds = jds.filter(j => j.id !== id);
+                    storedJobIds = storedJobIds.filter(value => value !== jd?.backend_id);
+                    serverJDCount = storedJobIds.length;
+                }
+                if ((type === 'res' && id === currentResumeId) || (type === 'jd' && id === selectedJdId)) {
+                    if (type === 'res') currentResumeId = resumes[0]?.id || null;
+                    selectedJdId = null;
+                    clearAnalysisSelection();
+                }
+                analysisCache.clear();
+                chatContextId = null;
+                updateChatContext();
+                renderList(type);
+                invalidateRankings();
+                renderCompareOptions();
+                logActivity('success', `${type === 'res' ? 'Resume' : 'Job description'} and its indexed chat contexts removed.`);
+            } catch (error) { logActivity('error', `Could not remove the document: ${error.message}`); }
         }
 
         async function loadSampleData() {
-            showBanner('info', 'Loading sample resumes & job descriptions...');
+            setBusy('load-fixtures-btn', true);
+            const dataset = document.getElementById('sample-dataset').value === 'india' ? 'india' : 'sample';
+            const expected = dataset === 'india' ? 100 : 5;
+            setNotice('upload-notices', `Saving ${expected} demo jobs…`);
             try {
-                const res = await fetch(`${API_BASE}/api/load-fixtures/pdfs`, { method: 'POST' });
-                if (res.ok) {
-                    const data = await res.json();
-                    resumes = data.resumes || [];
-                    jds = data.jds || [];
-                    renderList('res');
-                    renderList('jd');
-                    if (resumes[0]) {
-                        generateRankings(resumes[0].id, false);
-                    }
-                    logActivity('success', `Loaded ${resumes.length} sample resumes and ${jds.length} job descriptions.`);
-                    return;
+                const data = await apiRequest(`/api/load-fixtures/${dataset}`, { method: 'POST', timeoutMs: 300000 });
+                if (data.count !== expected || data.jds?.length !== expected || data.jds.some(j => !j.backend_id)) {
+                    throw new Error(`The backend did not save all ${expected} demo jobs. Please retry.`);
                 }
-            } catch (e) {}
-
-            // Fallback load
-            resumes = [...sampleResumes];
-            jds = [...sampleJDs];
-            renderList('res');
-            renderList('jd');
-            if (resumes[0]) {
-                generateRankings(resumes[0].id, false);
-            }
-            logActivity('info', 'Loaded bundled sample resumes & job descriptions.');
+                for (const resume of data.resumes || []) {
+                    if (!resumes.some(r => r.id === resume.id || r.text.trim() === resume.text.trim())) resumes.push(resume);
+                }
+                if (!importedDemoDatasets.includes(dataset)) importedDemoDatasets.push(dataset);
+                for (const job of data.jds) {
+                    if (!jds.some(j => (j.backend_id || j.id) === job.backend_id)) jds.push(job);
+                }
+                if (!resumes.some(r => r.id === currentResumeId)) currentResumeId = resumes[0]?.id || null;
+                invalidateRankings();
+                renderList('res');
+                await syncDataset();
+                if (data.jds.some(job => !storedJobIds.includes(job.backend_id))) {
+                    throw new Error(`Not all ${expected} demo jobs are available in the store. Please retry.`);
+                }
+                updateChatContext();
+                switchView('jobs');
+                const message = `All ${expected} demo jobs are saved. ${serverJDCount} jobs available for matching; ${resumes.length} resumes loaded in this browser.`;
+                setNotice('upload-notices', message);
+                logActivity('success', message);
+            } catch (error) {
+                try { await syncDataset(); } catch (_) {}
+                setNotice('upload-notices', `Sample loading failed: ${error.message}`, true);
+                logActivity('error', `Sample loading failed: ${error.message}`);
+            } finally { setBusy('load-fixtures-btn', false); }
         }
 
         async function resetSession() {
+            if (chatIsStreaming || chatIsIndexing) return logActivity('error', 'Wait for chat to finish before resetting.');
+            if (!window.confirm('Remove all stored job descriptions, loaded resumes, and this chat?')) return;
             try {
-                await fetch(`${API_BASE}/jds`, { method: 'DELETE' });
-            } catch (e) {}
-            resumes = [];
-            jds = [];
-            currentResumeId = null;
-            currentJdData = null;
-            document.getElementById('candidate-initials').textContent = '–';
-            document.getElementById('candidate-name').textContent = 'No candidate selected';
-            document.getElementById('candidate-meta').textContent = 'Choose a resume to analyze';
-            document.getElementById('role-list').innerHTML = '';
-            renderList('res');
-            renderList('jd');
-            switchView('upload');
-            logActivity('info', 'Session reset and store cleared.');
+                await clearChatData();
+                await apiRequest('/jds', { method: 'DELETE' });
+                resumes = [];
+                importedDemoDatasets = [];
+                jds = [];
+                currentResumeId = null;
+                selectedJdId = null;
+                storedJobIds = [];
+                serverJDCount = 0;
+                clearAnalysisSelection();
+                analysisCache.clear();
+                invalidateRankings();
+                updateChatContext();
+                renderList('res');
+                renderList('jd');
+                document.getElementById('candidate-initials').textContent = '–';
+                document.getElementById('candidate-name').textContent = 'No candidate selected';
+                document.getElementById('candidate-meta').textContent = 'Choose a resume';
+                document.getElementById('upload-notices').innerHTML = '';
+                switchView('upload');
+                logActivity('success', 'Session, job store, and indexed chat data cleared.');
+            } catch (error) { logActivity('error', `Reset failed: ${error.message}`); }
         }
 
         /* ---------------------------------------------------------------
-           Tier 1: Ranking Analysis (Cosine Similarity)
-           GUARANTEED TO DISPLAY RESULTS IN TOP MATCHES!
+           Tier 1: Embedding shortlist and Mercury role fit
+           Results come from the backend; failures are displayed explicitly.
         --------------------------------------------------------------- */
         async function runAnalysis() {
-            let targetId = document.getElementById('target-resume-select').value;
-            if (!targetId && resumes[0]) {
-                targetId = resumes[0].id;
-                document.getElementById('target-resume-select').value = targetId;
-            }
-            if (!targetId) targetId = 'res_python_dev';
-
-            if (jds.length === 0) {
-                jds = [...sampleJDs];
-                renderList('jd');
-            }
-
-            const modal = document.getElementById('progress-modal');
-            const pText = document.getElementById('progress-text');
-            const pBar = document.getElementById('modal-progress-bar');
-            if (modal) modal.classList.add('open');
-            if (pText) pText.innerText = 'Calculating vector cosine similarity rankings...';
-            if (pBar) pBar.style.width = '55%';
-
+            const targetId = document.getElementById('target-resume-select').value;
+            if (!targetId || !resumes.some(r => r.id === targetId)) return logActivity('error', 'Select a resume first.');
+            if (!jds.length) return logActivity('error', 'Upload or add at least one job description.');
+            setBusy('run-ranking-btn', true);
+            setNotice('ranking-status', 'Calculating job matches…');
+            setNotice('placement-status', 'Calculating job matches…');
             try {
                 await generateRankings(targetId, true);
-            } catch (err) {
-                console.error('Error during generateRankings:', err);
-                logActivity('error', 'Ranking error: ' + err.message);
-                switchView('matches');
-            } finally {
-                if (pBar) pBar.style.width = '100%';
-                setTimeout(() => {
-                    if (modal) modal.classList.remove('open');
-                    switchView('matches');
-                }, 300);
+                setNotice('placement-status', `Returned ${lastRankings.length} ranked jobs.`);
             }
+            catch (error) { setNotice('placement-status', `Ranking failed: ${error.message}`, true); logActivity('error', `Ranking failed: ${error.message}`); }
+            finally { setBusy('run-ranking-btn', false); }
         }
 
         async function generateRankings(resumeId, doSwitchView = true) {
-            let resume = resumes.find(r => r.id === resumeId) || sampleResumes.find(r => r.id === resumeId) || resumes[0] || sampleResumes[0];
-            if (!resume) {
-                resume = sampleResumes[0];
-                resumes = [...sampleResumes];
-                renderList('res');
-            }
-            if (!jds || jds.length === 0) {
-                jds = [...sampleJDs];
-                renderList('jd');
-            }
-
+            const resume = resumes.find(r => r.id === resumeId);
+            if (!resume) throw new Error('The selected resume is unavailable.');
+            const version = ++rankingRequestVersion;
             currentResumeId = resume.id;
-            const words = (resume.text || '').split(/\s+/).filter(Boolean).length;
-            const resName = resume.name || 'Candidate';
-
-            const headerEl = document.getElementById('matches-header');
-            if (headerEl) headerEl.innerText = `Target resume: ${resName} (${words} words)`;
-            
-            const initials = resName.split(/\s+/).filter(Boolean).map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'CV';
-            const initEl = document.getElementById('candidate-initials');
-            if (initEl) initEl.textContent = initials;
-            
-            const nameEl = document.getElementById('candidate-name');
-            if (nameEl) nameEl.textContent = resName;
-            
-            const metaEl = document.getElementById('candidate-meta');
-            if (metaEl) metaEl.textContent = `Resume · ${words} words`;
-
-            let rankings = [];
-
-            // 1. Try real backend vector ranking first
             try {
-                const rankRes = await fetch(`${API_BASE}/rank`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        resume_text: resume.text,
-                        resume_id: resume.id,
-                        top_n: 5
-                    })
-                });
-                if (rankRes.ok) {
-                    const rankData = await rankRes.json();
-                    const rawCards = rankData.results || rankData.rankings || [];
-                    if (rawCards && rawCards.length > 0) {
-                        rankings = rawCards.map(item => ({
-                            jd: {
-                                id: item.jd_id,
-                                title: item.title,
-                                company: item.company,
-                                location: item.location,
-                                text: item.snippet
-                            },
-                            score: item.similarity_score,
-                            snippet: item.snippet
-                        }));
-                    }
-                }
-            } catch (e) {
-                console.warn('Backend /rank call error, using local vector simulator:', e);
-            }
-
-            // 2. Fallback ranking simulation if backend offline or returned 0
-            if (!rankings || rankings.length === 0) {
-                const activeJDs = (jds && jds.length > 0) ? jds : sampleJDs;
-                rankings = activeJDs.map(jd => {
-                    const mockKey = `${resume.id}_${jd.id}`;
-                    const mockData = sampleAnalysis[mockKey];
-                    let score = mockData ? mockData.match_score : 0;
-                    if (!score) {
-                        const resTokens = new Set((resume.text || '').toLowerCase().match(/\b[a-z]{3,}\b/g) || []);
-                        const jdTokens = ((jd.text || jd.full_text || jd.snippet || '')).toLowerCase().match(/\b[a-z]{3,}\b/g) || [];
-                        let matched = 0;
-                        jdTokens.forEach(t => { if (resTokens.has(t)) matched++; });
-                        score = Math.min(94, Math.max(45, Math.round((matched / Math.max(jdTokens.length * 0.22, 1)) * 100)));
-                    }
-                    return {
-                        jd,
-                        score: score,
-                        snippet: mockData ? mockData.summary.substring(0, 130) + '…' : ((jd.text || jd.full_text || jd.snippet || '').substring(0, 130) + '…')
-                    };
-                }).sort((a, b) => b.score - a.score).slice(0, 5);
-            }
-
-            // 3. Render cards into #role-list
-            const container = document.getElementById('role-list');
-            if (container) {
-                container.innerHTML = '';
-                const medals = ['01', '02', '03', '04', '05'];
-
-                if (!rankings || rankings.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-note" style="padding:28px;text-align:center">
-                            <p style="font-size:14px;color:var(--text);font-weight:600">No ranked matches found for this candidate.</p>
-                            <button class="primary" style="margin-top:10px" onclick="loadSampleData()">Load sample roles &amp; candidates</button>
-                        </div>
-                    `;
-                } else {
-                    rankings.forEach((r, i) => {
-                        const card = document.createElement('button');
-                        card.className = 'role-card';
-                        const compName = (r.jd && r.jd.company) || 'Partner Company';
-                        const titleName = (r.jd && r.jd.title) || 'Software Role';
-                        const locName = (r.jd && r.jd.location) || 'Bengaluru / Remote';
-                        const snippetText = r.snippet || ((r.jd && (r.jd.text || r.jd.full_text || '')) ? (r.jd.text || r.jd.full_text).substring(0, 130) + '…' : 'Grounded role alignment with candidate qualifications.');
-                        const scoreVal = r.score || (75 - i * 4);
-                        const jdId = (r.jd && r.jd.id) || ('jd_' + i);
-
-                        card.innerHTML = `
-                            <div class="rank">${medals[i] || '0' + (i+1)}</div>
-                            <div class="role-info">
-                                <h3>${titleName}</h3>
-                                <p>${locName}</p>
-                                <p class="role-desc">${snippetText}</p>
-                            </div>
-                            <div class="role-side">
-                                <span class="company-badge" title="${compName}">${compName}</span>
-                                <div class="match"><strong>${scoreVal}%</strong><small>match</small></div>
-                            </div>
-                        `;
-                        card.onclick = () => loadAnalysis(resume.id, jdId);
-                        container.appendChild(card);
-                    });
-                }
-            }
-
-            // Always ensure navigation buttons are enabled
-            const navBtn = document.getElementById('nav-matches');
-            if (navBtn) navBtn.disabled = false;
-            const navGap = document.getElementById('nav-gap');
-            if (navGap) navGap.disabled = false;
-
-            if (doSwitchView) {
-                switchView('matches');
-                logActivity('success', `Found & ranked ${rankings.length} top job matches for "${resName}".`);
+                for (const jd of jds) await ensureJobStored(jd);
+                const result = await apiRequest('/rank', postJSON({
+                    resume_text: resume.text, resume_id: resume.id,
+                    top_n: Number(document.getElementById('rank-top-n').value || 5),
+                    preferred_location: document.getElementById('preferred-location').value.trim() || null,
+                    preferred_arrangement: document.getElementById('preferred-arrangement').value || null
+                }));
+                if (version !== rankingRequestVersion) return;
+                lastRankings = result.results || result.rankings || [];
+                rankedResumeId = resume.id;
+                document.getElementById('matches-header').textContent = `Target resume: ${resume.name} (${resume.text.split(/\s+/).filter(Boolean).length} words)`;
+                document.getElementById('ranking-updated').textContent = `Updated ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+                setNotice('ranking-status', lastRankings.length ? (result.ranking_note || '') : 'The backend returned no matches. Add job descriptions and retry.');
+                renderRankings();
+                if (doSwitchView) switchView('matches');
+                logActivity('success', `Ranked ${lastRankings.length} stored jobs for "${resume.name}".`);
+            } catch (error) {
+                if (version !== rankingRequestVersion) return;
+                lastRankings = [];
+                rankedResumeId = null;
+                renderRankings();
+                setNotice('ranking-status', `Matching unavailable: ${error.message}`, true);
+                if (doSwitchView) switchView('matches');
+                throw error;
             }
         }
 
         /* ---------------------------------------------------------------
            Tier 2: Deep Gap Analysis (Gemini + Skill Taxonomy)
         --------------------------------------------------------------- */
+        async function responseJSON(response) {
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                const detail = data.detail;
+                throw new Error(typeof detail === 'string' ? detail
+                    : Array.isArray(detail) ? detail.map(item => item.msg).join(' ')
+                    : detail?.message || data.message || `Request failed (HTTP ${response.status}).`);
+            }
+            return data;
+        }
+
         async function loadAnalysis(resumeId, jdId) {
+            const resume = resumes.find(r => r.id === resumeId);
+            const jd = jds.find(j => j.id === jdId || j.backend_id === jdId);
+            if (!resume || !jd) return logActivity('error', 'Select an available resume and job description.');
+            clearAnalysisSelection();
+            const version = analysisRequestVersion;
+            currentResumeId = resume.id;
+            selectedJdId = jd.id;
+            updateChatContext();
             const modal = document.getElementById('progress-modal');
-            const pText = document.getElementById('progress-text');
-            const pBar = document.getElementById('modal-progress-bar');
             modal.classList.add('open');
-            pText.innerText = 'Calling Gemini & deterministic skill taxonomy grounding...';
-            pBar.style.width = '65%';
-
-            const resume = resumes.find(r => r.id === resumeId) || sampleResumes[0];
-            const jd = jds.find(j => j.id === jdId) || sampleJDs[0];
-
-            let data = null;
-
-            if (isServerOnline) {
-                try {
-                    const res = await fetch(`${API_BASE}/analyze`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            resume_text: resume ? resume.text : '',
-                            resume_id: resumeId,
-                            jd_id: jdId
-                        })
-                    });
-                    if (res.ok) {
-                        data = await res.json();
-                    }
-                } catch (e) {
-                    console.warn('Backend /analyze call error:', e);
-                }
-            }
-
-            if (!data) {
-                const mockKey = `${resumeId}_${jdId}`;
-                data = sampleAnalysis[mockKey];
-                if (!data) {
-                    const score = Math.floor(Math.random() * 35 + 55);
-                    data = {
-                        resume_id: resumeId,
-                        jd_id: jdId,
-                        context_sufficient: true,
-                        match_score: score,
-                        summary: `Solid alignment between candidate "${resume.name}" and "${jd.title}". Demonstrated direct competencies in required tools with opportunities to add cloud deployment depth.`,
-                        strengths: ["Direct professional experience with software stack", "Strong foundation in data structures and backend logic", "Team collaboration in Agile environments"],
-                        weaknesses: ["Role-specific cloud scale requirements could be highlighted further", "Architecture leadership not explicitly detailed"],
-                        skill_gap: {
-                            matched: [{ skill_name: "Python", match_type: "exact" }, { skill_name: "FastAPI", match_type: "exact" }, { skill_name: "PostgreSQL", match_type: "exact" }, { skill_name: "Docker", match_type: "close" }],
-                            missing_essential: ["System Design"],
-                            missing_preferred: ["Redis Caching"],
-                            extra: ["Git", "Pytest"]
-                        },
-                        requirement_match: [
-                            { category: "Skills", match_percent: score },
-                            { category: "Experience", match_percent: 85 },
-                            { category: "Education", match_percent: 90 },
-                            { category: "Responsibilities", match_percent: 75 }
-                        ],
-                        recommendations: [
-                            { skill: "System Design", reason: "Highlight architecture and microservices design decisions." },
-                            { skill: "Caching Strategies", reason: "Emphasize Redis or Memcached distributed caching experience." }
-                        ]
-                    };
-                }
-            }
-
-            pBar.style.width = '100%';
-            setTimeout(() => {
-                modal.classList.remove('open');
+            document.getElementById('progress-text').textContent = 'Analyzing the selected resume and job description…';
+            document.getElementById('modal-progress-bar').style.width = '65%';
+            try {
+                const data = await analyzePair(resume, jd);
+                if (version !== analysisRequestVersion) return;
                 currentJdData = data;
+                updateChatContext();
                 renderGapAnalysis(data, resume, jd);
-                const navGap = document.getElementById('nav-gap');
-                if (navGap) navGap.disabled = false;
                 switchView('gap');
-                logActivity('success', `Deep gap analysis ready for "${jd.title}" (${data.match_score}% match).`);
-            }, 300);
+                logActivity('success', `Deep analysis ready for "${jd.title}" (${data.match_score}% skill fit).`);
+            } catch (error) {
+                if (version !== analysisRequestVersion) return;
+                updateChatContext();
+                switchView('matches');
+                logActivity('error', `Analysis unavailable: ${error.message}`);
+                if (chatPanelOpen) setChatStatus('Resume and job selected · Detailed analysis unavailable', 'error');
+            } finally { if (version === analysisRequestVersion) modal.classList.remove('open'); }
         }
 
         function tagListHTML(items, cls, dot) {
             if (!items || items.length === 0) return '<span style="color:#9a9ea3;font-size:11px">None</span>';
-            return items.map(s => `<span class="skill-tag ${cls}">${dot} ${typeof s === 'string' ? s : s.skill_name}</span>`).join('');
+            return items.map(s => `<span class="skill-tag ${cls}">${dot} ${escapeHtml(typeof s === 'string' ? s : s.skill_name)}</span>`).join('');
         }
 
         function renderGapAnalysis(data, resume, jd) {
@@ -3248,7 +3056,7 @@
             const roleCompany = jd ? jd.company : '';
 
             document.getElementById('gap-role-meta').textContent = `${roleTitle} ${roleCompany ? '· ' + roleCompany : ''}`;
-            document.getElementById('fit-meta-score').textContent = data.match_score + '% overall match';
+            document.getElementById('fit-meta-score').textContent = data.match_score + '% skill coverage';
 
             // Score ring
             document.getElementById('gap-score-text').textContent = data.match_score;
@@ -3264,15 +3072,15 @@
             const badge = document.getElementById('context-badge');
             badge.textContent = data.context_sufficient ? 'Context sufficient' : 'Context insufficient';
 
-            document.getElementById('executive-summary').innerHTML = data.summary || 'Summary generated by placement analyzer.';
+            document.getElementById('executive-summary').textContent = data.summary || 'Summary generated by placement analyzer.';
 
             // Strengths / weaknesses
-            document.getElementById('strengths-list').innerHTML = (data.strengths || []).map(s => `<li>${s}</li>`).join('') || '<li>No specific strengths highlighted</li>';
-            document.getElementById('weaknesses-list').innerHTML = (data.weaknesses || []).map(s => `<li>${s}</li>`).join('') || '<li>No critical weaknesses found</li>';
+            document.getElementById('strengths-list').innerHTML = (data.strengths || []).map(s => `<li>${escapeHtml(s)}</li>`).join('') || '<li>No specific strengths highlighted</li>';
+            document.getElementById('weaknesses-list').innerHTML = (data.weaknesses || []).map(s => `<li>${escapeHtml(s)}</li>`).join('') || '<li>No critical weaknesses found</li>';
 
             // Gap breakdown tags
             document.getElementById('gap-matched').innerHTML = (sg.matched && sg.matched.length) 
-                ? sg.matched.map(s => `<span class="skill-tag ${s.match_type === 'exact' ? 'tag-exact' : 'tag-close'}">${s.match_type === 'exact' ? '●' : '◐'} ${s.skill_name}</span>`).join('') 
+                ? sg.matched.map(s => `<span class="skill-tag ${s.match_type === 'exact' ? 'tag-exact' : 'tag-close'}">${s.match_type === 'exact' ? '●' : '◐'} ${escapeHtml(s.skill_name)}</span>`).join('')
                 : '<span style="color:#9a9ea3;font-size:11px">None</span>';
             document.getElementById('gap-miss-ess').innerHTML = tagListHTML(sg.missing_essential, 'tag-miss-ess', '○');
             document.getElementById('gap-miss-pref').innerHTML = tagListHTML(sg.missing_preferred, 'tag-miss-pref', '△');
@@ -3280,11 +3088,13 @@
 
             // Recommendations
             document.getElementById('recommendations-list').innerHTML = (data.recommendations || []).map(r => `
-                <div class="rec-card"><b>${r.skill}</b><p>${r.reason}</p></div>
+                <div class="rec-card"><b>${escapeHtml(r.skill)}</b><p>${escapeHtml(r.reason)}</p></div>
             `).join('') || '<div class="empty-note">No targeted recommendations needed.</div>';
 
             if (data.recommendations && data.recommendations[0]) {
-                document.getElementById('next-step-body').innerHTML = `<b>${data.recommendations[0].skill}</b><p>${data.recommendations[0].reason}</p>`;
+                document.getElementById('next-step-body').innerHTML = `<b>${escapeHtml(data.recommendations[0].skill)}</b><p>${escapeHtml(data.recommendations[0].reason)}</p>`;
+            } else {
+                document.getElementById('next-step-body').textContent = 'No additional recommendation in this report.';
             }
 
             // Requirement alignment bars
@@ -3338,67 +3148,53 @@
 
         /* ---------------------------------------------------------------
            Auto-Initialization on Load
-           Guarantees Top Matches has results ready immediately!
+           Load the actual stored jobs and configuration.
         --------------------------------------------------------------- */
+        async function syncDemoResumes() {
+            const data = await apiRequest('/api/loaded-demo-resumes');
+            let changed = false;
+            for (const dataset of data.datasets || []) {
+                if (!['sample', 'india'].includes(dataset.id) || importedDemoDatasets.includes(dataset.id)) continue;
+                for (const resume of dataset.resumes || []) {
+                    if (!resumes.some(r => r.id === resume.id || r.text.trim() === resume.text.trim())) resumes.push(resume);
+                }
+                importedDemoDatasets.push(dataset.id);
+                changed = true;
+            }
+            if (changed) {
+                if (!resumes.some(r => r.id === currentResumeId)) currentResumeId = resumes[0]?.id || null;
+                renderList('res');
+                renderCompareOptions();
+                updateChatContext();
+            }
+        }
+
         async function initializeApp() {
-            // Render initial lists immediately from pre-bundled sample dataset
             renderList('res');
             renderList('jd');
-
-            // Pre-select first candidate resume & pre-render top matches
-            const targetSelect = document.getElementById('target-resume-select');
-            if (resumes[0]) {
-                if (targetSelect) targetSelect.value = resumes[0].id;
-                currentResumeId = resumes[0].id;
-            }
-
-            // Unconditionally enable navigation
-            const navBtn = document.getElementById('nav-matches');
-            if (navBtn) navBtn.disabled = false;
-            const navGap = document.getElementById('nav-gap');
-            if (navGap) navGap.disabled = false;
-
-            // Load backend JDs if present, otherwise default to sample dataset
-            try {
-                const res = await fetch(`${API_BASE}/jds`);
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data && data.jds && data.jds.length > 0) {
-                        jds = data.jds.map(item => ({
-                            id: item.jd_id,
-                            title: item.title,
-                            company: item.company,
-                            location: item.location,
-                            text: item.full_text || item.snippet
-                        }));
-                        renderList('jd');
-                    }
-                }
-            } catch (e) {}
-
-            // Pre-render top matches with live embeddings if candidate available
-            if (resumes[0]) {
-                await generateRankings(resumes[0].id, false);
-            }
+            renderRankings();
+            const select = document.getElementById('target-resume-select');
+            select.value = currentResumeId || "";
+            updateChatContext();
+            try { await syncDataset(); }
+            catch (error) { logActivity('error', `Could not load stored jobs: ${error.message}`); }
+            try { await syncDemoResumes(); }
+            catch (error) { logActivity('error', `Could not load demo resumes: ${error.message}`); }
+            await loadSettings();
         }
 
         /* ===================================================================
            AI CHATBOT — Floating Panel with RAG-powered Backend Integration
         =================================================================== */
-        const CHAT_SESSION_ID = crypto.randomUUID();
+        let CHAT_SESSION_ID = crypto.randomUUID();
         let chatContextId = null;
+        let chatContextKey = null;
         let chatIsIndexing = false;
         let chatIsStreaming = false;
         let chatHistory = [];
         let chatPanelOpen = false;
 
         // Suggested questions based on context
-        const CHAT_SUGGESTIONS_DEFAULT = [
-            'What are my top matching skills?',
-            'Where are the biggest skill gaps?',
-            'Give me 3 interview tips for this role.',
-            'How can I improve my resume?',
-        ];
         const CHAT_SUGGESTIONS_GAP = [
             'Explain the missing essential skills.',
             'How long to learn the gap skills?',
@@ -3406,55 +3202,82 @@
             'Compare my experience to requirements.',
         ];
 
+        function closeChatPanel() {
+            chatPanelOpen = false;
+            document.getElementById('chat-panel').classList.remove('open');
+            document.getElementById('chat-panel').hidden = true;
+        }
+
         function toggleChatPanel() {
-            chatPanelOpen = !chatPanelOpen;
-            const panel = document.getElementById('chat-panel');
-            const fab = document.getElementById('chat-fab');
-            panel.classList.toggle('open', chatPanelOpen);
-            if (chatPanelOpen) {
-                fab.style.background = 'linear-gradient(135deg,#3a3f45 0%,#22262b 100%)';
-                updateChatContext();
-                if (chatHistory.length === 0) renderChatWelcome();
-                setTimeout(() => document.getElementById('chat-input').focus(), 280);
-            } else {
-                fab.style.background = '';
-            }
+            if (chatPanelOpen) { closeChatPanel(); document.getElementById('ask-ai-btn').focus(); }
+            else openChatView();
         }
 
         function openChatView() {
-            // When using sidebar nav for chat, just open the floating panel
-            switchView('upload');
-            if (!chatPanelOpen) toggleChatPanel();
+            if (!buildChatContextPayload()?.analysis) {
+                logActivity('info', 'Run a job’s gap analysis first, then ask AI about that match.');
+                return false;
+            }
+            updateChatContext();
+            chatPanelOpen = true;
+            document.getElementById('chat-panel').hidden = false;
+            document.getElementById('chat-panel').classList.add('open');
+            if (!chatHistory.length) renderChatWelcome();
+            document.getElementById('chat-input').focus();
+            return true;
         }
 
-        function updateChatContext() {
+        function buildChatContextPayload() {
+            const resume = resumes.find(r => r.id === currentResumeId);
+            if (!resume || !resume.text?.trim()) return null;
+            const jd = jds.find(j => j.id === selectedJdId);
+            const document = (record, source) => ({
+                document_id: record.id,
+                source,
+                pages: record.pages?.length ? record.pages : [{ text: record.text || record.full_text, page: null }],
+                backend_id: record.backend_id || null
+            });
+            const analysis = currentJdData?.context_sufficient
+                && currentJdData.resume_id === resume.id
+                && jd?.backend_id === currentJdData.jd_id ? currentJdData : null;
+            return {
+                session_id: CHAT_SESSION_ID,
+                resume: document(resume, resume.name || resume.id),
+                jd: jd ? document(jd, jd.title || jd.id) : null,
+                analysis
+            };
+        }
+
+        function updateChatContext({ preserveConversation = false } = {}) {
+            const payload = buildChatContextPayload();
+            const selectedResume = resumes.find(r => r.id === currentResumeId);
+            document.getElementById('candidate-name').textContent = selectedResume?.name || 'No candidate selected';
+            document.getElementById('candidate-meta').textContent = selectedResume ? `Resume · ${selectedResume.text.split(/\s+/).filter(Boolean).length} words` : 'Choose a resume';
+            document.getElementById('candidate-initials').textContent = selectedResume ? selectedResume.name.split(/\s+/).filter(Boolean).map(w => w[0]).join('').slice(0, 2).toUpperCase() : '–';
+            document.getElementById('target-resume-select').value = currentResumeId || '';
+            const key = JSON.stringify(payload);
+            if (key !== chatContextKey) {
+                closeChatPanel();
+                document.getElementById('chat-input').value = '';
+                chatContextKey = key;
+                chatContextId = null;
+                if (!preserveConversation) {
+                    chatHistory = [];
+                    document.getElementById('chat-messages').innerHTML = '';
+                }
+                setChatStatus(payload?.analysis ? 'Ready · Grounded in this gap report' : 'Run gap analysis to use the assistant');
+            }
             const resumeChip = document.getElementById('ctx-chip-resume');
             const jdChip = document.getElementById('ctx-chip-jd');
             const subtitle = document.getElementById('chat-panel-subtitle');
-
-            const res = resumes.find(r => r.id === currentResumeId);
-            const jdObj = currentJdData;
-
-            if (res) {
-                resumeChip.textContent = '📄 ' + (res.name || res.id);
-                resumeChip.classList.remove('empty');
-            } else {
-                resumeChip.textContent = 'No resume';
-                resumeChip.classList.add('empty');
-            }
-
-            if (jdObj && (jdObj.title || jdObj.jd_id)) {
-                jdChip.textContent = '💼 ' + (jdObj.title || jdObj.jd_id);
-                jdChip.classList.remove('empty');
-                subtitle.textContent = 'Analyzing your fit for this role';
-            } else {
-                jdChip.textContent = 'No JD selected';
-                jdChip.classList.add('empty');
-                subtitle.textContent = 'Ask me about your resume & job fit';
-            }
-
-            // Reset context when resume/JD changes so we re-index
-            chatContextId = null;
+            resumeChip.textContent = payload ? '📄 ' + payload.resume.source : 'No resume';
+            resumeChip.classList.toggle('empty', !payload);
+            jdChip.textContent = payload?.jd ? '💼 ' + payload.jd.source : 'No JD selected';
+            jdChip.classList.toggle('empty', !payload?.jd);
+            subtitle.textContent = 'Explaining your completed gap analysis';
+            setBusy('ask-ai-btn', !payload?.analysis);
+            updateTargetSelect();
+            if (chatPanelOpen && chatHistory.length === 0) renderChatWelcome();
         }
 
         function renderChatWelcome() {
@@ -3463,10 +3286,10 @@
             const res = resumes.find(r => r.id === currentResumeId);
             const name = res ? res.name : 'your resume';
             appendBotMessage(
-                `Hi! I'm your AI Resume Assistant 👋\n\nI can answer questions about **${name}**, the selected job description, skill gaps, and career strategy.\n\nWhat would you like to know?`,
+                `Let’s work through **${name}** against **${buildChatContextPayload().jd.source}**.\n\nI’m using your completed gap report and both documents. Ask about missing skills, resume improvements, projects, or interview preparation.`,
                 null, true
             );
-            renderSuggestions(currentJdData ? CHAT_SUGGESTIONS_GAP : CHAT_SUGGESTIONS_DEFAULT);
+            renderSuggestions(CHAT_SUGGESTIONS_GAP);
         }
 
         function renderSuggestions(suggestions) {
@@ -3476,9 +3299,12 @@
                 const btn = document.createElement('button');
                 btn.className = 'chat-suggestion-btn';
                 btn.textContent = s;
-                btn.onclick = () => { sendChatMessageText(s); el.innerHTML = ''; };
+                btn.disabled = chatIsStreaming || chatIsIndexing;
+                btn.onclick = () => sendChatMessageText(s);
                 el.appendChild(btn);
             });
+            const messages = document.getElementById('chat-messages');
+            messages.scrollTop = messages.scrollHeight;
         }
 
         function setChatStatus(msg, cls = '') {
@@ -3488,59 +3314,26 @@
         }
 
         async function ensureChatContextIndexed() {
+            if (!buildChatContextPayload()?.analysis) {
+                setChatStatus('Run gap analysis to use the assistant', 'error');
+                return false;
+            }
             if (chatContextId) return true;
             if (chatIsIndexing) return false;
             chatIsIndexing = true;
             setChatStatus('Indexing documents… please wait', 'indexing');
+            let indexingKey = null;
 
             try {
-                const res = resumes.find(r => r.id === currentResumeId);
-                if (!res || !res.text) {
-                    setChatStatus('⚠ No resume selected. Load sample data first.', 'error');
-                    chatIsIndexing = false;
+                const payload = buildChatContextPayload();
+                if (!payload) {
+                    setChatStatus('⚠ Select a resume with readable text first.', 'error');
                     return false;
                 }
-
-                const resumeDoc = {
-                    document_id: res.id,
-                    source: res.name || res.id,
-                    pages: [{ text: res.text, page: 1 }],
-                    backend_id: null
-                };
-
-                let jdDoc = null;
-                if (currentJdData && (currentJdData.text || currentJdData.full_text)) {
-                    const jdText = currentJdData.text || currentJdData.full_text || '';
-                    jdDoc = {
-                        document_id: currentJdData.id || currentJdData.jd_id || 'jd_unknown',
-                        source: currentJdData.title || 'Job Description',
-                        pages: [{ text: jdText, page: 1 }],
-                        backend_id: currentJdData.id || currentJdData.jd_id || null
-                    };
-                }
-
-                const payload = {
-                    session_id: CHAT_SESSION_ID,
-                    resume: resumeDoc,
-                    jd: jdDoc,
-                    analysis: null
-                };
-
-                const r = await fetch(`${API_BASE}/chat/documents`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!r.ok) {
-                    const err = await r.json().catch(() => ({}));
-                    const msg = err.detail || 'Document indexing failed.';
-                    setChatStatus('⚠ ' + msg, 'error');
-                    chatIsIndexing = false;
-                    return false;
-                }
-
-                const data = await r.json();
+                indexingKey = JSON.stringify(payload);
+                const data = await apiRequest('/chat/documents', postJSON(payload));
+                if (indexingKey !== JSON.stringify(buildChatContextPayload())) return false;
+                chatContextKey = indexingKey;
                 chatContextId = data.context_id;
                 setChatStatus(
                     data.reused
@@ -3551,9 +3344,11 @@
                 chatIsIndexing = false;
                 return true;
             } catch (e) {
-                setChatStatus('⚠ Could not reach backend. Is the server running?', 'error');
+                if (indexingKey === JSON.stringify(buildChatContextPayload())) setChatStatus(`Could not index this match: ${e.message}`, 'error');
                 chatIsIndexing = false;
                 return false;
+            } finally {
+                chatIsIndexing = false;
             }
         }
 
@@ -3580,18 +3375,18 @@
             const formatted = formatChatText(text);
             let citeHtml = '';
             if (citations && citations.length > 0) {
-                citeHtml = '<div class="chat-citations">';
+                citeHtml = '<div class="chat-citations"><details><summary>View sources</summary>';
                 citations.forEach(c => {
                     const label = c.document_type === 'resume' ? '📄 Resume' 
                                 : c.document_type === 'jd' ? '💼 Job Description'
                                 : '📊 Analysis';
                     const pageStr = c.page ? ` · Page ${c.page}` : '';
                     citeHtml += `<div class="chat-citation">
-                        <b>[${c.citation_id}] ${label}${pageStr}</b>
+                        <b>[${c.citation_id}] ${label} · ${escapeHtml(c.source || '')}${pageStr}</b>
                         <div class="cite-excerpt">${escapeHtml(c.excerpt)}</div>
                     </div>`;
                 });
-                citeHtml += '</div>';
+                citeHtml += '</details></div>';
             }
 
             el.innerHTML = `<div class="chat-bubble">${formatted}</div>${citeHtml}<div class="chat-time">${time}</div>`;
@@ -3644,67 +3439,48 @@
         }
 
         async function sendChatMessageText(text) {
-            if (!text || !text.trim()) return;
-            if (chatIsStreaming) return;
-            document.getElementById('chat-suggestions').innerHTML = '';
-
-            appendUserMessage(text);
-
-            const ready = await ensureChatContextIndexed();
-            if (!ready) {
-                appendErrorMessage('Cannot index documents. Please check the backend server is running.');
+            if (!text || !text.trim() || chatIsStreaming || chatIsIndexing) return;
+            updateChatContext();
+            if (!buildChatContextPayload()?.analysis) {
+                setChatStatus('Run gap analysis to use the assistant', 'error');
                 return;
             }
-
+            const requestKey = chatContextKey;
+            const history = chatHistory.slice(-6).map(m => ({ role: m.role, content: m.content.slice(0, 2000) }));
             chatIsStreaming = true;
+            renderSuggestions(CHAT_SUGGESTIONS_GAP);
             const sendBtn = document.getElementById('chat-send-btn');
             sendBtn.disabled = true;
-            appendTypingIndicator();
-
+            appendUserMessage(text);
             try {
-                const payload = {
-                    session_id: CHAT_SESSION_ID,
-                    context_id: chatContextId,
-                    message: text.trim().slice(0, 2000),
-                    history: chatHistory.slice(-6).map(m => ({ role: m.role, content: m.content.slice(0, 2000) }))
-                };
-
-                const r = await fetch(`${API_BASE}/chat`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                removeTypingIndicator();
-
-                if (!r.ok) {
-                    const err = await r.json().catch(() => ({}));
-                    appendErrorMessage(err.detail || 'The AI could not answer. Please retry.');
-                    setChatStatus('Error getting response · Powered by Gemini', 'error');
-                } else {
-                    const data = await r.json();
-                    if (!data.context_sufficient) {
-                        appendBotMessage('The selected documents don\'t have enough information to answer that. Try selecting a resume and JD first, or ask a different question.');
-                    } else {
-                        appendBotMessage(data.answer, data.citations);
-                        // Show follow-up suggestions if few messages
-                        if (chatHistory.length < 6) {
-                            renderSuggestions(currentJdData ? CHAT_SUGGESTIONS_GAP : CHAT_SUGGESTIONS_DEFAULT);
-                        }
-                    }
-                    setChatStatus('Powered by Gemini · RAG over your documents');
+                const ready = await ensureChatContextIndexed();
+                if (requestKey !== chatContextKey) return;
+                if (!ready) {
+                    appendErrorMessage('Document indexing failed. Check the status above and retry.');
+                    return;
                 }
-            } catch (e) {
+                appendTypingIndicator();
+                const data = await apiRequest('/chat', postJSON({
+                        session_id: CHAT_SESSION_ID,
+                        context_id: chatContextId,
+                        message: text.trim().slice(0, 2000),
+                        history
+                }));
+                if (requestKey !== chatContextKey) return;
                 removeTypingIndicator();
-                appendErrorMessage('Network error. Is the backend running at ' + API_BASE + '?');
-                setChatStatus('⚠ Network error', 'error');
+                appendBotMessage(data.answer || 'The selected documents do not provide enough information to answer that.', data.citations);
+                setChatStatus(data.context_sufficient ? 'Answered using this match’s context' : 'Not enough document evidence for this question');
+            } catch (error) {
+                if (requestKey === chatContextKey) {
+                    appendErrorMessage(error.message);
+                    setChatStatus('Could not get an answer · Please retry', 'error');
+                }
             } finally {
+                removeTypingIndicator();
                 chatIsStreaming = false;
                 sendBtn.disabled = false;
+                if (requestKey === chatContextKey && buildChatContextPayload()?.analysis) renderSuggestions(CHAT_SUGGESTIONS_GAP);
                 document.getElementById('chat-input').focus();
-                // Show badge on FAB to indicate new response
-                document.getElementById('chat-fab-badge').classList.add('show');
-                setTimeout(() => document.getElementById('chat-fab-badge').classList.remove('show'), 4000);
             }
         }
 
@@ -3718,6 +3494,7 @@
         }
 
         function chatInputKeydown(e) {
+            if (e.key === 'Escape') { toggleChatPanel(); return; }
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 sendChatMessage();
@@ -3729,34 +3506,326 @@
             el.style.height = Math.min(el.scrollHeight, 110) + 'px';
         }
 
-        // When candidate changes, reset chat context so new documents are indexed
-        const _origOnCandidateSelected = typeof onCandidateSelected === 'function' ? onCandidateSelected : null;
-        const _prevOnCandidateSelected = window.onCandidateSelected;
-        window._chatResetOnCandidateChange = function(resumeId) {
+        async function apiRequest(path, options = {}) {
+            const { timeoutMs = 120000, ...request } = options;
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                return await responseJSON(await fetch(`${API_BASE}${path}`, { ...request, signal: controller.signal }));
+            } catch (error) {
+                if (error.name === 'AbortError') throw new Error('The request took too long. Please retry.');
+                throw error;
+            } finally { clearTimeout(timer); }
+        }
+
+        function postJSON(data) {
+            return { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) };
+        }
+
+        function setNotice(id, message, error = false) {
+            const element = document.getElementById(id);
+            element.textContent = message;
+            element.className = message ? `notice ${error ? 'error' : ''}` : '';
+        }
+
+        function setBusy(id, busy) {
+            const element = document.getElementById(id);
+            if (element) element.disabled = busy;
+        }
+
+        function clearAnalysisSelection() {
+            currentJdData = null;
+            closeChatPanel();
+            setBusy('ask-ai-btn', true);
+            analysisRequestVersion++;
+            document.getElementById('progress-modal').classList.remove('open');
+            document.getElementById('report-status').textContent = '';
+        }
+
+        function invalidateRankings() {
+            rankingRequestVersion++;
+            lastRankings = [];
+            rankedResumeId = null;
+            renderRankings();
+            document.getElementById('ranking-updated').textContent = 'Awaiting analysis';
+            document.getElementById('matches-header').textContent = 'Matching jobs';
+            document.getElementById('compare-results').innerHTML = '';
+        }
+
+        async function syncDataset() {
+            const [jobs, stats, ids] = await Promise.all([
+                apiRequest('/jds'), apiRequest('/jds/count'), apiRequest('/jds/ids')
+            ]);
+            const previous = jds;
+            jds = jobs.jds.map(item => {
+                const old = previous.find(j => (j.backend_id || j.id) === item.jd_id);
+                return {
+                    ...old, id: old?.id || item.jd_id, backend_id: item.jd_id,
+                    title: item.title, company: item.company, location: item.location,
+                    text: item.full_text || item.snippet
+                };
+            });
+            jdCap = stats.cap;
+            serverJDCount = stats.count;
+            storedJobIds = ids.ids;
+            if (selectedJdId && !jds.some(j => j.id === selectedJdId)) {
+                selectedJdId = null;
+                clearAnalysisSelection();
+            }
+            renderList('jd');
+            updateChatContext();
+            renderCompareOptions();
+            return jobs;
+        }
+
+        async function refreshDataset() {
+            setBusy('refresh-store-btn', true);
+            try {
+                await syncDataset();
+                invalidateRankings();
+                logActivity('success', `Loaded ${serverJDCount} stored job descriptions.`);
+                if (document.getElementById('backend-json-view').classList.contains('open')) renderBackendJSON();
+            } catch (error) { logActivity('error', `Could not refresh jobs: ${error.message}`); }
+            finally { setBusy('refresh-store-btn', false); }
+        }
+
+        function renderBackendJSON() {
+            document.getElementById('backend-json-view').textContent = JSON.stringify({
+                backend_connected: isServerOnline,
+                stored_count: serverJDCount, capacity: jdCap, stored_job_ids: storedJobIds,
+                jobs: jds.map(j => ({ id: j.backend_id || j.id, title: j.title, company: j.company, location: j.location }))
+            }, null, 2);
+        }
+
+        async function ensureJobStored(jd) {
+            if (!jd.backend_id) {
+                const record = await apiRequest('/jds', postJSON({
+                    title: jd.title, company: jd.company, location: jd.location,
+                    jd_text: jd.text || jd.full_text || ''
+                }));
+                jd.backend_id = record.jd_id;
+                if (!storedJobIds.includes(record.jd_id)) storedJobIds.push(record.jd_id);
+                serverJDCount = storedJobIds.length;
+                updateCounts();
+            }
+            return jd.backend_id;
+        }
+
+        async function clearChatData() {
+            await apiRequest(`/chat/sessions/${CHAT_SESSION_ID}`, { method: 'DELETE' });
+            CHAT_SESSION_ID = crypto.randomUUID();
             chatContextId = null;
+            chatContextKey = null;
             chatHistory = [];
             updateChatContext();
-        };
+        }
 
-        // Hook into candidate selection to reset chat context
-        document.addEventListener('candidateChanged', () => {
-            chatContextId = null;
-            chatHistory = [];
-            updateChatContext();
-        });
+        async function clearChat() {
+            if (chatIsStreaming || chatIsIndexing) return setChatStatus('Wait for the current answer before clearing the conversation.', 'error');
+            const wasOpen = chatPanelOpen;
+            setBusy('clear-chat-btn', true);
+            try { await clearChatData(); if (wasOpen) openChatView(); setChatStatus('Conversation and indexed chat data cleared.'); }
+            catch (error) { setChatStatus(`Could not clear the conversation: ${error.message}`, 'error'); }
+            finally { setBusy('clear-chat-btn', false); }
+        }
 
-        // Also reset when JD is selected for gap analysis
-        const _origLoadAnalysis = window.loadAnalysis;
-        if (typeof _origLoadAnalysis === 'function') {
-            window.loadAnalysis = function(resumeId, jdId) {
-                const result = _origLoadAnalysis.apply(this, arguments);
-                setTimeout(() => {
-                    chatContextId = null;
-                    chatHistory = [];
-                    updateChatContext();
-                }, 500);
-                return result;
-            };
+        function usesMercuryFit(item) {
+            return item.score_source === 'mercury' && Number.isFinite(item.model_fit_score);
+        }
+
+        function primaryRankingScore(item) {
+            return usesMercuryFit(item) ? item.model_fit_score : (item.embedding_similarity ?? item.similarity_score);
+        }
+
+        function rankingNumber(value) {
+            return Number(Number(value).toFixed(1)).toString();
+        }
+
+        function renderRankings() {
+            const container = document.getElementById('role-list');
+            const location = document.getElementById('filter-location').value.trim().toLowerCase();
+            const arrangement = document.getElementById('filter-arrangement').value.toLowerCase();
+            const minimum = Number(document.getElementById('filter-score').value || 0);
+            const sort = document.getElementById('rank-sort').value;
+            const matches = lastRankings.filter(item => {
+                const value = (item.location || '').toLowerCase();
+                const workMatch = !arrangement || (arrangement === 'on-site' ? /on-site|onsite|office|in-person/.test(value) : value.includes(arrangement));
+                return value.includes(location) && workMatch && primaryRankingScore(item) >= minimum && !(minimum > 0 && lastRankings.some(usesMercuryFit) && !usesMercuryFit(item));
+            }).sort((a, b) => sort === 'title' ? a.title.localeCompare(b.title) : sort === 'company' ? a.company.localeCompare(b.company) : sort === 'similarity' ? (b.embedding_similarity ?? b.similarity_score) - (a.embedding_similarity ?? a.similarity_score) || a.rank - b.rank : a.rank - b.rank);
+            document.getElementById('minimum-score-label').textContent = lastRankings.some(usesMercuryFit) ? 'Minimum role fit' : 'Minimum similarity';
+            document.getElementById('ranking-score-explanation').textContent = lastRankings.some(usesMercuryFit) ? 'Role fit is a model rating. AI reviews up to 25 shortlisted jobs; the rest show similarity. Bonuses affect order separately.' : 'Similarity fallback is active. Bonuses affect order separately.';
+            container.innerHTML = '';
+            document.getElementById('rank-result-count').textContent = lastRankings.length ? `${matches.length} of ${lastRankings.length} returned roles shown` : '';
+            if (!matches.length) container.innerHTML = `<div class="empty-note">${lastRankings.length ? 'No roles match these filters.' : 'Run placement fit above to see matching jobs, then choose a job for gap analysis.'}</div>`;
+            matches.forEach(item => {
+                const local = jds.find(j => (j.backend_id || j.id) === item.jd_id);
+                const card = document.createElement('button');
+                card.className = 'role-card';
+                card.type = 'button';
+                card.ariaLabel = `Run gap analysis for ${item.title}`;
+                const modelUsed = usesMercuryFit(item);
+                const mainScore = modelUsed ? `${rankingNumber(item.model_fit_score)}/100` : `${item.embedding_similarity ?? item.similarity_score}%`;
+                const scoreLabel = modelUsed ? `Role fit${item.model_fit ? ` · ${escapeHtml(item.model_fit)}` : ''}` : (item.fit_status === 'not_reviewed' ? 'similarity · outside AI shortlist' : 'similarity');
+                const scoreTitle = modelUsed ? `Assessment confidence: ${Math.round((item.decision_confidence || 0) * 100)}%. Role fit is a model rating, not a hiring probability.` : 'Embedding similarity';
+                const distance = Number.isFinite(item.location_distance_km) ? ` · ~${rankingNumber(item.location_distance_km)} km` : '';
+                const locationBonus = item.location_reason && item.location_reason !== 'No location preference' ? `<span class="preference-note" title="${escapeHtml(item.location_reason)}">Location +${Number(item.location_bonus || 0)}${distance} · ${escapeHtml(item.location_reason)}</span>` : '';
+                const arrangementBonus = item.arrangement_bonus > 0 ? `<span class="preference-note">Work arrangement +${Number(item.arrangement_bonus)}</span>` : '';
+                const legacyBonus = item.location_bonus === undefined && item.preference_boost > 0 ? `<span class="preference-note">Preferences +${Number(item.preference_boost)}</span>` : '';
+                const rankingTotal = item.preference_boost > 0 && Number.isFinite(item.ranking_score) ? `<small class="preference-note">Ranking total: ${rankingNumber(item.ranking_score)} points</small>` : '';
+
+                card.innerHTML = `<div class="rank">${String(item.rank).padStart(2, '0')}</div><div class="role-info"><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.location || 'Location unspecified')}</p><p class="role-desc">${escapeHtml(item.snippet || '')}</p>${locationBonus}${arrangementBonus}${legacyBonus}</div><div class="role-side"><span class="company-badge">${escapeHtml(item.company)}</span><div class="match" title="${scoreTitle}"><strong>${mainScore}</strong><small>${scoreLabel}</small>${rankingTotal}</div><span class="gap-action">Run gap analysis →</span></div>`;
+                card.onclick = () => loadAnalysis(rankedResumeId, local?.id || item.jd_id);
+                container.appendChild(card);
+            });
+        }
+
+        function analysisKey(resume, jd) {
+            return JSON.stringify([resume.id, resume.text, jd.backend_id, jd.text || jd.full_text]);
+        }
+
+        async function analyzePair(resume, jd) {
+            await ensureJobStored(jd);
+            const key = analysisKey(resume, jd);
+            const configVersion = configurationRevision;
+            if (analysisCache.has(key)) return analysisCache.get(key);
+            const data = await apiRequest('/analyze', { ...postJSON({ resume_text: resume.text, resume_id: resume.id, jd_id: jd.backend_id }), timeoutMs: 180000 });
+            if (configVersion !== configurationRevision) throw new Error('Settings changed during analysis. Please run it again.');
+            if (!data.context_sufficient) throw new Error(data.insufficient_reason || 'The documents lack enough information for analysis.');
+            if (data.resume_id !== resume.id || data.jd_id !== jd.backend_id) throw new Error('The analysis belongs to different documents. Please retry.');
+            analysisCache.set(key, data);
+            return data;
+        }
+
+        async function downloadReport() {
+            const resume = resumes.find(r => r.id === currentResumeId);
+            const jd = jds.find(j => j.id === selectedJdId);
+            if (!resume || !jd || !currentJdData?.context_sufficient) return setNotice('report-status', 'Run detailed analysis first.', true);
+            setBusy('download-report-btn', true);
+            try {
+                const result = await apiRequest('/api/report/markdown', postJSON({ analysis: currentJdData, resume_name: resume.name, jd_title: jd.title }));
+                const blob = new Blob([result.markdown], { type: 'text/markdown;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const anchor = document.createElement('a');
+                anchor.href = url;
+                anchor.download = `gap-analysis-${resume.name}-${jd.title}.md`.replace(/[^a-zA-Z0-9._-]/g, '-');
+                anchor.click();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+                setNotice('report-status', 'Report downloaded.');
+            } catch (error) { setNotice('report-status', `Download failed: ${error.message}`, true); }
+            finally { setBusy('download-report-btn', false); }
+        }
+
+        function renderCompareOptions() {
+            const container = document.getElementById('compare-options');
+            const selected = new Set(Array.from(document.querySelectorAll('input[name="compare-jd"]:checked')).map(el => el.value));
+            container.innerHTML = '';
+            const resume = resumes.find(r => r.id === currentResumeId);
+            document.getElementById('compare-candidate').textContent = resume ? `Candidate: ${resume.name}. Choose two or three roles.` : 'Choose a resume in Placement fit.';
+            for (const jd of jds) {
+                const label = document.createElement('label');
+                const input = document.createElement('input');
+                input.type = 'checkbox'; input.name = 'compare-jd'; input.value = jd.id; input.checked = selected.has(jd.id);
+                label.appendChild(input);
+                const text = document.createElement('span'); text.textContent = `${jd.title} · ${jd.company}`; label.appendChild(text);
+                container.appendChild(label);
+            }
+            if (!jds.length) container.textContent = 'Add at least two job descriptions to compare roles.';
+        }
+
+        async function compareRoles() {
+            const ids = Array.from(document.querySelectorAll('input[name="compare-jd"]:checked')).map(el => el.value);
+            const resume = resumes.find(r => r.id === currentResumeId);
+            if (!resume || ids.length < 2 || ids.length > 3) return setNotice('compare-status', 'Select a candidate and two or three roles.', true);
+            const signature = JSON.stringify([resume.id, resume.text, ids, configurationRevision]);
+            const documentVersion = rankingRequestVersion;
+            setBusy('compare-btn', true);
+            const results = [];
+            document.getElementById('compare-results').innerHTML = '';
+            try {
+                for (const id of ids) {
+                    const jd = jds.find(j => j.id === id);
+                    if (!jd) throw new Error('A selected job was removed. Choose the jobs again.');
+                    setNotice('compare-status', `Analyzing role ${results.length + 1} of ${ids.length}: ${jd.title}…`);
+                    try { results.push({ jd, analysis: await analyzePair(resume, jd) }); }
+                    catch (error) { results.push({ jd, error: error.message }); }
+                    if (documentVersion !== rankingRequestVersion || resume.id !== currentResumeId || JSON.stringify([resume.id, resume.text, ids, configurationRevision]) !== signature) return;
+                }
+                renderComparison(results);
+                const successful = results.filter(r => r.analysis).length;
+                setNotice('compare-status', successful === results.length ? `Compared ${successful} roles.` : `Compared ${successful} of ${results.length} roles. Failed analyses are shown below.`, successful !== results.length);
+            } catch (error) { setNotice('compare-status', error.message, true); }
+            finally { setBusy('compare-btn', false); }
+        }
+
+        function renderComparison(results) {
+            const cell = value => `<td>${escapeHtml(value)}</td>`;
+            const fields = [
+                ['Skill coverage', r => r.analysis ? `${r.analysis.match_score}%` : 'Unavailable'],
+                ['Missing essential', r => r.analysis?.skill_gap?.missing_essential?.join(', ') || (r.analysis ? 'None' : r.error)],
+                ['Missing preferred', r => r.analysis?.skill_gap?.missing_preferred?.join(', ') || (r.analysis ? 'None' : 'Unavailable')],
+                ['Matched skills', r => r.analysis?.skill_gap?.matched?.map(s => s.skill_name).join(', ') || 'None'],
+                ['Summary', r => r.analysis?.summary || r.error]
+            ];
+            const counts = new Map();
+            results.filter(r => r.analysis).forEach(r => new Set(r.analysis.skill_gap.missing_essential).forEach(skill => counts.set(skill, (counts.get(skill) || 0) + 1)));
+            const gaps = [...counts].sort((a, b) => b[1] - a[1]).map(([skill, count]) => `${skill} (${count} roles)`).join(' · ');
+            document.getElementById('compare-results').innerHTML = `<section class="panel"><h2>Role comparison</h2><div class="table-scroll"><table class="comparison-table"><thead><tr><th>Requirement</th>${results.map(r => `<th>${escapeHtml(r.jd.title)}<br><span class="feature-note">${escapeHtml(r.jd.company)}</span></th>`).join('')}</tr></thead><tbody>${fields.map(([label, get]) => `<tr><th>${label}</th>${results.map(r => cell(get(r))).join('')}</tr>`).join('')}</tbody></table></div><h3>Recurring essential gaps</h3><p class="feature-note">${escapeHtml(gaps || 'No essential gaps in the successfully analyzed roles.')}</p></section>`;
+        }
+
+
+        async function loadSettings() {
+            setBusy('settings-refresh-btn', true);
+            setNotice('settings-status', 'Loading settings…');
+            try {
+                const data = await apiRequest('/api/config');
+                savedSettings = data;
+                document.getElementById('gemini-key-status').textContent = data.gemini_configured ? `Configured (${data.gemini_masked})` : 'No key configured';
+                document.getElementById('groq-key-status').textContent = data.groq_configured ? `Configured (${data.groq_masked})` : 'Optional fallback is not configured';
+                document.getElementById('openrouter-key-status').textContent = data.openrouter_configured ? `Configured (${data.openrouter_masked})` : 'No key configured · similarity ranking stays available';
+                document.getElementById('settings-decision-model').textContent = `${data.decision_model || 'inception/mercury-decide:free'}${data.decision_enabled === false ? ' · disabled in environment' : ''}`;
+                document.getElementById('settings-model').value = data.generation_model;
+                document.getElementById('settings-embedding').textContent = data.embedding_model;
+                document.getElementById('settings-rerank').checked = data.rerank;
+                jdCap = data.jd_cap;
+                serverJDCount = data.jd_count;
+                updateCounts();
+                setBusy('settings-save-btn', false);
+                setNotice('settings-status', 'Current settings loaded.');
+            } catch (error) {
+                setBusy('settings-save-btn', true);
+                setNotice('settings-status', `Could not load settings: ${error.message}`, true);
+            } finally { setBusy('settings-refresh-btn', false); }
+        }
+
+        async function saveSettings() {
+            if (!savedSettings) return setNotice('settings-status', 'Load the current settings first.', true);
+            if (chatIsStreaming || chatIsIndexing) return setNotice('settings-status', 'Wait for the current chat request to finish.', true);
+            const model = document.getElementById('settings-model').value.trim();
+            if (!model) return setNotice('settings-status', 'Enter a generation model.', true);
+            const payload = { generation_model: model, rerank: document.getElementById('settings-rerank').checked };
+            for (const provider of ['gemini', 'groq', 'openrouter']) {
+                const value = document.getElementById(`settings-${provider}-key`).value.trim();
+                const remove = document.getElementById(`remove-${provider}-key`).checked;
+                if (remove && value) return setNotice('settings-status', `Enter a ${provider} key or choose to remove it, not both.`, true);
+                if (remove || value) payload[`${provider}_api_key`] = remove ? '' : value;
+            }
+            setBusy('settings-save-btn', true);
+            try {
+                await apiRequest('/api/config', postJSON(payload));
+                configurationRevision++;
+                analysisCache.clear();
+                clearAnalysisSelection();
+                invalidateRankings();
+                for (const provider of ['gemini', 'groq', 'openrouter']) {
+                    document.getElementById(`settings-${provider}-key`).value = '';
+                    document.getElementById(`remove-${provider}-key`).checked = false;
+                }
+                try { await clearChatData(); }
+                catch (_) { chatContextId = null; chatContextKey = null; chatHistory = []; updateChatContext(); }
+                await loadSettings();
+                setNotice('settings-status', 'Settings saved. Your next request will use the new configuration.');
+            } catch (error) { setNotice('settings-status', `Settings could not be saved: ${error.message}`, true); }
+            finally { setBusy('settings-save-btn', !savedSettings); }
         }
 
         initializeApp();

@@ -19,7 +19,7 @@ class TestServerEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertIn("count", data)
-        self.assertEqual(data["cap"], 15)
+        self.assertIsNone(data["cap"])
 
     def test_post_jds_and_rank(self):
         jd_index.clear_store_for_testing()
@@ -81,7 +81,7 @@ class TestServerEndpoints(unittest.TestCase):
         self.assertEqual(data["match_score"], 0)
         self.assertIn("Resume text is too short", data["insufficient_reason"])
 
-    def test_post_jds_cap_exceeded_returns_409(self):
+    def test_post_jds_accepts_sixteenth_job(self):
         jd_index.clear_store_for_testing()
         with patch.object(jd_index, "_get_embedder") as mock_emb_fn:
             mock_emb = MagicMock()
@@ -98,8 +98,9 @@ class TestServerEndpoints(unittest.TestCase):
                 "location": "Loc",
                 "jd_text": "Text " * 10
             })
-            self.assertEqual(resp.status_code, 409)
-            self.assertEqual(resp.json()["detail"]["error_code"], "STORE_CAP_REACHED")
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(jd_index.count(), 16)
+            self.assertIsNone(self.client.get("/jds/count").json()["cap"])
 
     def test_post_analyze_jd_not_found_returns_404(self):
         resp = self.client.post("/analyze", json={

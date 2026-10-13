@@ -80,6 +80,7 @@ def add_uploaded_documents(files, kind):
     state_key = "resumes" if kind == "resume" else "jds"
     records, notices = prepare_uploads(
         files, st.session_state[state_key], kind, validate_doc_text, MAX_FILE_SIZE_BYTES,
+        cap=10 if kind == "resume" else None,
     )
     st.session_state[state_key].extend(records)
     if records:
@@ -595,10 +596,9 @@ with st.sidebar:
     st.subheader("Session Counters")
     col1, col2 = st.columns(2)
     col1.metric("Resumes", f"{len(st.session_state.resumes)} / 10")
-    col2.metric("JDs", f"{len(st.session_state.jds)} / 10")
+    col2.metric("JDs", len(st.session_state.jds))
 
     st.progress(len(st.session_state.resumes) / 10, text="Resume Cap")
-    st.progress(len(st.session_state.jds) / 10, text="JD Cap")
 
     st.divider()
 
@@ -758,7 +758,7 @@ tab_upload, tab_results, tab_detail, tab_compare, tab_chat = st.tabs([
 
 with tab_upload:
     st.header("Upload and Document Management Panel")
-    st.markdown("Upload candidate resumes and job descriptions (Max 10 documents each, **5MB max file size**).")
+    st.markdown("Upload candidate resumes and job descriptions (**5MB max file size**). Jobs have no count cap.")
     render_operation_notices("upload_notices", "Dismiss upload messages")
 
     col_res, col_jd = st.columns(2)
@@ -820,7 +820,7 @@ with tab_upload:
 
     # Right Column: Job Descriptions
     with col_jd:
-        st.subheader("Job Descriptions (Max 10, Limit 5MB)")
+        st.subheader("Job Descriptions (Limit 5MB per file)")
         jd_upload_mode = st.radio("JD Upload Mode", ["Files (PDF / DOCX / TXT)", "Manual Form"], horizontal=True, key="jd_mode")
 
         if jd_upload_mode == "Files (PDF / DOCX / TXT)":
@@ -841,9 +841,7 @@ with tab_upload:
                 m_jd_text = st.text_area("Job Description Full Text", height=120, placeholder="Requirements, qualifications, skills...")
                 submit_jd = st.form_submit_button("Add Manual JD")
                 if submit_jd:
-                    if len(st.session_state.jds) >= 10:
-                        st.error("JD cap reached (10 max).")
-                    elif not m_jd_text.strip():
+                    if not m_jd_text.strip():
                         st.error("JD text cannot be empty.")
                     else:
                         status, warn = validate_doc_text(m_jd_text)
@@ -862,7 +860,7 @@ with tab_upload:
                         st.rerun()
 
         # Preview JDs
-        st.markdown(f"**Ingested Job Descriptions ({len(st.session_state.jds)}/10)**")
+        st.markdown(f"**Ingested Job Descriptions ({len(st.session_state.jds)})**")
         if not st.session_state.jds:
             st.info("No JDs added yet.")
         for idx, j in enumerate(st.session_state.jds):
@@ -983,7 +981,7 @@ with tab_results:
         # Feature 1: Top-N Selector
         top_n_choice = st.radio(
             "Number of Results to Display",
-            ["Top 5", "Top 10", "All"],
+            ["Top 5", "Top 10", "Top 25", "All"],
             index=0,
             horizontal=True,
             key="top_n_choice"
@@ -1055,6 +1053,8 @@ with tab_results:
             visible_cards = filtered_cards[:5]
         elif top_n_choice == "Top 10":
             visible_cards = filtered_cards[:10]
+        elif top_n_choice == "Top 25":
+            visible_cards = filtered_cards[:25]
         else:
             visible_cards = filtered_cards
 

@@ -25,8 +25,8 @@ class EmbeddingManager:
 
     def __init__(self, model: str = EMBEDDING_MODEL):
         self.model = model
-        api_key = os.getenv("GEMINI_API_KEY") or GEMINI_API_KEY
-        self.client = genai.Client(api_key=api_key)
+        api_key = os.environ.get("GEMINI_API_KEY", GEMINI_API_KEY)
+        self.client = genai.Client(api_key=api_key, http_options={"timeout": 30000, "retry_options": {"attempts": 1}})
 
     def embed_chunk(self, text: str) -> list[float]:
         """Embeds a single piece of text, returns one vector."""

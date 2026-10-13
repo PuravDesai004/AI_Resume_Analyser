@@ -1,0 +1,2109 @@
+{
+  "description": "Synthetic India demo: 100 jobs and 100 resumes, shaped like the original five samples. Not real vacancies, people, or ground-truth fit scores.",
+  "resumes": [
+    {
+      "id": "res_india_python_backend_01",
+      "name": "Aarav Sharma — Python Developer (Mumbai)",
+      "text": "Python Developer based in Mumbai, India with 1 years of professional experience. Skilled in Python, FastAPI, PostgreSQL, Docker. Additional experience with Redis. Hands-on work building tested order-management APIs and database-backed services. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Bachelor of Computer Applications. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Mumbai, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_python_backend_02",
+      "name": "Aditi Sharma — Python Developer (Navi Mumbai)",
+      "text": "Python Developer based in Navi Mumbai, India with 3 years of professional experience. Skilled in Python, FastAPI, PostgreSQL, Docker, REST APIs. Additional experience with Redis, AWS. Hands-on work building tested order-management APIs and database-backed services. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Computer Science. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Navi Mumbai, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_python_backend_03",
+      "name": "Rohan Sharma — Python Developer (Pune)",
+      "text": "Python Developer based in Pune, India with 4 years of professional experience. Skilled in Python, FastAPI, PostgreSQL, Docker, REST APIs, microservices. Additional experience with Redis, AWS, Pytest. Hands-on work building tested order-management APIs and database-backed services. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Sc in Computer Science. Interested in remote roles and further developing role-specific skills.",
+      "location": "Pune, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_python_backend_04",
+      "name": "Ishita Sharma — Python Developer (Ratnagiri)",
+      "text": "Python Developer based in Ratnagiri, India with 7 years of professional experience. Skilled in Python, FastAPI, PostgreSQL, Docker, REST APIs, microservices. Additional experience with Redis, AWS, Pytest, GitHub Actions. Hands-on work building tested order-management APIs and database-backed services. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Master of Computer Applications. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Ratnagiri, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_python_backend_05",
+      "name": "Kabir Sharma — Python Developer (Ahmedabad)",
+      "text": "Python Developer based in Ahmedabad, India with 2 years of professional experience. Skilled in Python, FastAPI, Git, Excel, technical documentation. Additional experience with Redis. Hands-on work completing supervised practice projects in Python while transitioning from application support. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Information Technology. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Ahmedabad, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_react_frontend_01",
+      "name": "Meera Sharma — Frontend Engineer (Bengaluru)",
+      "text": "Frontend Engineer based in Bengaluru, India with 1 years of professional experience. Skilled in React, TypeScript, JavaScript, HTML5. Additional experience with Next.js. Hands-on work building accessible customer dashboards with reusable components and state management. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Bachelor of Computer Applications. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Bengaluru, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_react_frontend_02",
+      "name": "Arjun Sharma — Frontend Engineer (Hyderabad)",
+      "text": "Frontend Engineer based in Hyderabad, India with 3 years of professional experience. Skilled in React, TypeScript, JavaScript, HTML5, CSS3. Additional experience with Next.js, Tailwind CSS. Hands-on work building accessible customer dashboards with reusable components and state management. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Computer Science. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Hyderabad, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_react_frontend_03",
+      "name": "Ananya Sharma — Frontend Engineer (Chennai)",
+      "text": "Frontend Engineer based in Chennai, India with 4 years of professional experience. Skilled in React, TypeScript, JavaScript, HTML5, CSS3, Redux. Additional experience with Next.js, Tailwind CSS, Jest. Hands-on work building accessible customer dashboards with reusable components and state management. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Sc in Computer Science. Interested in remote roles and further developing role-specific skills.",
+      "location": "Chennai, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_react_frontend_04",
+      "name": "Vikram Sharma — Frontend Engineer (Delhi)",
+      "text": "Frontend Engineer based in Delhi, India with 7 years of professional experience. Skilled in React, TypeScript, JavaScript, HTML5, CSS3, Redux. Additional experience with Next.js, Tailwind CSS, Jest, Cypress. Hands-on work building accessible customer dashboards with reusable components and state management. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Master of Computer Applications. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Delhi, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_react_frontend_05",
+      "name": "Nisha Sharma — Frontend Engineer (Kolkata)",
+      "text": "Frontend Engineer based in Kolkata, India with 2 years of professional experience. Skilled in React, TypeScript, Git, Excel, technical documentation. Additional experience with Next.js. Hands-on work completing supervised practice projects in React while transitioning from application support. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Information Technology. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Kolkata, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_data_science_01",
+      "name": "Aarav Patil — Data Scientist (Noida)",
+      "text": "Data Scientist based in Noida, India with 1 years of professional experience. Skilled in Python, Pandas, NumPy, Scikit-learn. Additional experience with PyTorch. Hands-on work developing demand-forecasting models with reproducible validation and error analysis. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Bachelor of Computer Applications. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Noida, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_data_science_02",
+      "name": "Aditi Patil — Data Scientist (Gurugram)",
+      "text": "Data Scientist based in Gurugram, India with 3 years of professional experience. Skilled in Python, Pandas, NumPy, Scikit-learn, SQL. Additional experience with PyTorch, Matplotlib. Hands-on work developing demand-forecasting models with reproducible validation and error analysis. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Computer Science. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Gurugram, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_data_science_03",
+      "name": "Rohan Patil — Data Scientist (Jaipur)",
+      "text": "Data Scientist based in Jaipur, India with 4 years of professional experience. Skilled in Python, Pandas, NumPy, Scikit-learn, SQL, statistics. Additional experience with PyTorch, Matplotlib, Streamlit. Hands-on work developing demand-forecasting models with reproducible validation and error analysis. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Sc in Computer Science. Interested in remote roles and further developing role-specific skills.",
+      "location": "Jaipur, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_data_science_04",
+      "name": "Ishita Patil — Data Scientist (Kochi)",
+      "text": "Data Scientist based in Kochi, India with 7 years of professional experience. Skilled in Python, Pandas, NumPy, Scikit-learn, SQL, statistics. Additional experience with PyTorch, Matplotlib, Streamlit, model evaluation. Hands-on work developing demand-forecasting models with reproducible validation and error analysis. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Master of Computer Applications. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Kochi, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_data_science_05",
+      "name": "Kabir Patil — Data Scientist (Indore)",
+      "text": "Data Scientist based in Indore, India with 2 years of professional experience. Skilled in Python, Pandas, Git, Excel, technical documentation. Additional experience with PyTorch. Hands-on work completing supervised practice projects in Python while transitioning from application support. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Information Technology. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Indore, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_devops_01",
+      "name": "Meera Patil — DevOps Engineer (Lucknow)",
+      "text": "DevOps Engineer based in Lucknow, India with 1 years of professional experience. Skilled in Docker, Kubernetes, Terraform, Linux. Additional experience with AWS. Hands-on work automating container deployments, infrastructure provisioning and operational monitoring. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Bachelor of Computer Applications. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Lucknow, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_devops_02",
+      "name": "Arjun Patil — DevOps Engineer (Nagpur)",
+      "text": "DevOps Engineer based in Nagpur, India with 3 years of professional experience. Skilled in Docker, Kubernetes, Terraform, Linux, Bash. Additional experience with AWS, Ansible. Hands-on work automating container deployments, infrastructure provisioning and operational monitoring. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Computer Science. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Nagpur, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_devops_03",
+      "name": "Ananya Patil — DevOps Engineer (Thane)",
+      "text": "DevOps Engineer based in Thane, India with 4 years of professional experience. Skilled in Docker, Kubernetes, Terraform, Linux, Bash, CI/CD. Additional experience with AWS, Ansible, Jenkins. Hands-on work automating container deployments, infrastructure provisioning and operational monitoring. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Sc in Computer Science. Interested in remote roles and further developing role-specific skills.",
+      "location": "Thane, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_devops_04",
+      "name": "Vikram Patil — DevOps Engineer (Nashik)",
+      "text": "DevOps Engineer based in Nashik, India with 7 years of professional experience. Skilled in Docker, Kubernetes, Terraform, Linux, Bash, CI/CD. Additional experience with AWS, Ansible, Jenkins, GitLab CI/CD. Hands-on work automating container deployments, infrastructure provisioning and operational monitoring. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Master of Computer Applications. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Nashik, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_devops_05",
+      "name": "Nisha Patil — DevOps Engineer (Coimbatore)",
+      "text": "DevOps Engineer based in Coimbatore, India with 2 years of professional experience. Skilled in Docker, Kubernetes, Git, Excel, technical documentation. Additional experience with AWS. Hands-on work completing supervised practice projects in Docker while transitioning from application support. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Information Technology. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Coimbatore, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_fullstack_01",
+      "name": "Aarav Iyer — Fullstack Engineer (Mumbai)",
+      "text": "Fullstack Engineer based in Mumbai, India with 1 years of professional experience. Skilled in Python, React, PostgreSQL, REST APIs. Additional experience with MongoDB. Hands-on work delivering inventory-management applications with frontend screens and backend services. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Bachelor of Computer Applications. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Mumbai, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_fullstack_02",
+      "name": "Aditi Iyer — Fullstack Engineer (Navi Mumbai)",
+      "text": "Fullstack Engineer based in Navi Mumbai, India with 3 years of professional experience. Skilled in Python, React, PostgreSQL, REST APIs, Git. Additional experience with MongoDB, Nginx. Hands-on work delivering inventory-management applications with frontend screens and backend services. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Computer Science. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Navi Mumbai, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_fullstack_03",
+      "name": "Rohan Iyer — Fullstack Engineer (Pune)",
+      "text": "Fullstack Engineer based in Pune, India with 4 years of professional experience. Skilled in Python, React, PostgreSQL, REST APIs, Git, JavaScript. Additional experience with MongoDB, Nginx, Google Cloud Platform. Hands-on work delivering inventory-management applications with frontend screens and backend services. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Sc in Computer Science. Interested in remote roles and further developing role-specific skills.",
+      "location": "Pune, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_fullstack_04",
+      "name": "Ishita Iyer — Fullstack Engineer (Ratnagiri)",
+      "text": "Fullstack Engineer based in Ratnagiri, India with 7 years of professional experience. Skilled in Python, React, PostgreSQL, REST APIs, Git, JavaScript. Additional experience with MongoDB, Nginx, Google Cloud Platform, Docker. Hands-on work delivering inventory-management applications with frontend screens and backend services. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Master of Computer Applications. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Ratnagiri, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_fullstack_05",
+      "name": "Kabir Iyer — Fullstack Engineer (Ahmedabad)",
+      "text": "Fullstack Engineer based in Ahmedabad, India with 2 years of professional experience. Skilled in Python, React, Git, Excel, technical documentation. Additional experience with MongoDB. Hands-on work completing supervised practice projects in Python while transitioning from application support. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Information Technology. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Ahmedabad, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_java_backend_01",
+      "name": "Meera Iyer — Java Developer (Bengaluru)",
+      "text": "Java Developer based in Bengaluru, India with 1 years of professional experience. Skilled in Java, Spring Boot, Hibernate, PostgreSQL. Additional experience with Kafka. Hands-on work building payment-reconciliation services with transaction handling and integration tests. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Bachelor of Computer Applications. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Bengaluru, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_java_backend_02",
+      "name": "Arjun Iyer — Java Developer (Hyderabad)",
+      "text": "Java Developer based in Hyderabad, India with 3 years of professional experience. Skilled in Java, Spring Boot, Hibernate, PostgreSQL, REST APIs. Additional experience with Kafka, Docker. Hands-on work building payment-reconciliation services with transaction handling and integration tests. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Computer Science. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Hyderabad, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_java_backend_03",
+      "name": "Ananya Iyer — Java Developer (Chennai)",
+      "text": "Java Developer based in Chennai, India with 4 years of professional experience. Skilled in Java, Spring Boot, Hibernate, PostgreSQL, REST APIs, JUnit. Additional experience with Kafka, Docker, Redis. Hands-on work building payment-reconciliation services with transaction handling and integration tests. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Sc in Computer Science. Interested in remote roles and further developing role-specific skills.",
+      "location": "Chennai, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_java_backend_04",
+      "name": "Vikram Iyer — Java Developer (Delhi)",
+      "text": "Java Developer based in Delhi, India with 7 years of professional experience. Skilled in Java, Spring Boot, Hibernate, PostgreSQL, REST APIs, JUnit. Additional experience with Kafka, Docker, Redis, Maven. Hands-on work building payment-reconciliation services with transaction handling and integration tests. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Master of Computer Applications. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Delhi, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_java_backend_05",
+      "name": "Nisha Iyer — Java Developer (Kolkata)",
+      "text": "Java Developer based in Kolkata, India with 2 years of professional experience. Skilled in Java, Spring Boot, Git, Excel, technical documentation. Additional experience with Kafka. Hands-on work completing supervised practice projects in Java while transitioning from application support. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Information Technology. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Kolkata, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_data_engineer_01",
+      "name": "Aarav Shah — Data Engineer (Noida)",
+      "text": "Data Engineer based in Noida, India with 1 years of professional experience. Skilled in Python, SQL, Apache Spark, Airflow. Additional experience with dbt. Hands-on work maintaining scheduled ingestion pipelines and analytics-ready warehouse tables. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Bachelor of Computer Applications. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Noida, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_data_engineer_02",
+      "name": "Aditi Shah — Data Engineer (Gurugram)",
+      "text": "Data Engineer based in Gurugram, India with 3 years of professional experience. Skilled in Python, SQL, Apache Spark, Airflow, ETL. Additional experience with dbt, Snowflake. Hands-on work maintaining scheduled ingestion pipelines and analytics-ready warehouse tables. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Computer Science. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Gurugram, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_data_engineer_03",
+      "name": "Rohan Shah — Data Engineer (Jaipur)",
+      "text": "Data Engineer based in Jaipur, India with 4 years of professional experience. Skilled in Python, SQL, Apache Spark, Airflow, ETL, data modelling. Additional experience with dbt, Snowflake, AWS S3. Hands-on work maintaining scheduled ingestion pipelines and analytics-ready warehouse tables. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Sc in Computer Science. Interested in remote roles and further developing role-specific skills.",
+      "location": "Jaipur, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_data_engineer_04",
+      "name": "Ishita Shah — Data Engineer (Kochi)",
+      "text": "Data Engineer based in Kochi, India with 7 years of professional experience. Skilled in Python, SQL, Apache Spark, Airflow, ETL, data modelling. Additional experience with dbt, Snowflake, AWS S3, data quality testing. Hands-on work maintaining scheduled ingestion pipelines and analytics-ready warehouse tables. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Master of Computer Applications. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Kochi, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_data_engineer_05",
+      "name": "Kabir Shah — Data Engineer (Indore)",
+      "text": "Data Engineer based in Indore, India with 2 years of professional experience. Skilled in Python, SQL, Git, Excel, technical documentation. Additional experience with dbt. Hands-on work completing supervised practice projects in Python while transitioning from application support. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Information Technology. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Indore, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_android_01",
+      "name": "Meera Shah — Android Developer (Lucknow)",
+      "text": "Android Developer based in Lucknow, India with 1 years of professional experience. Skilled in Kotlin, Android SDK, Jetpack Compose, Room. Additional experience with Firebase. Hands-on work building offline-capable delivery apps with API integration and local persistence. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Bachelor of Computer Applications. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Lucknow, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_android_02",
+      "name": "Arjun Shah — Android Developer (Nagpur)",
+      "text": "Android Developer based in Nagpur, India with 3 years of professional experience. Skilled in Kotlin, Android SDK, Jetpack Compose, Room, REST APIs. Additional experience with Firebase, Gradle. Hands-on work building offline-capable delivery apps with API integration and local persistence. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Computer Science. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Nagpur, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_android_03",
+      "name": "Ananya Shah — Android Developer (Thane)",
+      "text": "Android Developer based in Thane, India with 4 years of professional experience. Skilled in Kotlin, Android SDK, Jetpack Compose, Room, REST APIs, Git. Additional experience with Firebase, Gradle, JUnit. Hands-on work building offline-capable delivery apps with API integration and local persistence. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Sc in Computer Science. Interested in remote roles and further developing role-specific skills.",
+      "location": "Thane, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_android_04",
+      "name": "Vikram Shah — Android Developer (Nashik)",
+      "text": "Android Developer based in Nashik, India with 7 years of professional experience. Skilled in Kotlin, Android SDK, Jetpack Compose, Room, REST APIs, Git. Additional experience with Firebase, Gradle, JUnit, Coroutines. Hands-on work building offline-capable delivery apps with API integration and local persistence. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Master of Computer Applications. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Nashik, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_android_05",
+      "name": "Nisha Shah — Android Developer (Coimbatore)",
+      "text": "Android Developer based in Coimbatore, India with 2 years of professional experience. Skilled in Kotlin, Android SDK, Git, Excel, technical documentation. Additional experience with Firebase. Hands-on work completing supervised practice projects in Kotlin while transitioning from application support. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Information Technology. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Coimbatore, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_ios_01",
+      "name": "Aarav Rao — iOS Developer (Mumbai)",
+      "text": "iOS Developer based in Mumbai, India with 1 years of professional experience. Skilled in Swift, SwiftUI, Core Data, REST APIs. Additional experience with Combine. Hands-on work developing appointment-booking apps with secure session handling and automated tests. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Bachelor of Computer Applications. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Mumbai, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_ios_02",
+      "name": "Aditi Rao — iOS Developer (Navi Mumbai)",
+      "text": "iOS Developer based in Navi Mumbai, India with 3 years of professional experience. Skilled in Swift, SwiftUI, Core Data, REST APIs, Git. Additional experience with Combine, UIKit. Hands-on work developing appointment-booking apps with secure session handling and automated tests. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Computer Science. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Navi Mumbai, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_ios_03",
+      "name": "Rohan Rao — iOS Developer (Pune)",
+      "text": "iOS Developer based in Pune, India with 4 years of professional experience. Skilled in Swift, SwiftUI, Core Data, REST APIs, Git, XCTest. Additional experience with Combine, UIKit, Fastlane. Hands-on work developing appointment-booking apps with secure session handling and automated tests. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Sc in Computer Science. Interested in remote roles and further developing role-specific skills.",
+      "location": "Pune, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_ios_04",
+      "name": "Ishita Rao — iOS Developer (Ratnagiri)",
+      "text": "iOS Developer based in Ratnagiri, India with 7 years of professional experience. Skilled in Swift, SwiftUI, Core Data, REST APIs, Git, XCTest. Additional experience with Combine, UIKit, Fastlane, accessibility testing. Hands-on work developing appointment-booking apps with secure session handling and automated tests. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Master of Computer Applications. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Ratnagiri, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_ios_05",
+      "name": "Kabir Rao — iOS Developer (Ahmedabad)",
+      "text": "iOS Developer based in Ahmedabad, India with 2 years of professional experience. Skilled in Swift, SwiftUI, Git, Excel, technical documentation. Additional experience with Combine. Hands-on work completing supervised practice projects in Swift while transitioning from application support. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Information Technology. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Ahmedabad, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_qa_01",
+      "name": "Meera Rao — QA Automation Engineer (Bengaluru)",
+      "text": "QA Automation Engineer based in Bengaluru, India with 1 years of professional experience. Skilled in Python, Selenium, Pytest, API testing. Additional experience with Playwright. Hands-on work maintaining browser and API regression suites with reproducible defect reports. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Bachelor of Computer Applications. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Bengaluru, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_qa_02",
+      "name": "Arjun Rao — QA Automation Engineer (Hyderabad)",
+      "text": "QA Automation Engineer based in Hyderabad, India with 3 years of professional experience. Skilled in Python, Selenium, Pytest, API testing, Git. Additional experience with Playwright, Postman. Hands-on work maintaining browser and API regression suites with reproducible defect reports. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Computer Science. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Hyderabad, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_qa_03",
+      "name": "Ananya Rao — QA Automation Engineer (Chennai)",
+      "text": "QA Automation Engineer based in Chennai, India with 4 years of professional experience. Skilled in Python, Selenium, Pytest, API testing, Git, test planning. Additional experience with Playwright, Postman, JMeter. Hands-on work maintaining browser and API regression suites with reproducible defect reports. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Sc in Computer Science. Interested in remote roles and further developing role-specific skills.",
+      "location": "Chennai, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_qa_04",
+      "name": "Vikram Rao — QA Automation Engineer (Delhi)",
+      "text": "QA Automation Engineer based in Delhi, India with 7 years of professional experience. Skilled in Python, Selenium, Pytest, API testing, Git, test planning. Additional experience with Playwright, Postman, JMeter, CI/CD. Hands-on work maintaining browser and API regression suites with reproducible defect reports. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Master of Computer Applications. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Delhi, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_qa_05",
+      "name": "Nisha Rao — QA Automation Engineer (Kolkata)",
+      "text": "QA Automation Engineer based in Kolkata, India with 2 years of professional experience. Skilled in Python, Selenium, Git, Excel, technical documentation. Additional experience with Playwright. Hands-on work completing supervised practice projects in Python while transitioning from application support. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Information Technology. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Kolkata, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_security_01",
+      "name": "Aarav Deshmukh — Security Analyst (Noida)",
+      "text": "Security Analyst based in Noida, India with 1 years of professional experience. Skilled in Linux, network security, SIEM, incident response. Additional experience with Splunk. Hands-on work triaging security alerts and documenting investigation and remediation workflows. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Bachelor of Computer Applications. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Noida, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_security_02",
+      "name": "Aditi Deshmukh — Security Analyst (Gurugram)",
+      "text": "Security Analyst based in Gurugram, India with 3 years of professional experience. Skilled in Linux, network security, SIEM, incident response, vulnerability assessment. Additional experience with Splunk, Wireshark. Hands-on work triaging security alerts and documenting investigation and remediation workflows. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Computer Science. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Gurugram, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_security_03",
+      "name": "Rohan Deshmukh — Security Analyst (Jaipur)",
+      "text": "Security Analyst based in Jaipur, India with 4 years of professional experience. Skilled in Linux, network security, SIEM, incident response, vulnerability assessment, Python. Additional experience with Splunk, Wireshark, OWASP. Hands-on work triaging security alerts and documenting investigation and remediation workflows. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Sc in Computer Science. Interested in remote roles and further developing role-specific skills.",
+      "location": "Jaipur, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_security_04",
+      "name": "Ishita Deshmukh — Security Analyst (Kochi)",
+      "text": "Security Analyst based in Kochi, India with 7 years of professional experience. Skilled in Linux, network security, SIEM, incident response, vulnerability assessment, Python. Additional experience with Splunk, Wireshark, OWASP, security documentation. Hands-on work triaging security alerts and documenting investigation and remediation workflows. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Master of Computer Applications. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Kochi, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_security_05",
+      "name": "Kabir Deshmukh — Security Analyst (Indore)",
+      "text": "Security Analyst based in Indore, India with 2 years of professional experience. Skilled in Linux, network security, Git, Excel, technical documentation. Additional experience with Splunk. Hands-on work completing supervised practice projects in Linux while transitioning from application support. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Information Technology. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Indore, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_cloud_01",
+      "name": "Meera Deshmukh — Cloud Engineer (Lucknow)",
+      "text": "Cloud Engineer based in Lucknow, India with 1 years of professional experience. Skilled in AWS, Terraform, Linux, IAM. Additional experience with Azure. Hands-on work provisioning cloud services with least-privilege access and recovery procedures. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Bachelor of Computer Applications. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Lucknow, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_cloud_02",
+      "name": "Arjun Deshmukh — Cloud Engineer (Nagpur)",
+      "text": "Cloud Engineer based in Nagpur, India with 3 years of professional experience. Skilled in AWS, Terraform, Linux, IAM, Docker. Additional experience with Azure, Ansible. Hands-on work provisioning cloud services with least-privilege access and recovery procedures. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Computer Science. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Nagpur, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_cloud_03",
+      "name": "Ananya Deshmukh — Cloud Engineer (Thane)",
+      "text": "Cloud Engineer based in Thane, India with 4 years of professional experience. Skilled in AWS, Terraform, Linux, IAM, Docker, Python. Additional experience with Azure, Ansible, Kubernetes. Hands-on work provisioning cloud services with least-privilege access and recovery procedures. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Sc in Computer Science. Interested in remote roles and further developing role-specific skills.",
+      "location": "Thane, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_cloud_04",
+      "name": "Vikram Deshmukh — Cloud Engineer (Nashik)",
+      "text": "Cloud Engineer based in Nashik, India with 7 years of professional experience. Skilled in AWS, Terraform, Linux, IAM, Docker, Python. Additional experience with Azure, Ansible, Kubernetes, CloudWatch. Hands-on work provisioning cloud services with least-privilege access and recovery procedures. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Master of Computer Applications. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Nashik, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_cloud_05",
+      "name": "Nisha Deshmukh — Cloud Engineer (Coimbatore)",
+      "text": "Cloud Engineer based in Coimbatore, India with 2 years of professional experience. Skilled in AWS, Terraform, Git, Excel, technical documentation. Additional experience with Azure. Hands-on work completing supervised practice projects in AWS while transitioning from application support. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Information Technology. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Coimbatore, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_ml_01",
+      "name": "Aarav Menon — Machine Learning Engineer (Mumbai)",
+      "text": "Machine Learning Engineer based in Mumbai, India with 1 years of professional experience. Skilled in Python, PyTorch, Scikit-learn, Docker. Additional experience with LangChain. Hands-on work deploying versioned model-serving APIs with evaluation and inference monitoring. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Bachelor of Computer Applications. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Mumbai, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_ml_02",
+      "name": "Aditi Menon — Machine Learning Engineer (Navi Mumbai)",
+      "text": "Machine Learning Engineer based in Navi Mumbai, India with 3 years of professional experience. Skilled in Python, PyTorch, Scikit-learn, Docker, MLflow. Additional experience with LangChain, model fine-tuning. Hands-on work deploying versioned model-serving APIs with evaluation and inference monitoring. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Computer Science. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Navi Mumbai, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_ml_03",
+      "name": "Rohan Menon — Machine Learning Engineer (Pune)",
+      "text": "Machine Learning Engineer based in Pune, India with 4 years of professional experience. Skilled in Python, PyTorch, Scikit-learn, Docker, MLflow, FastAPI. Additional experience with LangChain, model fine-tuning, ChromaDB. Hands-on work deploying versioned model-serving APIs with evaluation and inference monitoring. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Sc in Computer Science. Interested in remote roles and further developing role-specific skills.",
+      "location": "Pune, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_ml_04",
+      "name": "Ishita Menon — Machine Learning Engineer (Ratnagiri)",
+      "text": "Machine Learning Engineer based in Ratnagiri, India with 7 years of professional experience. Skilled in Python, PyTorch, Scikit-learn, Docker, MLflow, FastAPI. Additional experience with LangChain, model fine-tuning, ChromaDB, monitoring. Hands-on work deploying versioned model-serving APIs with evaluation and inference monitoring. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Master of Computer Applications. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Ratnagiri, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_ml_05",
+      "name": "Kabir Menon — Machine Learning Engineer (Ahmedabad)",
+      "text": "Machine Learning Engineer based in Ahmedabad, India with 2 years of professional experience. Skilled in Python, PyTorch, Git, Excel, technical documentation. Additional experience with LangChain. Hands-on work completing supervised practice projects in Python while transitioning from application support. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Information Technology. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Ahmedabad, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_dotnet_01",
+      "name": "Meera Menon — .NET Developer (Bengaluru)",
+      "text": ".NET Developer based in Bengaluru, India with 1 years of professional experience. Skilled in C#, ASP.NET Core, Entity Framework Core, SQL Server. Additional experience with Azure. Hands-on work building business workflow APIs with relational data access and authentication. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Bachelor of Computer Applications. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Bengaluru, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_dotnet_02",
+      "name": "Arjun Menon — .NET Developer (Hyderabad)",
+      "text": ".NET Developer based in Hyderabad, India with 3 years of professional experience. Skilled in C#, ASP.NET Core, Entity Framework Core, SQL Server, REST APIs. Additional experience with Azure, Redis. Hands-on work building business workflow APIs with relational data access and authentication. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Computer Science. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Hyderabad, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_dotnet_03",
+      "name": "Ananya Menon — .NET Developer (Chennai)",
+      "text": ".NET Developer based in Chennai, India with 4 years of professional experience. Skilled in C#, ASP.NET Core, Entity Framework Core, SQL Server, REST APIs, Git. Additional experience with Azure, Redis, Docker. Hands-on work building business workflow APIs with relational data access and authentication. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Sc in Computer Science. Interested in remote roles and further developing role-specific skills.",
+      "location": "Chennai, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_dotnet_04",
+      "name": "Vikram Menon — .NET Developer (Delhi)",
+      "text": ".NET Developer based in Delhi, India with 7 years of professional experience. Skilled in C#, ASP.NET Core, Entity Framework Core, SQL Server, REST APIs, Git. Additional experience with Azure, Redis, Docker, xUnit. Hands-on work building business workflow APIs with relational data access and authentication. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Master of Computer Applications. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Delhi, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_dotnet_05",
+      "name": "Nisha Menon — .NET Developer (Kolkata)",
+      "text": ".NET Developer based in Kolkata, India with 2 years of professional experience. Skilled in C#, ASP.NET Core, Git, Excel, technical documentation. Additional experience with Azure. Hands-on work completing supervised practice projects in C# while transitioning from application support. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Information Technology. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Kolkata, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_ux_01",
+      "name": "Aarav Gupta — UX Designer (Noida)",
+      "text": "UX Designer based in Noida, India with 1 years of professional experience. Skilled in Figma, wireframing, prototyping, user research. Additional experience with HTML5. Hands-on work designing and testing onboarding journeys with documented usability findings. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Bachelor of Computer Applications. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Noida, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_ux_02",
+      "name": "Aditi Gupta — UX Designer (Gurugram)",
+      "text": "UX Designer based in Gurugram, India with 3 years of professional experience. Skilled in Figma, wireframing, prototyping, user research, usability testing. Additional experience with HTML5, CSS3. Hands-on work designing and testing onboarding journeys with documented usability findings. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Computer Science. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Gurugram, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_ux_03",
+      "name": "Rohan Gupta — UX Designer (Jaipur)",
+      "text": "UX Designer based in Jaipur, India with 4 years of professional experience. Skilled in Figma, wireframing, prototyping, user research, usability testing, design systems. Additional experience with HTML5, CSS3, Adobe XD. Hands-on work designing and testing onboarding journeys with documented usability findings. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Sc in Computer Science. Interested in remote roles and further developing role-specific skills.",
+      "location": "Jaipur, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_ux_04",
+      "name": "Ishita Gupta — UX Designer (Kochi)",
+      "text": "UX Designer based in Kochi, India with 7 years of professional experience. Skilled in Figma, wireframing, prototyping, user research, usability testing, design systems. Additional experience with HTML5, CSS3, Adobe XD, accessibility. Hands-on work designing and testing onboarding journeys with documented usability findings. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Master of Computer Applications. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Kochi, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_ux_05",
+      "name": "Kabir Gupta — UX Designer (Indore)",
+      "text": "UX Designer based in Indore, India with 2 years of professional experience. Skilled in Figma, wireframing, Git, Excel, technical documentation. Additional experience with HTML5. Hands-on work completing supervised practice projects in Figma while transitioning from application support. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Information Technology. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Indore, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_bi_01",
+      "name": "Meera Gupta — Business Intelligence Analyst (Lucknow)",
+      "text": "Business Intelligence Analyst based in Lucknow, India with 1 years of professional experience. Skilled in SQL, Excel, Power BI, DAX. Additional experience with Python. Hands-on work building sales-performance dashboards with governed metrics and drill-down reports. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Bachelor of Computer Applications. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Lucknow, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_bi_02",
+      "name": "Arjun Gupta — Business Intelligence Analyst (Nagpur)",
+      "text": "Business Intelligence Analyst based in Nagpur, India with 3 years of professional experience. Skilled in SQL, Excel, Power BI, DAX, data modelling. Additional experience with Python, Tableau. Hands-on work building sales-performance dashboards with governed metrics and drill-down reports. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Computer Science. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Nagpur, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_bi_03",
+      "name": "Ananya Gupta — Business Intelligence Analyst (Thane)",
+      "text": "Business Intelligence Analyst based in Thane, India with 4 years of professional experience. Skilled in SQL, Excel, Power BI, DAX, data modelling, dashboard design. Additional experience with Python, Tableau, Snowflake. Hands-on work building sales-performance dashboards with governed metrics and drill-down reports. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Sc in Computer Science. Interested in remote roles and further developing role-specific skills.",
+      "location": "Thane, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_bi_04",
+      "name": "Vikram Gupta — Business Intelligence Analyst (Nashik)",
+      "text": "Business Intelligence Analyst based in Nashik, India with 7 years of professional experience. Skilled in SQL, Excel, Power BI, DAX, data modelling, dashboard design. Additional experience with Python, Tableau, Snowflake, statistics. Hands-on work building sales-performance dashboards with governed metrics and drill-down reports. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Master of Computer Applications. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Nashik, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_bi_05",
+      "name": "Nisha Gupta — Business Intelligence Analyst (Coimbatore)",
+      "text": "Business Intelligence Analyst based in Coimbatore, India with 2 years of professional experience. Skilled in SQL, Excel, Git, Excel, technical documentation. Additional experience with Python. Hands-on work completing supervised practice projects in SQL while transitioning from application support. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Information Technology. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Coimbatore, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_dba_01",
+      "name": "Aarav Bose — Database Administrator (Mumbai)",
+      "text": "Database Administrator based in Mumbai, India with 1 years of professional experience. Skilled in PostgreSQL, SQL, backup and recovery, replication. Additional experience with MySQL. Hands-on work maintaining database backups, replication and query-performance runbooks. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Bachelor of Computer Applications. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Mumbai, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_dba_02",
+      "name": "Aditi Bose — Database Administrator (Navi Mumbai)",
+      "text": "Database Administrator based in Navi Mumbai, India with 3 years of professional experience. Skilled in PostgreSQL, SQL, backup and recovery, replication, performance tuning. Additional experience with MySQL, Redis. Hands-on work maintaining database backups, replication and query-performance runbooks. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Computer Science. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Navi Mumbai, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_dba_03",
+      "name": "Rohan Bose — Database Administrator (Pune)",
+      "text": "Database Administrator based in Pune, India with 4 years of professional experience. Skilled in PostgreSQL, SQL, backup and recovery, replication, performance tuning, Linux. Additional experience with MySQL, Redis, AWS RDS. Hands-on work maintaining database backups, replication and query-performance runbooks. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Sc in Computer Science. Interested in remote roles and further developing role-specific skills.",
+      "location": "Pune, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_dba_04",
+      "name": "Ishita Bose — Database Administrator (Ratnagiri)",
+      "text": "Database Administrator based in Ratnagiri, India with 7 years of professional experience. Skilled in PostgreSQL, SQL, backup and recovery, replication, performance tuning, Linux. Additional experience with MySQL, Redis, AWS RDS, monitoring. Hands-on work maintaining database backups, replication and query-performance runbooks. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Master of Computer Applications. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Ratnagiri, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_dba_05",
+      "name": "Kabir Bose — Database Administrator (Ahmedabad)",
+      "text": "Database Administrator based in Ahmedabad, India with 2 years of professional experience. Skilled in PostgreSQL, SQL, Git, Excel, technical documentation. Additional experience with MySQL. Hands-on work completing supervised practice projects in PostgreSQL while transitioning from application support. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Information Technology. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Ahmedabad, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_embedded_01",
+      "name": "Meera Bose — Embedded Software Engineer (Bengaluru)",
+      "text": "Embedded Software Engineer based in Bengaluru, India with 1 years of professional experience. Skilled in C, C++, microcontrollers, UART. Additional experience with I2C. Hands-on work developing sensor-device firmware with peripheral integration and hardware diagnostics. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Bachelor of Computer Applications. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Bengaluru, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_embedded_02",
+      "name": "Arjun Bose — Embedded Software Engineer (Hyderabad)",
+      "text": "Embedded Software Engineer based in Hyderabad, India with 3 years of professional experience. Skilled in C, C++, microcontrollers, UART, SPI. Additional experience with I2C, Linux. Hands-on work developing sensor-device firmware with peripheral integration and hardware diagnostics. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Computer Science. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Hyderabad, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_embedded_03",
+      "name": "Ananya Bose — Embedded Software Engineer (Chennai)",
+      "text": "Embedded Software Engineer based in Chennai, India with 4 years of professional experience. Skilled in C, C++, microcontrollers, UART, SPI, RTOS. Additional experience with I2C, Linux, unit testing. Hands-on work developing sensor-device firmware with peripheral integration and hardware diagnostics. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Sc in Computer Science. Interested in remote roles and further developing role-specific skills.",
+      "location": "Chennai, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_embedded_04",
+      "name": "Vikram Bose — Embedded Software Engineer (Delhi)",
+      "text": "Embedded Software Engineer based in Delhi, India with 7 years of professional experience. Skilled in C, C++, microcontrollers, UART, SPI, RTOS. Additional experience with I2C, Linux, unit testing, debugging. Hands-on work developing sensor-device firmware with peripheral integration and hardware diagnostics. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Master of Computer Applications. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Delhi, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_embedded_05",
+      "name": "Nisha Bose — Embedded Software Engineer (Kolkata)",
+      "text": "Embedded Software Engineer based in Kolkata, India with 2 years of professional experience. Skilled in C, C++, Git, Excel, technical documentation. Additional experience with I2C. Hands-on work completing supervised practice projects in C while transitioning from application support. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Information Technology. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Kolkata, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_product_analytics_01",
+      "name": "Aarav Kulkarni — Product Analyst (Noida)",
+      "text": "Product Analyst based in Noida, India with 1 years of professional experience. Skilled in SQL, Python, Excel, A/B testing. Additional experience with Amplitude. Hands-on work analysing conversion funnels and experiments with documented metric definitions. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Bachelor of Computer Applications. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Noida, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_product_analytics_02",
+      "name": "Aditi Kulkarni — Product Analyst (Gurugram)",
+      "text": "Product Analyst based in Gurugram, India with 3 years of professional experience. Skilled in SQL, Python, Excel, A/B testing, product analytics. Additional experience with Amplitude, Google Analytics. Hands-on work analysing conversion funnels and experiments with documented metric definitions. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Computer Science. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Gurugram, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_product_analytics_03",
+      "name": "Rohan Kulkarni — Product Analyst (Jaipur)",
+      "text": "Product Analyst based in Jaipur, India with 4 years of professional experience. Skilled in SQL, Python, Excel, A/B testing, product analytics, statistics. Additional experience with Amplitude, Google Analytics, Tableau. Hands-on work analysing conversion funnels and experiments with documented metric definitions. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Sc in Computer Science. Interested in remote roles and further developing role-specific skills.",
+      "location": "Jaipur, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_product_analytics_04",
+      "name": "Ishita Kulkarni — Product Analyst (Kochi)",
+      "text": "Product Analyst based in Kochi, India with 7 years of professional experience. Skilled in SQL, Python, Excel, A/B testing, product analytics, statistics. Additional experience with Amplitude, Google Analytics, Tableau, cohort analysis. Hands-on work analysing conversion funnels and experiments with documented metric definitions. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Master of Computer Applications. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Kochi, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_product_analytics_05",
+      "name": "Kabir Kulkarni — Product Analyst (Indore)",
+      "text": "Product Analyst based in Indore, India with 2 years of professional experience. Skilled in SQL, Python, Git, Excel, technical documentation. Additional experience with Amplitude. Hands-on work completing supervised practice projects in SQL while transitioning from application support. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Information Technology. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Indore, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_support_01",
+      "name": "Meera Kulkarni — Technical Support Engineer (Lucknow)",
+      "text": "Technical Support Engineer based in Lucknow, India with 1 years of professional experience. Skilled in Linux, SQL, networking, troubleshooting. Additional experience with Python. Hands-on work investigating customer incidents and documenting reproducible fixes and escalation steps. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Bachelor of Computer Applications. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Lucknow, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_support_02",
+      "name": "Arjun Kulkarni — Technical Support Engineer (Nagpur)",
+      "text": "Technical Support Engineer based in Nagpur, India with 3 years of professional experience. Skilled in Linux, SQL, networking, troubleshooting, ticket management. Additional experience with Python, AWS. Hands-on work investigating customer incidents and documenting reproducible fixes and escalation steps. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Computer Science. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Nagpur, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_support_03",
+      "name": "Ananya Kulkarni — Technical Support Engineer (Thane)",
+      "text": "Technical Support Engineer based in Thane, India with 4 years of professional experience. Skilled in Linux, SQL, networking, troubleshooting, ticket management, REST APIs. Additional experience with Python, AWS, ITIL. Hands-on work investigating customer incidents and documenting reproducible fixes and escalation steps. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Sc in Computer Science. Interested in remote roles and further developing role-specific skills.",
+      "location": "Thane, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_support_04",
+      "name": "Vikram Kulkarni — Technical Support Engineer (Nashik)",
+      "text": "Technical Support Engineer based in Nashik, India with 7 years of professional experience. Skilled in Linux, SQL, networking, troubleshooting, ticket management, REST APIs. Additional experience with Python, AWS, ITIL, technical writing. Hands-on work investigating customer incidents and documenting reproducible fixes and escalation steps. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: Master of Computer Applications. Interested in hybrid roles and further developing role-specific skills.",
+      "location": "Nashik, India",
+      "synthetic": true
+    },
+    {
+      "id": "res_india_support_05",
+      "name": "Nisha Kulkarni — Technical Support Engineer (Coimbatore)",
+      "text": "Technical Support Engineer based in Coimbatore, India with 2 years of professional experience. Skilled in Linux, SQL, Git, Excel, technical documentation. Additional experience with Python. Hands-on work completing supervised practice projects in Linux while transitioning from application support. Collaborated with engineering and operations teams, used Git for version control, and documented project decisions. Education: B.Tech in Information Technology. Interested in on-site roles and further developing role-specific skills.",
+      "location": "Coimbatore, India",
+      "synthetic": true
+    }
+  ],
+  "jds": [
+    {
+      "id": "jd_india_python_backend_01",
+      "title": "Junior Python Backend Engineer",
+      "company": "Demo Sharma Digital Labs",
+      "location": "Mumbai, India (On-site)",
+      "text": "We are looking for a Junior Python Backend Engineer for our Mumbai, India team. Essential Requirements: Python, FastAPI, PostgreSQL, Docker, REST APIs, microservices. Fresh graduates or candidates with up to 2 years of experience may apply. Responsibilities include building tested order-management APIs and database-backed services, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Redis, AWS, Pytest, GitHub Actions. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_python_backend_02",
+      "title": "Associate Python Backend Engineer",
+      "company": "Demo Sharma Digital Labs",
+      "location": "Navi Mumbai, India (Hybrid)",
+      "text": "We are looking for a Associate Python Backend Engineer for our Navi Mumbai, India team. Essential Requirements: Python, FastAPI, PostgreSQL, Docker, REST APIs, microservices. At least 2 years of relevant professional experience required. Responsibilities include building tested order-management APIs and database-backed services, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Redis, AWS, Pytest, GitHub Actions. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_python_backend_03",
+      "title": "Python Backend Engineer",
+      "company": "Demo Sharma Digital Labs",
+      "location": "Pune, India (Remote)",
+      "text": "We are looking for a Python Backend Engineer for our Pune, India team. Essential Requirements: Python, FastAPI, PostgreSQL, Docker, REST APIs, microservices. At least 3 years of relevant professional experience required. Responsibilities include building tested order-management APIs and database-backed services, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Redis, AWS, Pytest, GitHub Actions. Work arrangement: Remote. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_python_backend_04",
+      "title": "Senior Python Backend Engineer",
+      "company": "Demo Sharma Digital Labs",
+      "location": "Ratnagiri, India (Hybrid)",
+      "text": "We are looking for a Senior Python Backend Engineer for our Ratnagiri, India team. Essential Requirements: Python, FastAPI, PostgreSQL, Docker, REST APIs, microservices. At least 5 years of relevant professional experience required. Responsibilities include building tested order-management APIs and database-backed services, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Redis, AWS, Pytest, GitHub Actions. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_python_backend_05",
+      "title": "Python Backend Engineer",
+      "company": "Demo Sharma Digital Labs",
+      "location": "Ahmedabad, India (On-site)",
+      "text": "We are looking for a Python Backend Engineer for our Ahmedabad, India team. Essential Requirements: Python, FastAPI, PostgreSQL, Docker, REST APIs, microservices. At least 4 years of relevant professional experience required. Responsibilities include building tested order-management APIs and database-backed services, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Redis, AWS, Pytest, GitHub Actions. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_react_frontend_01",
+      "title": "Junior React Frontend Developer",
+      "company": "Demo Patil Digital Labs",
+      "location": "Bengaluru, India (On-site)",
+      "text": "We are looking for a Junior React Frontend Developer for our Bengaluru, India team. Essential Requirements: React, TypeScript, JavaScript, HTML5, CSS3, Redux. Fresh graduates or candidates with up to 2 years of experience may apply. Responsibilities include building accessible customer dashboards with reusable components and state management, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Next.js, Tailwind CSS, Jest, Cypress. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_react_frontend_02",
+      "title": "Associate React Frontend Developer",
+      "company": "Demo Patil Digital Labs",
+      "location": "Hyderabad, India (Hybrid)",
+      "text": "We are looking for a Associate React Frontend Developer for our Hyderabad, India team. Essential Requirements: React, TypeScript, JavaScript, HTML5, CSS3, Redux. At least 2 years of relevant professional experience required. Responsibilities include building accessible customer dashboards with reusable components and state management, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Next.js, Tailwind CSS, Jest, Cypress. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_react_frontend_03",
+      "title": "React Frontend Developer",
+      "company": "Demo Patil Digital Labs",
+      "location": "Chennai, India (Remote)",
+      "text": "We are looking for a React Frontend Developer for our Chennai, India team. Essential Requirements: React, TypeScript, JavaScript, HTML5, CSS3, Redux. At least 3 years of relevant professional experience required. Responsibilities include building accessible customer dashboards with reusable components and state management, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Next.js, Tailwind CSS, Jest, Cypress. Work arrangement: Remote. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_react_frontend_04",
+      "title": "Senior React Frontend Developer",
+      "company": "Demo Patil Digital Labs",
+      "location": "Delhi, India (Hybrid)",
+      "text": "We are looking for a Senior React Frontend Developer for our Delhi, India team. Essential Requirements: React, TypeScript, JavaScript, HTML5, CSS3, Redux. At least 5 years of relevant professional experience required. Responsibilities include building accessible customer dashboards with reusable components and state management, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Next.js, Tailwind CSS, Jest, Cypress. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_react_frontend_05",
+      "title": "React Frontend Developer",
+      "company": "Demo Patil Digital Labs",
+      "location": "Kolkata, India (On-site)",
+      "text": "We are looking for a React Frontend Developer for our Kolkata, India team. Essential Requirements: React, TypeScript, JavaScript, HTML5, CSS3, Redux. At least 4 years of relevant professional experience required. Responsibilities include building accessible customer dashboards with reusable components and state management, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Next.js, Tailwind CSS, Jest, Cypress. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_data_science_01",
+      "title": "Junior Data Scientist",
+      "company": "Demo Iyer Digital Labs",
+      "location": "Noida, India (On-site)",
+      "text": "We are looking for a Junior Data Scientist for our Noida, India team. Essential Requirements: Python, Pandas, NumPy, Scikit-learn, SQL, statistics. Fresh graduates or candidates with up to 2 years of experience may apply. Responsibilities include developing demand-forecasting models with reproducible validation and error analysis, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: PyTorch, Matplotlib, Streamlit, model evaluation. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_data_science_02",
+      "title": "Associate Data Scientist",
+      "company": "Demo Iyer Digital Labs",
+      "location": "Gurugram, India (Hybrid)",
+      "text": "We are looking for a Associate Data Scientist for our Gurugram, India team. Essential Requirements: Python, Pandas, NumPy, Scikit-learn, SQL, statistics. At least 2 years of relevant professional experience required. Responsibilities include developing demand-forecasting models with reproducible validation and error analysis, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: PyTorch, Matplotlib, Streamlit, model evaluation. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_data_science_03",
+      "title": "Data Scientist",
+      "company": "Demo Iyer Digital Labs",
+      "location": "Jaipur, India (Remote)",
+      "text": "We are looking for a Data Scientist for our Jaipur, India team. Essential Requirements: Python, Pandas, NumPy, Scikit-learn, SQL, statistics. At least 3 years of relevant professional experience required. Responsibilities include developing demand-forecasting models with reproducible validation and error analysis, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: PyTorch, Matplotlib, Streamlit, model evaluation. Work arrangement: Remote. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_data_science_04",
+      "title": "Senior Data Scientist",
+      "company": "Demo Iyer Digital Labs",
+      "location": "Kochi, India (Hybrid)",
+      "text": "We are looking for a Senior Data Scientist for our Kochi, India team. Essential Requirements: Python, Pandas, NumPy, Scikit-learn, SQL, statistics. At least 5 years of relevant professional experience required. Responsibilities include developing demand-forecasting models with reproducible validation and error analysis, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: PyTorch, Matplotlib, Streamlit, model evaluation. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_data_science_05",
+      "title": "Data Scientist",
+      "company": "Demo Iyer Digital Labs",
+      "location": "Indore, India (On-site)",
+      "text": "We are looking for a Data Scientist for our Indore, India team. Essential Requirements: Python, Pandas, NumPy, Scikit-learn, SQL, statistics. At least 4 years of relevant professional experience required. Responsibilities include developing demand-forecasting models with reproducible validation and error analysis, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: PyTorch, Matplotlib, Streamlit, model evaluation. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_devops_01",
+      "title": "Junior DevOps and Cloud Engineer",
+      "company": "Demo Shah Digital Labs",
+      "location": "Lucknow, India (On-site)",
+      "text": "We are looking for a Junior DevOps and Cloud Engineer for our Lucknow, India team. Essential Requirements: Docker, Kubernetes, Terraform, Linux, Bash, CI/CD. Fresh graduates or candidates with up to 2 years of experience may apply. Responsibilities include automating container deployments, infrastructure provisioning and operational monitoring, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: AWS, Ansible, Jenkins, GitLab CI/CD. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_devops_02",
+      "title": "Associate DevOps and Cloud Engineer",
+      "company": "Demo Shah Digital Labs",
+      "location": "Nagpur, India (Hybrid)",
+      "text": "We are looking for a Associate DevOps and Cloud Engineer for our Nagpur, India team. Essential Requirements: Docker, Kubernetes, Terraform, Linux, Bash, CI/CD. At least 2 years of relevant professional experience required. Responsibilities include automating container deployments, infrastructure provisioning and operational monitoring, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: AWS, Ansible, Jenkins, GitLab CI/CD. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_devops_03",
+      "title": "DevOps and Cloud Engineer",
+      "company": "Demo Shah Digital Labs",
+      "location": "Thane, India (Remote)",
+      "text": "We are looking for a DevOps and Cloud Engineer for our Thane, India team. Essential Requirements: Docker, Kubernetes, Terraform, Linux, Bash, CI/CD. At least 3 years of relevant professional experience required. Responsibilities include automating container deployments, infrastructure provisioning and operational monitoring, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: AWS, Ansible, Jenkins, GitLab CI/CD. Work arrangement: Remote. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_devops_04",
+      "title": "Senior DevOps and Cloud Engineer",
+      "company": "Demo Shah Digital Labs",
+      "location": "Nashik, India (Hybrid)",
+      "text": "We are looking for a Senior DevOps and Cloud Engineer for our Nashik, India team. Essential Requirements: Docker, Kubernetes, Terraform, Linux, Bash, CI/CD. At least 5 years of relevant professional experience required. Responsibilities include automating container deployments, infrastructure provisioning and operational monitoring, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: AWS, Ansible, Jenkins, GitLab CI/CD. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_devops_05",
+      "title": "DevOps and Cloud Engineer",
+      "company": "Demo Shah Digital Labs",
+      "location": "Coimbatore, India (On-site)",
+      "text": "We are looking for a DevOps and Cloud Engineer for our Coimbatore, India team. Essential Requirements: Docker, Kubernetes, Terraform, Linux, Bash, CI/CD. At least 4 years of relevant professional experience required. Responsibilities include automating container deployments, infrastructure provisioning and operational monitoring, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: AWS, Ansible, Jenkins, GitLab CI/CD. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_fullstack_01",
+      "title": "Junior Full Stack Software Engineer",
+      "company": "Demo Rao Digital Labs",
+      "location": "Mumbai, India (On-site)",
+      "text": "We are looking for a Junior Full Stack Software Engineer for our Mumbai, India team. Essential Requirements: Python or Node.js, React, PostgreSQL, REST APIs, Git, JavaScript. Fresh graduates or candidates with up to 2 years of experience may apply. Responsibilities include delivering inventory-management applications with frontend screens and backend services, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: MongoDB, Nginx, Google Cloud Platform, Docker. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_fullstack_02",
+      "title": "Associate Full Stack Software Engineer",
+      "company": "Demo Rao Digital Labs",
+      "location": "Navi Mumbai, India (Hybrid)",
+      "text": "We are looking for a Associate Full Stack Software Engineer for our Navi Mumbai, India team. Essential Requirements: Python or Node.js, React, PostgreSQL, REST APIs, Git, JavaScript. At least 2 years of relevant professional experience required. Responsibilities include delivering inventory-management applications with frontend screens and backend services, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: MongoDB, Nginx, Google Cloud Platform, Docker. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_fullstack_03",
+      "title": "Full Stack Software Engineer",
+      "company": "Demo Rao Digital Labs",
+      "location": "Pune, India (Remote)",
+      "text": "We are looking for a Full Stack Software Engineer for our Pune, India team. Essential Requirements: Python or Node.js, React, PostgreSQL, REST APIs, Git, JavaScript. At least 3 years of relevant professional experience required. Responsibilities include delivering inventory-management applications with frontend screens and backend services, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: MongoDB, Nginx, Google Cloud Platform, Docker. Work arrangement: Remote. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_fullstack_04",
+      "title": "Senior Full Stack Software Engineer",
+      "company": "Demo Rao Digital Labs",
+      "location": "Ratnagiri, India (Hybrid)",
+      "text": "We are looking for a Senior Full Stack Software Engineer for our Ratnagiri, India team. Essential Requirements: Python or Node.js, React, PostgreSQL, REST APIs, Git, JavaScript. At least 5 years of relevant professional experience required. Responsibilities include delivering inventory-management applications with frontend screens and backend services, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: MongoDB, Nginx, Google Cloud Platform, Docker. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_fullstack_05",
+      "title": "Full Stack Software Engineer",
+      "company": "Demo Rao Digital Labs",
+      "location": "Ahmedabad, India (On-site)",
+      "text": "We are looking for a Full Stack Software Engineer for our Ahmedabad, India team. Essential Requirements: Python or Node.js, React, PostgreSQL, REST APIs, Git, JavaScript. At least 4 years of relevant professional experience required. Responsibilities include delivering inventory-management applications with frontend screens and backend services, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: MongoDB, Nginx, Google Cloud Platform, Docker. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_java_backend_01",
+      "title": "Junior Java Backend Engineer",
+      "company": "Demo Deshmukh Digital Labs",
+      "location": "Bengaluru, India (On-site)",
+      "text": "We are looking for a Junior Java Backend Engineer for our Bengaluru, India team. Essential Requirements: Java, Spring Boot, Hibernate, PostgreSQL, REST APIs, JUnit. Fresh graduates or candidates with up to 2 years of experience may apply. Responsibilities include building payment-reconciliation services with transaction handling and integration tests, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Kafka, Docker, Redis, Maven. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_java_backend_02",
+      "title": "Associate Java Backend Engineer",
+      "company": "Demo Deshmukh Digital Labs",
+      "location": "Hyderabad, India (Hybrid)",
+      "text": "We are looking for a Associate Java Backend Engineer for our Hyderabad, India team. Essential Requirements: Java, Spring Boot, Hibernate, PostgreSQL, REST APIs, JUnit. At least 2 years of relevant professional experience required. Responsibilities include building payment-reconciliation services with transaction handling and integration tests, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Kafka, Docker, Redis, Maven. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_java_backend_03",
+      "title": "Java Backend Engineer",
+      "company": "Demo Deshmukh Digital Labs",
+      "location": "Chennai, India (Remote)",
+      "text": "We are looking for a Java Backend Engineer for our Chennai, India team. Essential Requirements: Java, Spring Boot, Hibernate, PostgreSQL, REST APIs, JUnit. At least 3 years of relevant professional experience required. Responsibilities include building payment-reconciliation services with transaction handling and integration tests, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Kafka, Docker, Redis, Maven. Work arrangement: Remote. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_java_backend_04",
+      "title": "Senior Java Backend Engineer",
+      "company": "Demo Deshmukh Digital Labs",
+      "location": "Delhi, India (Hybrid)",
+      "text": "We are looking for a Senior Java Backend Engineer for our Delhi, India team. Essential Requirements: Java, Spring Boot, Hibernate, PostgreSQL, REST APIs, JUnit. At least 5 years of relevant professional experience required. Responsibilities include building payment-reconciliation services with transaction handling and integration tests, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Kafka, Docker, Redis, Maven. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_java_backend_05",
+      "title": "Java Backend Engineer",
+      "company": "Demo Deshmukh Digital Labs",
+      "location": "Kolkata, India (On-site)",
+      "text": "We are looking for a Java Backend Engineer for our Kolkata, India team. Essential Requirements: Java, Spring Boot, Hibernate, PostgreSQL, REST APIs, JUnit. At least 4 years of relevant professional experience required. Responsibilities include building payment-reconciliation services with transaction handling and integration tests, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Kafka, Docker, Redis, Maven. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_data_engineer_01",
+      "title": "Junior Data Engineer",
+      "company": "Demo Menon Digital Labs",
+      "location": "Noida, India (On-site)",
+      "text": "We are looking for a Junior Data Engineer for our Noida, India team. Essential Requirements: Python, SQL, Apache Spark, Airflow, ETL, data modelling. Fresh graduates or candidates with up to 2 years of experience may apply. Responsibilities include maintaining scheduled ingestion pipelines and analytics-ready warehouse tables, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: dbt, Snowflake, AWS S3, data quality testing. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_data_engineer_02",
+      "title": "Associate Data Engineer",
+      "company": "Demo Menon Digital Labs",
+      "location": "Gurugram, India (Hybrid)",
+      "text": "We are looking for a Associate Data Engineer for our Gurugram, India team. Essential Requirements: Python, SQL, Apache Spark, Airflow, ETL, data modelling. At least 2 years of relevant professional experience required. Responsibilities include maintaining scheduled ingestion pipelines and analytics-ready warehouse tables, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: dbt, Snowflake, AWS S3, data quality testing. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_data_engineer_03",
+      "title": "Data Engineer",
+      "company": "Demo Menon Digital Labs",
+      "location": "Jaipur, India (Remote)",
+      "text": "We are looking for a Data Engineer for our Jaipur, India team. Essential Requirements: Python, SQL, Apache Spark, Airflow, ETL, data modelling. At least 3 years of relevant professional experience required. Responsibilities include maintaining scheduled ingestion pipelines and analytics-ready warehouse tables, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: dbt, Snowflake, AWS S3, data quality testing. Work arrangement: Remote. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_data_engineer_04",
+      "title": "Senior Data Engineer",
+      "company": "Demo Menon Digital Labs",
+      "location": "Kochi, India (Hybrid)",
+      "text": "We are looking for a Senior Data Engineer for our Kochi, India team. Essential Requirements: Python, SQL, Apache Spark, Airflow, ETL, data modelling. At least 5 years of relevant professional experience required. Responsibilities include maintaining scheduled ingestion pipelines and analytics-ready warehouse tables, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: dbt, Snowflake, AWS S3, data quality testing. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_data_engineer_05",
+      "title": "Data Engineer",
+      "company": "Demo Menon Digital Labs",
+      "location": "Indore, India (On-site)",
+      "text": "We are looking for a Data Engineer for our Indore, India team. Essential Requirements: Python, SQL, Apache Spark, Airflow, ETL, data modelling. At least 4 years of relevant professional experience required. Responsibilities include maintaining scheduled ingestion pipelines and analytics-ready warehouse tables, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: dbt, Snowflake, AWS S3, data quality testing. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_android_01",
+      "title": "Junior Android Application Developer",
+      "company": "Demo Gupta Digital Labs",
+      "location": "Lucknow, India (On-site)",
+      "text": "We are looking for a Junior Android Application Developer for our Lucknow, India team. Essential Requirements: Kotlin, Android SDK, Jetpack Compose, Room, REST APIs, Git. Fresh graduates or candidates with up to 2 years of experience may apply. Responsibilities include building offline-capable delivery apps with API integration and local persistence, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Firebase, Gradle, JUnit, Coroutines. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_android_02",
+      "title": "Associate Android Application Developer",
+      "company": "Demo Gupta Digital Labs",
+      "location": "Nagpur, India (Hybrid)",
+      "text": "We are looking for a Associate Android Application Developer for our Nagpur, India team. Essential Requirements: Kotlin, Android SDK, Jetpack Compose, Room, REST APIs, Git. At least 2 years of relevant professional experience required. Responsibilities include building offline-capable delivery apps with API integration and local persistence, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Firebase, Gradle, JUnit, Coroutines. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_android_03",
+      "title": "Android Application Developer",
+      "company": "Demo Gupta Digital Labs",
+      "location": "Thane, India (Remote)",
+      "text": "We are looking for a Android Application Developer for our Thane, India team. Essential Requirements: Kotlin, Android SDK, Jetpack Compose, Room, REST APIs, Git. At least 3 years of relevant professional experience required. Responsibilities include building offline-capable delivery apps with API integration and local persistence, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Firebase, Gradle, JUnit, Coroutines. Work arrangement: Remote. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_android_04",
+      "title": "Senior Android Application Developer",
+      "company": "Demo Gupta Digital Labs",
+      "location": "Nashik, India (Hybrid)",
+      "text": "We are looking for a Senior Android Application Developer for our Nashik, India team. Essential Requirements: Kotlin, Android SDK, Jetpack Compose, Room, REST APIs, Git. At least 5 years of relevant professional experience required. Responsibilities include building offline-capable delivery apps with API integration and local persistence, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Firebase, Gradle, JUnit, Coroutines. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_android_05",
+      "title": "Android Application Developer",
+      "company": "Demo Gupta Digital Labs",
+      "location": "Coimbatore, India (On-site)",
+      "text": "We are looking for a Android Application Developer for our Coimbatore, India team. Essential Requirements: Kotlin, Android SDK, Jetpack Compose, Room, REST APIs, Git. At least 4 years of relevant professional experience required. Responsibilities include building offline-capable delivery apps with API integration and local persistence, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Firebase, Gradle, JUnit, Coroutines. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_ios_01",
+      "title": "Junior iOS Application Developer",
+      "company": "Demo Bose Digital Labs",
+      "location": "Mumbai, India (On-site)",
+      "text": "We are looking for a Junior iOS Application Developer for our Mumbai, India team. Essential Requirements: Swift, SwiftUI, Core Data, REST APIs, Git, XCTest. Fresh graduates or candidates with up to 2 years of experience may apply. Responsibilities include developing appointment-booking apps with secure session handling and automated tests, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Combine, UIKit, Fastlane, accessibility testing. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_ios_02",
+      "title": "Associate iOS Application Developer",
+      "company": "Demo Bose Digital Labs",
+      "location": "Navi Mumbai, India (Hybrid)",
+      "text": "We are looking for a Associate iOS Application Developer for our Navi Mumbai, India team. Essential Requirements: Swift, SwiftUI, Core Data, REST APIs, Git, XCTest. At least 2 years of relevant professional experience required. Responsibilities include developing appointment-booking apps with secure session handling and automated tests, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Combine, UIKit, Fastlane, accessibility testing. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_ios_03",
+      "title": "iOS Application Developer",
+      "company": "Demo Bose Digital Labs",
+      "location": "Pune, India (Remote)",
+      "text": "We are looking for a iOS Application Developer for our Pune, India team. Essential Requirements: Swift, SwiftUI, Core Data, REST APIs, Git, XCTest. At least 3 years of relevant professional experience required. Responsibilities include developing appointment-booking apps with secure session handling and automated tests, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Combine, UIKit, Fastlane, accessibility testing. Work arrangement: Remote. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_ios_04",
+      "title": "Senior iOS Application Developer",
+      "company": "Demo Bose Digital Labs",
+      "location": "Ratnagiri, India (Hybrid)",
+      "text": "We are looking for a Senior iOS Application Developer for our Ratnagiri, India team. Essential Requirements: Swift, SwiftUI, Core Data, REST APIs, Git, XCTest. At least 5 years of relevant professional experience required. Responsibilities include developing appointment-booking apps with secure session handling and automated tests, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Combine, UIKit, Fastlane, accessibility testing. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_ios_05",
+      "title": "iOS Application Developer",
+      "company": "Demo Bose Digital Labs",
+      "location": "Ahmedabad, India (On-site)",
+      "text": "We are looking for a iOS Application Developer for our Ahmedabad, India team. Essential Requirements: Swift, SwiftUI, Core Data, REST APIs, Git, XCTest. At least 4 years of relevant professional experience required. Responsibilities include developing appointment-booking apps with secure session handling and automated tests, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Combine, UIKit, Fastlane, accessibility testing. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_qa_01",
+      "title": "Junior QA Automation Engineer",
+      "company": "Demo Kulkarni Digital Labs",
+      "location": "Bengaluru, India (On-site)",
+      "text": "We are looking for a Junior QA Automation Engineer for our Bengaluru, India team. Essential Requirements: Python, Selenium, Pytest, API testing, Git, test planning. Fresh graduates or candidates with up to 2 years of experience may apply. Responsibilities include maintaining browser and API regression suites with reproducible defect reports, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Playwright, Postman, JMeter, CI/CD. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_qa_02",
+      "title": "Associate QA Automation Engineer",
+      "company": "Demo Kulkarni Digital Labs",
+      "location": "Hyderabad, India (Hybrid)",
+      "text": "We are looking for a Associate QA Automation Engineer for our Hyderabad, India team. Essential Requirements: Python, Selenium, Pytest, API testing, Git, test planning. At least 2 years of relevant professional experience required. Responsibilities include maintaining browser and API regression suites with reproducible defect reports, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Playwright, Postman, JMeter, CI/CD. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_qa_03",
+      "title": "QA Automation Engineer",
+      "company": "Demo Kulkarni Digital Labs",
+      "location": "Chennai, India (Remote)",
+      "text": "We are looking for a QA Automation Engineer for our Chennai, India team. Essential Requirements: Python, Selenium, Pytest, API testing, Git, test planning. At least 3 years of relevant professional experience required. Responsibilities include maintaining browser and API regression suites with reproducible defect reports, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Playwright, Postman, JMeter, CI/CD. Work arrangement: Remote. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_qa_04",
+      "title": "Senior QA Automation Engineer",
+      "company": "Demo Kulkarni Digital Labs",
+      "location": "Delhi, India (Hybrid)",
+      "text": "We are looking for a Senior QA Automation Engineer for our Delhi, India team. Essential Requirements: Python, Selenium, Pytest, API testing, Git, test planning. At least 5 years of relevant professional experience required. Responsibilities include maintaining browser and API regression suites with reproducible defect reports, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Playwright, Postman, JMeter, CI/CD. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_qa_05",
+      "title": "QA Automation Engineer",
+      "company": "Demo Kulkarni Digital Labs",
+      "location": "Kolkata, India (On-site)",
+      "text": "We are looking for a QA Automation Engineer for our Kolkata, India team. Essential Requirements: Python, Selenium, Pytest, API testing, Git, test planning. At least 4 years of relevant professional experience required. Responsibilities include maintaining browser and API regression suites with reproducible defect reports, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Playwright, Postman, JMeter, CI/CD. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_security_01",
+      "title": "Junior Cybersecurity Analyst",
+      "company": "Demo Sharma Digital Labs",
+      "location": "Noida, India (On-site)",
+      "text": "We are looking for a Junior Cybersecurity Analyst for our Noida, India team. Essential Requirements: Linux, network security, SIEM, incident response, vulnerability assessment, Python. Fresh graduates or candidates with up to 2 years of experience may apply. Responsibilities include triaging security alerts and documenting investigation and remediation workflows, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Splunk, Wireshark, OWASP, security documentation. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_security_02",
+      "title": "Associate Cybersecurity Analyst",
+      "company": "Demo Sharma Digital Labs",
+      "location": "Gurugram, India (Hybrid)",
+      "text": "We are looking for a Associate Cybersecurity Analyst for our Gurugram, India team. Essential Requirements: Linux, network security, SIEM, incident response, vulnerability assessment, Python. At least 2 years of relevant professional experience required. Responsibilities include triaging security alerts and documenting investigation and remediation workflows, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Splunk, Wireshark, OWASP, security documentation. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_security_03",
+      "title": "Cybersecurity Analyst",
+      "company": "Demo Sharma Digital Labs",
+      "location": "Jaipur, India (Remote)",
+      "text": "We are looking for a Cybersecurity Analyst for our Jaipur, India team. Essential Requirements: Linux, network security, SIEM, incident response, vulnerability assessment, Python. At least 3 years of relevant professional experience required. Responsibilities include triaging security alerts and documenting investigation and remediation workflows, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Splunk, Wireshark, OWASP, security documentation. Work arrangement: Remote. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_security_04",
+      "title": "Senior Cybersecurity Analyst",
+      "company": "Demo Sharma Digital Labs",
+      "location": "Kochi, India (Hybrid)",
+      "text": "We are looking for a Senior Cybersecurity Analyst for our Kochi, India team. Essential Requirements: Linux, network security, SIEM, incident response, vulnerability assessment, Python. At least 5 years of relevant professional experience required. Responsibilities include triaging security alerts and documenting investigation and remediation workflows, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Splunk, Wireshark, OWASP, security documentation. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_security_05",
+      "title": "Cybersecurity Analyst",
+      "company": "Demo Sharma Digital Labs",
+      "location": "Indore, India (On-site)",
+      "text": "We are looking for a Cybersecurity Analyst for our Indore, India team. Essential Requirements: Linux, network security, SIEM, incident response, vulnerability assessment, Python. At least 4 years of relevant professional experience required. Responsibilities include triaging security alerts and documenting investigation and remediation workflows, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Splunk, Wireshark, OWASP, security documentation. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_cloud_01",
+      "title": "Junior Cloud Platform Engineer",
+      "company": "Demo Patil Digital Labs",
+      "location": "Lucknow, India (On-site)",
+      "text": "We are looking for a Junior Cloud Platform Engineer for our Lucknow, India team. Essential Requirements: AWS, Terraform, Linux, IAM, Docker, Python. Fresh graduates or candidates with up to 2 years of experience may apply. Responsibilities include provisioning cloud services with least-privilege access and recovery procedures, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Azure, Ansible, Kubernetes, CloudWatch. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_cloud_02",
+      "title": "Associate Cloud Platform Engineer",
+      "company": "Demo Patil Digital Labs",
+      "location": "Nagpur, India (Hybrid)",
+      "text": "We are looking for a Associate Cloud Platform Engineer for our Nagpur, India team. Essential Requirements: AWS, Terraform, Linux, IAM, Docker, Python. At least 2 years of relevant professional experience required. Responsibilities include provisioning cloud services with least-privilege access and recovery procedures, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Azure, Ansible, Kubernetes, CloudWatch. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_cloud_03",
+      "title": "Cloud Platform Engineer",
+      "company": "Demo Patil Digital Labs",
+      "location": "Thane, India (Remote)",
+      "text": "We are looking for a Cloud Platform Engineer for our Thane, India team. Essential Requirements: AWS, Terraform, Linux, IAM, Docker, Python. At least 3 years of relevant professional experience required. Responsibilities include provisioning cloud services with least-privilege access and recovery procedures, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Azure, Ansible, Kubernetes, CloudWatch. Work arrangement: Remote. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_cloud_04",
+      "title": "Senior Cloud Platform Engineer",
+      "company": "Demo Patil Digital Labs",
+      "location": "Nashik, India (Hybrid)",
+      "text": "We are looking for a Senior Cloud Platform Engineer for our Nashik, India team. Essential Requirements: AWS, Terraform, Linux, IAM, Docker, Python. At least 5 years of relevant professional experience required. Responsibilities include provisioning cloud services with least-privilege access and recovery procedures, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Azure, Ansible, Kubernetes, CloudWatch. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_cloud_05",
+      "title": "Cloud Platform Engineer",
+      "company": "Demo Patil Digital Labs",
+      "location": "Coimbatore, India (On-site)",
+      "text": "We are looking for a Cloud Platform Engineer for our Coimbatore, India team. Essential Requirements: AWS, Terraform, Linux, IAM, Docker, Python. At least 4 years of relevant professional experience required. Responsibilities include provisioning cloud services with least-privilege access and recovery procedures, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Azure, Ansible, Kubernetes, CloudWatch. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_ml_01",
+      "title": "Junior Machine Learning Engineer",
+      "company": "Demo Iyer Digital Labs",
+      "location": "Mumbai, India (On-site)",
+      "text": "We are looking for a Junior Machine Learning Engineer for our Mumbai, India team. Essential Requirements: Python, PyTorch or TensorFlow, Scikit-learn, Docker, MLflow, FastAPI. Fresh graduates or candidates with up to 2 years of experience may apply. Responsibilities include deploying versioned model-serving APIs with evaluation and inference monitoring, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: LangChain, model fine-tuning, ChromaDB, monitoring. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_ml_02",
+      "title": "Associate Machine Learning Engineer",
+      "company": "Demo Iyer Digital Labs",
+      "location": "Navi Mumbai, India (Hybrid)",
+      "text": "We are looking for a Associate Machine Learning Engineer for our Navi Mumbai, India team. Essential Requirements: Python, PyTorch or TensorFlow, Scikit-learn, Docker, MLflow, FastAPI. At least 2 years of relevant professional experience required. Responsibilities include deploying versioned model-serving APIs with evaluation and inference monitoring, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: LangChain, model fine-tuning, ChromaDB, monitoring. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_ml_03",
+      "title": "Machine Learning Engineer",
+      "company": "Demo Iyer Digital Labs",
+      "location": "Pune, India (Remote)",
+      "text": "We are looking for a Machine Learning Engineer for our Pune, India team. Essential Requirements: Python, PyTorch or TensorFlow, Scikit-learn, Docker, MLflow, FastAPI. At least 3 years of relevant professional experience required. Responsibilities include deploying versioned model-serving APIs with evaluation and inference monitoring, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: LangChain, model fine-tuning, ChromaDB, monitoring. Work arrangement: Remote. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_ml_04",
+      "title": "Senior Machine Learning Engineer",
+      "company": "Demo Iyer Digital Labs",
+      "location": "Ratnagiri, India (Hybrid)",
+      "text": "We are looking for a Senior Machine Learning Engineer for our Ratnagiri, India team. Essential Requirements: Python, PyTorch or TensorFlow, Scikit-learn, Docker, MLflow, FastAPI. At least 5 years of relevant professional experience required. Responsibilities include deploying versioned model-serving APIs with evaluation and inference monitoring, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: LangChain, model fine-tuning, ChromaDB, monitoring. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_ml_05",
+      "title": "Machine Learning Engineer",
+      "company": "Demo Iyer Digital Labs",
+      "location": "Ahmedabad, India (On-site)",
+      "text": "We are looking for a Machine Learning Engineer for our Ahmedabad, India team. Essential Requirements: Python, PyTorch or TensorFlow, Scikit-learn, Docker, MLflow, FastAPI. At least 4 years of relevant professional experience required. Responsibilities include deploying versioned model-serving APIs with evaluation and inference monitoring, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: LangChain, model fine-tuning, ChromaDB, monitoring. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_dotnet_01",
+      "title": "Junior .NET Backend Developer",
+      "company": "Demo Shah Digital Labs",
+      "location": "Bengaluru, India (On-site)",
+      "text": "We are looking for a Junior .NET Backend Developer for our Bengaluru, India team. Essential Requirements: C#, ASP.NET Core, Entity Framework Core, SQL Server, REST APIs, Git. Fresh graduates or candidates with up to 2 years of experience may apply. Responsibilities include building business workflow APIs with relational data access and authentication, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Azure, Redis, Docker, xUnit. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_dotnet_02",
+      "title": "Associate .NET Backend Developer",
+      "company": "Demo Shah Digital Labs",
+      "location": "Hyderabad, India (Hybrid)",
+      "text": "We are looking for a Associate .NET Backend Developer for our Hyderabad, India team. Essential Requirements: C#, ASP.NET Core, Entity Framework Core, SQL Server, REST APIs, Git. At least 2 years of relevant professional experience required. Responsibilities include building business workflow APIs with relational data access and authentication, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Azure, Redis, Docker, xUnit. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_dotnet_03",
+      "title": ".NET Backend Developer",
+      "company": "Demo Shah Digital Labs",
+      "location": "Chennai, India (Remote)",
+      "text": "We are looking for a .NET Backend Developer for our Chennai, India team. Essential Requirements: C#, ASP.NET Core, Entity Framework Core, SQL Server, REST APIs, Git. At least 3 years of relevant professional experience required. Responsibilities include building business workflow APIs with relational data access and authentication, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Azure, Redis, Docker, xUnit. Work arrangement: Remote. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_dotnet_04",
+      "title": "Senior .NET Backend Developer",
+      "company": "Demo Shah Digital Labs",
+      "location": "Delhi, India (Hybrid)",
+      "text": "We are looking for a Senior .NET Backend Developer for our Delhi, India team. Essential Requirements: C#, ASP.NET Core, Entity Framework Core, SQL Server, REST APIs, Git. At least 5 years of relevant professional experience required. Responsibilities include building business workflow APIs with relational data access and authentication, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Azure, Redis, Docker, xUnit. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_dotnet_05",
+      "title": ".NET Backend Developer",
+      "company": "Demo Shah Digital Labs",
+      "location": "Kolkata, India (On-site)",
+      "text": "We are looking for a .NET Backend Developer for our Kolkata, India team. Essential Requirements: C#, ASP.NET Core, Entity Framework Core, SQL Server, REST APIs, Git. At least 4 years of relevant professional experience required. Responsibilities include building business workflow APIs with relational data access and authentication, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Azure, Redis, Docker, xUnit. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_ux_01",
+      "title": "Junior UI and UX Designer",
+      "company": "Demo Rao Digital Labs",
+      "location": "Noida, India (On-site)",
+      "text": "We are looking for a Junior UI and UX Designer for our Noida, India team. Essential Requirements: Figma, wireframing, prototyping, user research, usability testing, design systems. Fresh graduates or candidates with up to 2 years of experience may apply. Responsibilities include designing and testing onboarding journeys with documented usability findings, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: HTML5, CSS3, Adobe XD, accessibility. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_ux_02",
+      "title": "Associate UI and UX Designer",
+      "company": "Demo Rao Digital Labs",
+      "location": "Gurugram, India (Hybrid)",
+      "text": "We are looking for a Associate UI and UX Designer for our Gurugram, India team. Essential Requirements: Figma, wireframing, prototyping, user research, usability testing, design systems. At least 2 years of relevant professional experience required. Responsibilities include designing and testing onboarding journeys with documented usability findings, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: HTML5, CSS3, Adobe XD, accessibility. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_ux_03",
+      "title": "UI and UX Designer",
+      "company": "Demo Rao Digital Labs",
+      "location": "Jaipur, India (Remote)",
+      "text": "We are looking for a UI and UX Designer for our Jaipur, India team. Essential Requirements: Figma, wireframing, prototyping, user research, usability testing, design systems. At least 3 years of relevant professional experience required. Responsibilities include designing and testing onboarding journeys with documented usability findings, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: HTML5, CSS3, Adobe XD, accessibility. Work arrangement: Remote. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_ux_04",
+      "title": "Senior UI and UX Designer",
+      "company": "Demo Rao Digital Labs",
+      "location": "Kochi, India (Hybrid)",
+      "text": "We are looking for a Senior UI and UX Designer for our Kochi, India team. Essential Requirements: Figma, wireframing, prototyping, user research, usability testing, design systems. At least 5 years of relevant professional experience required. Responsibilities include designing and testing onboarding journeys with documented usability findings, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: HTML5, CSS3, Adobe XD, accessibility. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_ux_05",
+      "title": "UI and UX Designer",
+      "company": "Demo Rao Digital Labs",
+      "location": "Indore, India (On-site)",
+      "text": "We are looking for a UI and UX Designer for our Indore, India team. Essential Requirements: Figma, wireframing, prototyping, user research, usability testing, design systems. At least 4 years of relevant professional experience required. Responsibilities include designing and testing onboarding journeys with documented usability findings, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: HTML5, CSS3, Adobe XD, accessibility. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_bi_01",
+      "title": "Junior BI Analyst",
+      "company": "Demo Deshmukh Digital Labs",
+      "location": "Lucknow, India (On-site)",
+      "text": "We are looking for a Junior BI Analyst for our Lucknow, India team. Essential Requirements: SQL, Excel, Power BI, DAX, data modelling, dashboard design. Fresh graduates or candidates with up to 2 years of experience may apply. Responsibilities include building sales-performance dashboards with governed metrics and drill-down reports, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Python, Tableau, Snowflake, statistics. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_bi_02",
+      "title": "Associate BI Analyst",
+      "company": "Demo Deshmukh Digital Labs",
+      "location": "Nagpur, India (Hybrid)",
+      "text": "We are looking for a Associate BI Analyst for our Nagpur, India team. Essential Requirements: SQL, Excel, Power BI, DAX, data modelling, dashboard design. At least 2 years of relevant professional experience required. Responsibilities include building sales-performance dashboards with governed metrics and drill-down reports, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Python, Tableau, Snowflake, statistics. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_bi_03",
+      "title": "BI Analyst",
+      "company": "Demo Deshmukh Digital Labs",
+      "location": "Thane, India (Remote)",
+      "text": "We are looking for a BI Analyst for our Thane, India team. Essential Requirements: SQL, Excel, Power BI, DAX, data modelling, dashboard design. At least 3 years of relevant professional experience required. Responsibilities include building sales-performance dashboards with governed metrics and drill-down reports, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Python, Tableau, Snowflake, statistics. Work arrangement: Remote. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_bi_04",
+      "title": "Senior BI Analyst",
+      "company": "Demo Deshmukh Digital Labs",
+      "location": "Nashik, India (Hybrid)",
+      "text": "We are looking for a Senior BI Analyst for our Nashik, India team. Essential Requirements: SQL, Excel, Power BI, DAX, data modelling, dashboard design. At least 5 years of relevant professional experience required. Responsibilities include building sales-performance dashboards with governed metrics and drill-down reports, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Python, Tableau, Snowflake, statistics. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_bi_05",
+      "title": "BI Analyst",
+      "company": "Demo Deshmukh Digital Labs",
+      "location": "Coimbatore, India (On-site)",
+      "text": "We are looking for a BI Analyst for our Coimbatore, India team. Essential Requirements: SQL, Excel, Power BI, DAX, data modelling, dashboard design. At least 4 years of relevant professional experience required. Responsibilities include building sales-performance dashboards with governed metrics and drill-down reports, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Python, Tableau, Snowflake, statistics. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_dba_01",
+      "title": "Junior PostgreSQL Database Administrator",
+      "company": "Demo Menon Digital Labs",
+      "location": "Mumbai, India (On-site)",
+      "text": "We are looking for a Junior PostgreSQL Database Administrator for our Mumbai, India team. Essential Requirements: PostgreSQL, SQL, backup and recovery, replication, performance tuning, Linux. Fresh graduates or candidates with up to 2 years of experience may apply. Responsibilities include maintaining database backups, replication and query-performance runbooks, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: MySQL, Redis, AWS RDS, monitoring. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_dba_02",
+      "title": "Associate PostgreSQL Database Administrator",
+      "company": "Demo Menon Digital Labs",
+      "location": "Navi Mumbai, India (Hybrid)",
+      "text": "We are looking for a Associate PostgreSQL Database Administrator for our Navi Mumbai, India team. Essential Requirements: PostgreSQL, SQL, backup and recovery, replication, performance tuning, Linux. At least 2 years of relevant professional experience required. Responsibilities include maintaining database backups, replication and query-performance runbooks, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: MySQL, Redis, AWS RDS, monitoring. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_dba_03",
+      "title": "PostgreSQL Database Administrator",
+      "company": "Demo Menon Digital Labs",
+      "location": "Pune, India (Remote)",
+      "text": "We are looking for a PostgreSQL Database Administrator for our Pune, India team. Essential Requirements: PostgreSQL, SQL, backup and recovery, replication, performance tuning, Linux. At least 3 years of relevant professional experience required. Responsibilities include maintaining database backups, replication and query-performance runbooks, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: MySQL, Redis, AWS RDS, monitoring. Work arrangement: Remote. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_dba_04",
+      "title": "Senior PostgreSQL Database Administrator",
+      "company": "Demo Menon Digital Labs",
+      "location": "Ratnagiri, India (Hybrid)",
+      "text": "We are looking for a Senior PostgreSQL Database Administrator for our Ratnagiri, India team. Essential Requirements: PostgreSQL, SQL, backup and recovery, replication, performance tuning, Linux. At least 5 years of relevant professional experience required. Responsibilities include maintaining database backups, replication and query-performance runbooks, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: MySQL, Redis, AWS RDS, monitoring. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_dba_05",
+      "title": "PostgreSQL Database Administrator",
+      "company": "Demo Menon Digital Labs",
+      "location": "Ahmedabad, India (On-site)",
+      "text": "We are looking for a PostgreSQL Database Administrator for our Ahmedabad, India team. Essential Requirements: PostgreSQL, SQL, backup and recovery, replication, performance tuning, Linux. At least 4 years of relevant professional experience required. Responsibilities include maintaining database backups, replication and query-performance runbooks, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: MySQL, Redis, AWS RDS, monitoring. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_embedded_01",
+      "title": "Junior Embedded Software Engineer",
+      "company": "Demo Gupta Digital Labs",
+      "location": "Bengaluru, India (On-site)",
+      "text": "We are looking for a Junior Embedded Software Engineer for our Bengaluru, India team. Essential Requirements: C, C++, microcontrollers, UART, SPI, RTOS. Fresh graduates or candidates with up to 2 years of experience may apply. Responsibilities include developing sensor-device firmware with peripheral integration and hardware diagnostics, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: I2C, Linux, unit testing, debugging. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_embedded_02",
+      "title": "Associate Embedded Software Engineer",
+      "company": "Demo Gupta Digital Labs",
+      "location": "Hyderabad, India (Hybrid)",
+      "text": "We are looking for a Associate Embedded Software Engineer for our Hyderabad, India team. Essential Requirements: C, C++, microcontrollers, UART, SPI, RTOS. At least 2 years of relevant professional experience required. Responsibilities include developing sensor-device firmware with peripheral integration and hardware diagnostics, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: I2C, Linux, unit testing, debugging. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_embedded_03",
+      "title": "Embedded Software Engineer",
+      "company": "Demo Gupta Digital Labs",
+      "location": "Chennai, India (Remote)",
+      "text": "We are looking for a Embedded Software Engineer for our Chennai, India team. Essential Requirements: C, C++, microcontrollers, UART, SPI, RTOS. At least 3 years of relevant professional experience required. Responsibilities include developing sensor-device firmware with peripheral integration and hardware diagnostics, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: I2C, Linux, unit testing, debugging. Work arrangement: Remote. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_embedded_04",
+      "title": "Senior Embedded Software Engineer",
+      "company": "Demo Gupta Digital Labs",
+      "location": "Delhi, India (Hybrid)",
+      "text": "We are looking for a Senior Embedded Software Engineer for our Delhi, India team. Essential Requirements: C, C++, microcontrollers, UART, SPI, RTOS. At least 5 years of relevant professional experience required. Responsibilities include developing sensor-device firmware with peripheral integration and hardware diagnostics, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: I2C, Linux, unit testing, debugging. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_embedded_05",
+      "title": "Embedded Software Engineer",
+      "company": "Demo Gupta Digital Labs",
+      "location": "Kolkata, India (On-site)",
+      "text": "We are looking for a Embedded Software Engineer for our Kolkata, India team. Essential Requirements: C, C++, microcontrollers, UART, SPI, RTOS. At least 4 years of relevant professional experience required. Responsibilities include developing sensor-device firmware with peripheral integration and hardware diagnostics, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: I2C, Linux, unit testing, debugging. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_product_analytics_01",
+      "title": "Junior Product Data Analyst",
+      "company": "Demo Bose Digital Labs",
+      "location": "Noida, India (On-site)",
+      "text": "We are looking for a Junior Product Data Analyst for our Noida, India team. Essential Requirements: SQL, Python, Excel, A/B testing, product analytics, statistics. Fresh graduates or candidates with up to 2 years of experience may apply. Responsibilities include analysing conversion funnels and experiments with documented metric definitions, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Amplitude, Google Analytics, Tableau, cohort analysis. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_product_analytics_02",
+      "title": "Associate Product Data Analyst",
+      "company": "Demo Bose Digital Labs",
+      "location": "Gurugram, India (Hybrid)",
+      "text": "We are looking for a Associate Product Data Analyst for our Gurugram, India team. Essential Requirements: SQL, Python, Excel, A/B testing, product analytics, statistics. At least 2 years of relevant professional experience required. Responsibilities include analysing conversion funnels and experiments with documented metric definitions, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Amplitude, Google Analytics, Tableau, cohort analysis. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_product_analytics_03",
+      "title": "Product Data Analyst",
+      "company": "Demo Bose Digital Labs",
+      "location": "Jaipur, India (Remote)",
+      "text": "We are looking for a Product Data Analyst for our Jaipur, India team. Essential Requirements: SQL, Python, Excel, A/B testing, product analytics, statistics. At least 3 years of relevant professional experience required. Responsibilities include analysing conversion funnels and experiments with documented metric definitions, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Amplitude, Google Analytics, Tableau, cohort analysis. Work arrangement: Remote. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_product_analytics_04",
+      "title": "Senior Product Data Analyst",
+      "company": "Demo Bose Digital Labs",
+      "location": "Kochi, India (Hybrid)",
+      "text": "We are looking for a Senior Product Data Analyst for our Kochi, India team. Essential Requirements: SQL, Python, Excel, A/B testing, product analytics, statistics. At least 5 years of relevant professional experience required. Responsibilities include analysing conversion funnels and experiments with documented metric definitions, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Amplitude, Google Analytics, Tableau, cohort analysis. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_product_analytics_05",
+      "title": "Product Data Analyst",
+      "company": "Demo Bose Digital Labs",
+      "location": "Indore, India (On-site)",
+      "text": "We are looking for a Product Data Analyst for our Indore, India team. Essential Requirements: SQL, Python, Excel, A/B testing, product analytics, statistics. At least 4 years of relevant professional experience required. Responsibilities include analysing conversion funnels and experiments with documented metric definitions, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Amplitude, Google Analytics, Tableau, cohort analysis. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_support_01",
+      "title": "Junior Technical Support Engineer",
+      "company": "Demo Kulkarni Digital Labs",
+      "location": "Lucknow, India (On-site)",
+      "text": "We are looking for a Junior Technical Support Engineer for our Lucknow, India team. Essential Requirements: Linux, SQL, networking, troubleshooting, ticket management, REST APIs. Fresh graduates or candidates with up to 2 years of experience may apply. Responsibilities include investigating customer incidents and documenting reproducible fixes and escalation steps, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Python, AWS, ITIL, technical writing. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_support_02",
+      "title": "Associate Technical Support Engineer",
+      "company": "Demo Kulkarni Digital Labs",
+      "location": "Nagpur, India (Hybrid)",
+      "text": "We are looking for a Associate Technical Support Engineer for our Nagpur, India team. Essential Requirements: Linux, SQL, networking, troubleshooting, ticket management, REST APIs. At least 2 years of relevant professional experience required. Responsibilities include investigating customer incidents and documenting reproducible fixes and escalation steps, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Python, AWS, ITIL, technical writing. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_support_03",
+      "title": "Technical Support Engineer",
+      "company": "Demo Kulkarni Digital Labs",
+      "location": "Thane, India (Remote)",
+      "text": "We are looking for a Technical Support Engineer for our Thane, India team. Essential Requirements: Linux, SQL, networking, troubleshooting, ticket management, REST APIs. At least 3 years of relevant professional experience required. Responsibilities include investigating customer incidents and documenting reproducible fixes and escalation steps, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Python, AWS, ITIL, technical writing. Work arrangement: Remote. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_support_04",
+      "title": "Senior Technical Support Engineer",
+      "company": "Demo Kulkarni Digital Labs",
+      "location": "Nashik, India (Hybrid)",
+      "text": "We are looking for a Senior Technical Support Engineer for our Nashik, India team. Essential Requirements: Linux, SQL, networking, troubleshooting, ticket management, REST APIs. At least 5 years of relevant professional experience required. Responsibilities include investigating customer incidents and documenting reproducible fixes and escalation steps, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Python, AWS, ITIL, technical writing. Work arrangement: Hybrid. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    },
+    {
+      "id": "jd_india_support_05",
+      "title": "Technical Support Engineer",
+      "company": "Demo Kulkarni Digital Labs",
+      "location": "Coimbatore, India (On-site)",
+      "text": "We are looking for a Technical Support Engineer for our Coimbatore, India team. Essential Requirements: Linux, SQL, networking, troubleshooting, ticket management, REST APIs. At least 4 years of relevant professional experience required. Responsibilities include investigating customer incidents and documenting reproducible fixes and escalation steps, collaborating with teammates, and documenting reliable delivery. Bachelor's degree in Computer Science, Information Technology, Computer Applications, or equivalent relevant experience required. Preferred: Python, AWS, ITIL, technical writing. Work arrangement: On-site. This is a fictional vacancy for project demonstration.",
+      "synthetic": true
+    }
+  ],
+  "demo_pairs": [
+    {
+      "resume_id": "res_india_python_backend_01",
+      "jd_id": "jd_india_python_backend_01",
+      "role_family": "python_backend",
+      "profile": "junior_partial"
+    },
+    {
+      "resume_id": "res_india_python_backend_02",
+      "jd_id": "jd_india_python_backend_02",
+      "role_family": "python_backend",
+      "profile": "associate_partial"
+    },
+    {
+      "resume_id": "res_india_python_backend_03",
+      "jd_id": "jd_india_python_backend_03",
+      "role_family": "python_backend",
+      "profile": "experienced"
+    },
+    {
+      "resume_id": "res_india_python_backend_04",
+      "jd_id": "jd_india_python_backend_04",
+      "role_family": "python_backend",
+      "profile": "senior"
+    },
+    {
+      "resume_id": "res_india_python_backend_05",
+      "jd_id": "jd_india_python_backend_05",
+      "role_family": "python_backend",
+      "profile": "career_transition"
+    },
+    {
+      "resume_id": "res_india_react_frontend_01",
+      "jd_id": "jd_india_react_frontend_01",
+      "role_family": "react_frontend",
+      "profile": "junior_partial"
+    },
+    {
+      "resume_id": "res_india_react_frontend_02",
+      "jd_id": "jd_india_react_frontend_02",
+      "role_family": "react_frontend",
+      "profile": "associate_partial"
+    },
+    {
+      "resume_id": "res_india_react_frontend_03",
+      "jd_id": "jd_india_react_frontend_03",
+      "role_family": "react_frontend",
+      "profile": "experienced"
+    },
+    {
+      "resume_id": "res_india_react_frontend_04",
+      "jd_id": "jd_india_react_frontend_04",
+      "role_family": "react_frontend",
+      "profile": "senior"
+    },
+    {
+      "resume_id": "res_india_react_frontend_05",
+      "jd_id": "jd_india_react_frontend_05",
+      "role_family": "react_frontend",
+      "profile": "career_transition"
+    },
+    {
+      "resume_id": "res_india_data_science_01",
+      "jd_id": "jd_india_data_science_01",
+      "role_family": "data_science",
+      "profile": "junior_partial"
+    },
+    {
+      "resume_id": "res_india_data_science_02",
+      "jd_id": "jd_india_data_science_02",
+      "role_family": "data_science",
+      "profile": "associate_partial"
+    },
+    {
+      "resume_id": "res_india_data_science_03",
+      "jd_id": "jd_india_data_science_03",
+      "role_family": "data_science",
+      "profile": "experienced"
+    },
+    {
+      "resume_id": "res_india_data_science_04",
+      "jd_id": "jd_india_data_science_04",
+      "role_family": "data_science",
+      "profile": "senior"
+    },
+    {
+      "resume_id": "res_india_data_science_05",
+      "jd_id": "jd_india_data_science_05",
+      "role_family": "data_science",
+      "profile": "career_transition"
+    },
+    {
+      "resume_id": "res_india_devops_01",
+      "jd_id": "jd_india_devops_01",
+      "role_family": "devops",
+      "profile": "junior_partial"
+    },
+    {
+      "resume_id": "res_india_devops_02",
+      "jd_id": "jd_india_devops_02",
+      "role_family": "devops",
+      "profile": "associate_partial"
+    },
+    {
+      "resume_id": "res_india_devops_03",
+      "jd_id": "jd_india_devops_03",
+      "role_family": "devops",
+      "profile": "experienced"
+    },
+    {
+      "resume_id": "res_india_devops_04",
+      "jd_id": "jd_india_devops_04",
+      "role_family": "devops",
+      "profile": "senior"
+    },
+    {
+      "resume_id": "res_india_devops_05",
+      "jd_id": "jd_india_devops_05",
+      "role_family": "devops",
+      "profile": "career_transition"
+    },
+    {
+      "resume_id": "res_india_fullstack_01",
+      "jd_id": "jd_india_fullstack_01",
+      "role_family": "fullstack",
+      "profile": "junior_partial"
+    },
+    {
+      "resume_id": "res_india_fullstack_02",
+      "jd_id": "jd_india_fullstack_02",
+      "role_family": "fullstack",
+      "profile": "associate_partial"
+    },
+    {
+      "resume_id": "res_india_fullstack_03",
+      "jd_id": "jd_india_fullstack_03",
+      "role_family": "fullstack",
+      "profile": "experienced"
+    },
+    {
+      "resume_id": "res_india_fullstack_04",
+      "jd_id": "jd_india_fullstack_04",
+      "role_family": "fullstack",
+      "profile": "senior"
+    },
+    {
+      "resume_id": "res_india_fullstack_05",
+      "jd_id": "jd_india_fullstack_05",
+      "role_family": "fullstack",
+      "profile": "career_transition"
+    },
+    {
+      "resume_id": "res_india_java_backend_01",
+      "jd_id": "jd_india_java_backend_01",
+      "role_family": "java_backend",
+      "profile": "junior_partial"
+    },
+    {
+      "resume_id": "res_india_java_backend_02",
+      "jd_id": "jd_india_java_backend_02",
+      "role_family": "java_backend",
+      "profile": "associate_partial"
+    },
+    {
+      "resume_id": "res_india_java_backend_03",
+      "jd_id": "jd_india_java_backend_03",
+      "role_family": "java_backend",
+      "profile": "experienced"
+    },
+    {
+      "resume_id": "res_india_java_backend_04",
+      "jd_id": "jd_india_java_backend_04",
+      "role_family": "java_backend",
+      "profile": "senior"
+    },
+    {
+      "resume_id": "res_india_java_backend_05",
+      "jd_id": "jd_india_java_backend_05",
+      "role_family": "java_backend",
+      "profile": "career_transition"
+    },
+    {
+      "resume_id": "res_india_data_engineer_01",
+      "jd_id": "jd_india_data_engineer_01",
+      "role_family": "data_engineer",
+      "profile": "junior_partial"
+    },
+    {
+      "resume_id": "res_india_data_engineer_02",
+      "jd_id": "jd_india_data_engineer_02",
+      "role_family": "data_engineer",
+      "profile": "associate_partial"
+    },
+    {
+      "resume_id": "res_india_data_engineer_03",
+      "jd_id": "jd_india_data_engineer_03",
+      "role_family": "data_engineer",
+      "profile": "experienced"
+    },
+    {
+      "resume_id": "res_india_data_engineer_04",
+      "jd_id": "jd_india_data_engineer_04",
+      "role_family": "data_engineer",
+      "profile": "senior"
+    },
+    {
+      "resume_id": "res_india_data_engineer_05",
+      "jd_id": "jd_india_data_engineer_05",
+      "role_family": "data_engineer",
+      "profile": "career_transition"
+    },
+    {
+      "resume_id": "res_india_android_01",
+      "jd_id": "jd_india_android_01",
+      "role_family": "android",
+      "profile": "junior_partial"
+    },
+    {
+      "resume_id": "res_india_android_02",
+      "jd_id": "jd_india_android_02",
+      "role_family": "android",
+      "profile": "associate_partial"
+    },
+    {
+      "resume_id": "res_india_android_03",
+      "jd_id": "jd_india_android_03",
+      "role_family": "android",
+      "profile": "experienced"
+    },
+    {
+      "resume_id": "res_india_android_04",
+      "jd_id": "jd_india_android_04",
+      "role_family": "android",
+      "profile": "senior"
+    },
+    {
+      "resume_id": "res_india_android_05",
+      "jd_id": "jd_india_android_05",
+      "role_family": "android",
+      "profile": "career_transition"
+    },
+    {
+      "resume_id": "res_india_ios_01",
+      "jd_id": "jd_india_ios_01",
+      "role_family": "ios",
+      "profile": "junior_partial"
+    },
+    {
+      "resume_id": "res_india_ios_02",
+      "jd_id": "jd_india_ios_02",
+      "role_family": "ios",
+      "profile": "associate_partial"
+    },
+    {
+      "resume_id": "res_india_ios_03",
+      "jd_id": "jd_india_ios_03",
+      "role_family": "ios",
+      "profile": "experienced"
+    },
+    {
+      "resume_id": "res_india_ios_04",
+      "jd_id": "jd_india_ios_04",
+      "role_family": "ios",
+      "profile": "senior"
+    },
+    {
+      "resume_id": "res_india_ios_05",
+      "jd_id": "jd_india_ios_05",
+      "role_family": "ios",
+      "profile": "career_transition"
+    },
+    {
+      "resume_id": "res_india_qa_01",
+      "jd_id": "jd_india_qa_01",
+      "role_family": "qa",
+      "profile": "junior_partial"
+    },
+    {
+      "resume_id": "res_india_qa_02",
+      "jd_id": "jd_india_qa_02",
+      "role_family": "qa",
+      "profile": "associate_partial"
+    },
+    {
+      "resume_id": "res_india_qa_03",
+      "jd_id": "jd_india_qa_03",
+      "role_family": "qa",
+      "profile": "experienced"
+    },
+    {
+      "resume_id": "res_india_qa_04",
+      "jd_id": "jd_india_qa_04",
+      "role_family": "qa",
+      "profile": "senior"
+    },
+    {
+      "resume_id": "res_india_qa_05",
+      "jd_id": "jd_india_qa_05",
+      "role_family": "qa",
+      "profile": "career_transition"
+    },
+    {
+      "resume_id": "res_india_security_01",
+      "jd_id": "jd_india_security_01",
+      "role_family": "security",
+      "profile": "junior_partial"
+    },
+    {
+      "resume_id": "res_india_security_02",
+      "jd_id": "jd_india_security_02",
+      "role_family": "security",
+      "profile": "associate_partial"
+    },
+    {
+      "resume_id": "res_india_security_03",
+      "jd_id": "jd_india_security_03",
+      "role_family": "security",
+      "profile": "experienced"
+    },
+    {
+      "resume_id": "res_india_security_04",
+      "jd_id": "jd_india_security_04",
+      "role_family": "security",
+      "profile": "senior"
+    },
+    {
+      "resume_id": "res_india_security_05",
+      "jd_id": "jd_india_security_05",
+      "role_family": "security",
+      "profile": "career_transition"
+    },
+    {
+      "resume_id": "res_india_cloud_01",
+      "jd_id": "jd_india_cloud_01",
+      "role_family": "cloud",
+      "profile": "junior_partial"
+    },
+    {
+      "resume_id": "res_india_cloud_02",
+      "jd_id": "jd_india_cloud_02",
+      "role_family": "cloud",
+      "profile": "associate_partial"
+    },
+    {
+      "resume_id": "res_india_cloud_03",
+      "jd_id": "jd_india_cloud_03",
+      "role_family": "cloud",
+      "profile": "experienced"
+    },
+    {
+      "resume_id": "res_india_cloud_04",
+      "jd_id": "jd_india_cloud_04",
+      "role_family": "cloud",
+      "profile": "senior"
+    },
+    {
+      "resume_id": "res_india_cloud_05",
+      "jd_id": "jd_india_cloud_05",
+      "role_family": "cloud",
+      "profile": "career_transition"
+    },
+    {
+      "resume_id": "res_india_ml_01",
+      "jd_id": "jd_india_ml_01",
+      "role_family": "ml",
+      "profile": "junior_partial"
+    },
+    {
+      "resume_id": "res_india_ml_02",
+      "jd_id": "jd_india_ml_02",
+      "role_family": "ml",
+      "profile": "associate_partial"
+    },
+    {
+      "resume_id": "res_india_ml_03",
+      "jd_id": "jd_india_ml_03",
+      "role_family": "ml",
+      "profile": "experienced"
+    },
+    {
+      "resume_id": "res_india_ml_04",
+      "jd_id": "jd_india_ml_04",
+      "role_family": "ml",
+      "profile": "senior"
+    },
+    {
+      "resume_id": "res_india_ml_05",
+      "jd_id": "jd_india_ml_05",
+      "role_family": "ml",
+      "profile": "career_transition"
+    },
+    {
+      "resume_id": "res_india_dotnet_01",
+      "jd_id": "jd_india_dotnet_01",
+      "role_family": "dotnet",
+      "profile": "junior_partial"
+    },
+    {
+      "resume_id": "res_india_dotnet_02",
+      "jd_id": "jd_india_dotnet_02",
+      "role_family": "dotnet",
+      "profile": "associate_partial"
+    },
+    {
+      "resume_id": "res_india_dotnet_03",
+      "jd_id": "jd_india_dotnet_03",
+      "role_family": "dotnet",
+      "profile": "experienced"
+    },
+    {
+      "resume_id": "res_india_dotnet_04",
+      "jd_id": "jd_india_dotnet_04",
+      "role_family": "dotnet",
+      "profile": "senior"
+    },
+    {
+      "resume_id": "res_india_dotnet_05",
+      "jd_id": "jd_india_dotnet_05",
+      "role_family": "dotnet",
+      "profile": "career_transition"
+    },
+    {
+      "resume_id": "res_india_ux_01",
+      "jd_id": "jd_india_ux_01",
+      "role_family": "ux",
+      "profile": "junior_partial"
+    },
+    {
+      "resume_id": "res_india_ux_02",
+      "jd_id": "jd_india_ux_02",
+      "role_family": "ux",
+      "profile": "associate_partial"
+    },
+    {
+      "resume_id": "res_india_ux_03",
+      "jd_id": "jd_india_ux_03",
+      "role_family": "ux",
+      "profile": "experienced"
+    },
+    {
+      "resume_id": "res_india_ux_04",
+      "jd_id": "jd_india_ux_04",
+      "role_family": "ux",
+      "profile": "senior"
+    },
+    {
+      "resume_id": "res_india_ux_05",
+      "jd_id": "jd_india_ux_05",
+      "role_family": "ux",
+      "profile": "career_transition"
+    },
+    {
+      "resume_id": "res_india_bi_01",
+      "jd_id": "jd_india_bi_01",
+      "role_family": "bi",
+      "profile": "junior_partial"
+    },
+    {
+      "resume_id": "res_india_bi_02",
+      "jd_id": "jd_india_bi_02",
+      "role_family": "bi",
+      "profile": "associate_partial"
+    },
+    {
+      "resume_id": "res_india_bi_03",
+      "jd_id": "jd_india_bi_03",
+      "role_family": "bi",
+      "profile": "experienced"
+    },
+    {
+      "resume_id": "res_india_bi_04",
+      "jd_id": "jd_india_bi_04",
+      "role_family": "bi",
+      "profile": "senior"
+    },
+    {
+      "resume_id": "res_india_bi_05",
+      "jd_id": "jd_india_bi_05",
+      "role_family": "bi",
+      "profile": "career_transition"
+    },
+    {
+      "resume_id": "res_india_dba_01",
+      "jd_id": "jd_india_dba_01",
+      "role_family": "dba",
+      "profile": "junior_partial"
+    },
+    {
+      "resume_id": "res_india_dba_02",
+      "jd_id": "jd_india_dba_02",
+      "role_family": "dba",
+      "profile": "associate_partial"
+    },
+    {
+      "resume_id": "res_india_dba_03",
+      "jd_id": "jd_india_dba_03",
+      "role_family": "dba",
+      "profile": "experienced"
+    },
+    {
+      "resume_id": "res_india_dba_04",
+      "jd_id": "jd_india_dba_04",
+      "role_family": "dba",
+      "profile": "senior"
+    },
+    {
+      "resume_id": "res_india_dba_05",
+      "jd_id": "jd_india_dba_05",
+      "role_family": "dba",
+      "profile": "career_transition"
+    },
+    {
+      "resume_id": "res_india_embedded_01",
+      "jd_id": "jd_india_embedded_01",
+      "role_family": "embedded",
+      "profile": "junior_partial"
+    },
+    {
+      "resume_id": "res_india_embedded_02",
+      "jd_id": "jd_india_embedded_02",
+      "role_family": "embedded",
+      "profile": "associate_partial"
+    },
+    {
+      "resume_id": "res_india_embedded_03",
+      "jd_id": "jd_india_embedded_03",
+      "role_family": "embedded",
+      "profile": "experienced"
+    },
+    {
+      "resume_id": "res_india_embedded_04",
+      "jd_id": "jd_india_embedded_04",
+      "role_family": "embedded",
+      "profile": "senior"
+    },
+    {
+      "resume_id": "res_india_embedded_05",
+      "jd_id": "jd_india_embedded_05",
+      "role_family": "embedded",
+      "profile": "career_transition"
+    },
+    {
+      "resume_id": "res_india_product_analytics_01",
+      "jd_id": "jd_india_product_analytics_01",
+      "role_family": "product_analytics",
+      "profile": "junior_partial"
+    },
+    {
+      "resume_id": "res_india_product_analytics_02",
+      "jd_id": "jd_india_product_analytics_02",
+      "role_family": "product_analytics",
+      "profile": "associate_partial"
+    },
+    {
+      "resume_id": "res_india_product_analytics_03",
+      "jd_id": "jd_india_product_analytics_03",
+      "role_family": "product_analytics",
+      "profile": "experienced"
+    },
+    {
+      "resume_id": "res_india_product_analytics_04",
+      "jd_id": "jd_india_product_analytics_04",
+      "role_family": "product_analytics",
+      "profile": "senior"
+    },
+    {
+      "resume_id": "res_india_product_analytics_05",
+      "jd_id": "jd_india_product_analytics_05",
+      "role_family": "product_analytics",
+      "profile": "career_transition"
+    },
+    {
+      "resume_id": "res_india_support_01",
+      "jd_id": "jd_india_support_01",
+      "role_family": "support",
+      "profile": "junior_partial"
+    },
+    {
+      "resume_id": "res_india_support_02",
+      "jd_id": "jd_india_support_02",
+      "role_family": "support",
+      "profile": "associate_partial"
+    },
+    {
+      "resume_id": "res_india_support_03",
+      "jd_id": "jd_india_support_03",
+      "role_family": "support",
+      "profile": "experienced"
+    },
+    {
+      "resume_id": "res_india_support_04",
+      "jd_id": "jd_india_support_04",
+      "role_family": "support",
+      "profile": "senior"
+    },
+    {
+      "resume_id": "res_india_support_05",
+      "jd_id": "jd_india_support_05",
+      "role_family": "support",
+      "profile": "career_transition"
+    }
+  ]
+}

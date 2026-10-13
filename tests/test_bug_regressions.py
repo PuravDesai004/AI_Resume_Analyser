@@ -86,12 +86,12 @@ class StoreRegressionTests(unittest.TestCase):
         self.assertEqual(jd_index.count(), 1)
         self.embedder.embed_chunk.assert_called_once()
 
-    def test_concurrent_requests_cannot_exceed_cap(self):
+    def test_concurrent_requests_preserve_all_jobs_without_count_cap(self):
         with ThreadPoolExecutor(max_workers=5) as pool:
             records = list(pool.map(lambda i: self.add(f"Role {i}"), range(20)))
-        self.assertEqual(sum(hasattr(r, "jd_id") for r in records), 15)
-        self.assertEqual(jd_index.count(), 15)
-        self.assertEqual(self.embedder.embed_chunk.call_count, 15)
+        self.assertEqual(sum(hasattr(r, "jd_id") for r in records), 20)
+        self.assertEqual(jd_index.count(), 20)
+        self.assertEqual(self.embedder.embed_chunk.call_count, 20)
 
     def test_repeated_ranking_reuses_resume_embedding_and_reads_one_snapshot(self):
         self.add()

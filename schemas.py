@@ -23,12 +23,31 @@ class RankingCard(BaseModel):
     company: str
     location: str
     snippet: str
+    embedding_similarity: Optional[int] = Field(None, ge=0, le=100)
+    preference_boost: int = Field(0, ge=0, le=8)
+    location_bonus: int = Field(0, ge=0, le=5)
+    arrangement_bonus: int = Field(0, ge=0, le=3)
+    location_distance_km: Optional[float] = Field(None, ge=0)
+    location_reason: str = ""
+    score_source: Literal["mercury", "similarity"] = "similarity"
+    fit_status: Literal["assessed", "not_reviewed", "fallback"] = "fallback"
+    ranking_score: Optional[float] = Field(None, ge=0, le=108)
+    baseline_rank: Optional[int] = None
+    model_fit: Optional[Literal["Weak", "Moderate", "Strong", "Unclear"]] = None
+    model_fit_score: Optional[float] = Field(None, ge=0, le=100)
+    decision_confidence: Optional[float] = Field(None, ge=0, le=1)
 
 
 class RankingResult(BaseModel):
     """Tier 1 ranking response."""
     resume_id: str
     results: list[RankingCard] = Field(default_factory=list)
+    ranking_method: Literal["similarity", "mercury"] = "similarity"
+    decision_status: str = "not_configured"
+    ranking_note: str = ""
+    decision_model: Optional[str] = None
+    decision_shortlist_size: int = 0
+    total_jobs: int = 0
 
 
 class MatchedSkill(BaseModel):

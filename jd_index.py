@@ -7,15 +7,13 @@ import chroma_db
 from embedding_manager import EmbeddingManager
 from schemas import JDRecord, ErrorResponse
 
-JD_STORE_CAP = 15
-
 # Use ChromaDB client from existing chroma_db.py to avoid modifying Phase 2 files
 _client = chroma_db.client
 _collection = None
 _embedder = None
 
 
-# In-memory caches to eliminate redundant ChromaDB SQLite queries for <=15 records
+# In-memory caches for the stored job library.
 _RECORD_CACHE: dict[str, JDRecord] = {}
 _EMBEDDING_CACHE: dict[str, list[float]] = {}
 _CACHE_INITIALIZED = False
@@ -87,7 +85,7 @@ def add_jd(
     jd_text: str
 ) -> Union[JDRecord, ErrorResponse]:
     """
-    Adds a new JD to the store if below the 15-record cap.
+    Adds a new JD without an artificial record-count cap.
     Embeds jd_text once and stores vector + metadata in ChromaDB and memory cache.
     """
     _ensure_cache_synced()
@@ -102,14 +100,6 @@ def add_jd(
     for record in _RECORD_CACHE.values():
         if record.full_text == clean_text and all(getattr(record, key) == value for key, value in metadata.items()):
             return record
-    current_count = len(_RECORD_CACHE)
-    if current_count >= JD_STORE_CAP:
-        return ErrorResponse(
-            error_code="STORE_CAP_REACHED",
-            message=f"JD store cap of {JD_STORE_CAP} records has been reached",
-            stage="jd_store"
-        )
-
     snippet = clean_text[:150].strip()
     if len(clean_text) > 150:
         snippet += "..."
@@ -131,22 +121,8 @@ def add_jd(
         )
     except Exception as exc:
         if "dimension" in str(exc).lower():
-            try:
-                _client.delete_collection("job_descriptions")
-            except Exception:
-                pass
-            global _collection
-            _collection = _client.get_or_create_collection(name="job_descriptions")
-            _RECORD_CACHE.clear()
-            _EMBEDDING_CACHE.clear()
-            _get_collection().add(
-                ids=[jd_id],
-                embeddings=[embedding],
-                documents=[clean_text],
-                metadatas=[metadata]
-            )
-        else:
-            raise exc
+            raise RuntimeError("Embedding dimensions do not match the stored jobs. Use the same embedding model; existing jobs were preserved.") from exc
+        raise
 
     record = JDRecord(
         jd_id=jd_id,
@@ -161,6 +137,45 @@ def add_jd(
     _EMBEDDING_CACHE[jd_id] = embedding
 
     return record
+
+
+@_synchronized
+def add_jds_batch(jobs, batch_size=20):
+    """Idempotent dataset ingestion with real embeddings in bounded batches.
+
+    Completed batches persist on failure and are reused by the next attempt.
+    No count cap, fake vectors or destructive dimension-error recovery.
+    """
+    _ensure_cache_synced()
+    known = {(r.title, r.company, r.location, r.full_text): r for r in _RECORD_CACHE.values()}
+    prepared, pending = [], {}
+    for job in jobs:
+        text = str(job.get("text", "")).strip()
+        if not text:
+            raise ValueError("Dataset job descriptions cannot be empty")
+        identity = (str(job.get("title", "Role")).strip(), str(job.get("company", "Company")).strip(),
+                    str(job.get("location", "Unspecified")).strip(), text)
+        prepared.append(identity)
+        if identity not in known:
+            pending.setdefault(identity, job)
+    identities = list(pending)
+    for offset in range(0, len(identities), batch_size):
+        batch = identities[offset:offset + batch_size]
+        vectors = _get_embedder().embed_chunks_batch([identity[3] for identity in batch])
+        if len(vectors) != len(batch):
+            raise ValueError("Provider returned incomplete job embeddings")
+        records = [JDRecord(jd_id=f"jd_{uuid.uuid4().hex[:8]}", title=title, company=company,
+                            location=location, snippet=text[:150] + ("..." if len(text) > 150 else ""), full_text=text)
+                   for title, company, location, text in batch]
+        _get_collection().add(ids=[r.jd_id for r in records], embeddings=vectors,
+                              documents=[r.full_text for r in records], metadatas=[{
+                                  "title": r.title, "company": r.company, "location": r.location, "snippet": r.snippet
+                              } for r in records])
+        for identity, record, vector in zip(batch, records, vectors):
+            _RECORD_CACHE[record.jd_id] = record
+            _EMBEDDING_CACHE[record.jd_id] = vector
+            known[identity] = record
+    return [known[identity] for identity in prepared]
 
 
 @_synchronized
@@ -228,6 +243,12 @@ def get_jd_record(jd_id: str) -> Optional[JDRecord]:
 def get_jd_ids() -> list[str]:
     _ensure_cache_synced()
     return list(_RECORD_CACHE)
+
+
+@_synchronized
+def get_jd_records() -> list[JDRecord]:
+    _ensure_cache_synced()
+    return list(_RECORD_CACHE.values())
 
 
 @_synchronized

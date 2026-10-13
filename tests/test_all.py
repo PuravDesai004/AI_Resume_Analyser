@@ -163,18 +163,16 @@ class TestPlacementAnalyzer(unittest.TestCase):
             self.assertEqual(jd_index.count(), 15)
             self.assertEqual(mock_emb.embed_chunk.call_count, 15)
 
-            # Attempt 16th JD -> must return ErrorResponse without touching store
+            # The sixteenth job is accepted; there is no record-count cap.
             rec_16 = jd_index.add_jd(
                 title="16th Role",
                 company="TestCo",
                 location="Remote",
-                jd_text="This 16th JD should be rejected by the cap."
+                jd_text="This sixteenth job is accepted."
             )
-            self.assertIsInstance(rec_16, ErrorResponse)
-            self.assertEqual(rec_16.error_code, "STORE_CAP_REACHED")
-            self.assertEqual(jd_index.count(), 15)
-            # Embed chunk should NOT have been called for rejected 16th JD
-            self.assertEqual(mock_emb.embed_chunk.call_count, 15)
+            self.assertIsInstance(rec_16, JDRecord)
+            self.assertEqual(jd_index.count(), 16)
+            self.assertEqual(mock_emb.embed_chunk.call_count, 16)
 
     # ── 5. Ranking (Tier 1) & Zero Gemini Calls ──
 

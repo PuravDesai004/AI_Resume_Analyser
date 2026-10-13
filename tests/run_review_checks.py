@@ -1,5 +1,6 @@
 """Run all offline regressions in isolated storage, without changing app data."""
 from pathlib import Path
+import os
 import sys
 import unittest
 import logging
@@ -18,7 +19,8 @@ def main():
     logging.getLogger("streamlit.runtime.scriptrunner_utils.script_run_context").setLevel(logging.ERROR)
     logging.getLogger("streamlit.runtime.state.session_state_proxy").setLevel(logging.ERROR)
     factory = chromadb.PersistentClient
-    with patch("chromadb.PersistentClient", side_effect=lambda *a, **k: factory(path=str(storage / "db"))), \
+    with patch.dict(os.environ, {"OPENROUTER_API_KEY": ""}), \
+            patch("chromadb.PersistentClient", side_effect=lambda *a, **k: factory(path=str(storage / "db"))), \
             patch("analysis_pipeline.genai.Client"), patch("requests.get") as get:
         get.return_value.status_code = 200
         suite = unittest.defaultTestLoader.discover(str(ROOT / "tests"), pattern="test_*.py")

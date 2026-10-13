@@ -25,7 +25,7 @@ def prepare_uploads(files, existing, kind, validate_text, max_file_size, cap=10)
             if normalized_text in known_texts:
                 notices.append(("info", f"'{uploaded.name}' is already loaded. Duplicate skipped."))
                 continue
-            if len(existing) + len(records) >= cap:
+            if cap is not None and len(existing) + len(records) >= cap:
                 notices.append(("warning", f"Cannot add '{uploaded.name}': the {kind} limit of {cap} is reached. Remove a document first."))
                 continue
             status, warning = validate_text(text)
