@@ -11,7 +11,7 @@ Python 3.12 is the tested local runtime. From the repository directory on macOS 
 ```bash
 python3.12 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
-cp .env.example .env
+[ -e .env ] || cp .env.example .env
 .venv/bin/python -m uvicorn server:app --host 127.0.0.1 --port 8010
 ```
 
@@ -25,7 +25,7 @@ On Windows PowerShell:
 ```powershell
 py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
-Copy-Item .env.example .env
+if (-not (Test-Path .env)) { Copy-Item .env.example .env }
 .\.venv\Scripts\python.exe -m uvicorn server:app --host 127.0.0.1 --port 8010
 ```
 
