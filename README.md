@@ -51,7 +51,7 @@ $env:PYTHONUTF8 = '1'
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-The full suite could not be collected on the audited Windows machine because application control blocked a `grpc` DLL imported by ChromaDB. A run excluding `tests/test_all.py` exercised the remaining suite; provider interactions used existing test doubles. UTF-8 mode avoids a Windows text-decoding failure in the synthetic dataset test.
+A fresh Python 3.12 environment on Windows passed 124 tests and 14 subtests with provider test doubles. Run the suite in a clean clone without your personal `.env` file. An earlier environment could not collect the full suite because application control blocked a `grpc` DLL imported by ChromaDB; a fresh environment completed it. The dataset test now reads its input as UTF-8.
 
 ## Data and limitations
 
