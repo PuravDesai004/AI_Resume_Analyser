@@ -113,7 +113,7 @@ class IndiaDatasetTests(unittest.TestCase):
 
     def test_dataset_style_diversity_and_real_city_resolution(self):
         dataset = build_dataset()
-        disk = json.loads((Path(server.PROJECT_ROOT) / "datasets/india_demo_100.json").read_text())
+        disk = json.loads((Path(server.PROJECT_ROOT) / "datasets/india_demo_100.json").read_text(encoding="utf-8"))
         self.assertEqual(dataset, disk)
         self.assertEqual(len(dataset["jds"]), 100)
         self.assertEqual(len(dataset["resumes"]), 100)
