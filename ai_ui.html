@@ -8,7 +8,7 @@
     <style>
         :root {
             --ink: #202328;
-            --muted: #737982;
+            --muted: #59636e;
             --paper: #f4f5f6;
             --white: #fff;
             --line: #e2e4e7;
@@ -26,7 +26,11 @@
             --success-line: #bfe2cc;
             --error: #b3261e;
             --error-bg: #fdecea;
-            --error-line: #f2c2bd
+            --error-line: #f2c2bd;
+            --skill-matched: #1e6f43;
+            --skill-essential: #a8201a;
+            --skill-preferred: #8a5300;
+            --skill-extra: #59636e
         }
 
         * {
@@ -47,70 +51,18 @@
         }
 
         button:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible,
+        summary:focus-visible,
         [tabindex]:focus-visible {
-            outline: 3px solid #777d84;
+            outline: 3px solid #316d82;
             outline-offset: 3px
         }
 
         .shell {
             min-height: 100vh;
-            display: grid;
-            grid-template-columns: 238px minmax(0, 1fr);
-            transition: grid-template-columns .25s ease
-        }
-
-        .collapse-btn {
-            margin-left: auto;
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
-            border: 1px solid #41464d;
-            background: #2b2f34;
-            color: #e7e8ea;
-            display: grid;
-            place-items: center;
-            font-size: 15px;
-            line-height: 1;
-            padding: 0
-        }
-
-        .collapse-btn:hover {
-            background: #3a3f45
-        }
-
-        .shell.collapsed {
-            grid-template-columns: 74px minmax(0, 1fr)
-        }
-
-        .shell.collapsed .sidebar {
-            padding: 22px 11px
-        }
-
-        .shell.collapsed .brand {
-            flex-direction: column;
-            gap: 12px;
-            padding: 0 0 24px
-        }
-
-        .shell.collapsed .collapse-btn {
-            margin-left: 0
-        }
-
-        .shell.collapsed .brand-word,
-        .shell.collapsed .nav-label,
-        .shell.collapsed .nav-text,
-        .shell.collapsed .side-metric,
-        .shell.collapsed .side-btn {
-            display: none
-        }
-
-        .shell.collapsed .nav button {
-            justify-content: center;
-            padding: 12px
-        }
-
-        .shell.collapsed .nav button .ico {
-            font-size: 18px
+            display: block
         }
 
         .sidebar {
@@ -596,7 +548,7 @@
 
         .rank {
             font-size: 12px;
-            color: #8b9097;
+            color: var(--muted);
             font-weight: 750;
             text-align: center
         }
@@ -800,12 +752,12 @@
             height: 100%;
             display: block;
             border-radius: 6px;
-            background: var(--green);
+            background: var(--skill-matched);
             transition: width .4s ease
         }
 
         .bar i.mid {
-            background: #858a91
+            background: var(--skill-preferred)
         }
 
         .next-step {
@@ -1004,20 +956,19 @@
             width: 7px;
             height: 7px;
             border-radius: 2px;
-            background: #34393f
+            background: var(--skill-matched)
         }
 
         .legend-dot.l2 {
-            background: #777c83
+            background: var(--skill-essential)
         }
 
         .legend-dot.l3 {
-            background: #b2b6bc
+            background: var(--skill-preferred)
         }
 
         .legend-dot.l4 {
-            background: #e5e7ea;
-            border: 1px solid #d9dce0
+            background: var(--skill-extra)
         }
 
         .volume-chart {
@@ -1298,28 +1249,33 @@
         }
 
         .tag-exact {
-            background: var(--mint);
-            color: var(--green)
+            background: #e6f4ea;
+            color: #165632;
+            border: 1px solid #b7dfc4
         }
 
         .tag-close {
-            background: #eef0f2;
-            color: #4d525a
+            background: #e8f0fe;
+            color: #174ea6;
+            border: 1px solid #c2d7fa
         }
 
         .tag-miss-ess {
-            background: #f0f1f3;
-            color: #2c2f33
+            background: #fde8e7;
+            color: #9c1c16;
+            border: 1px solid #f5c2bf
         }
 
         .tag-miss-pref {
-            background: var(--amber-bg);
-            color: var(--amber)
+            background: #fef3dc;
+            color: #7a4900;
+            border: 1px solid #f7d99c
         }
 
         .tag-extra {
-            background: #eceef0;
-            color: #41464d
+            background: #eef0f2;
+            color: #3b4046;
+            border: 1px solid #d5d9de
         }
 
         .rec-card {
@@ -1546,10 +1502,6 @@
         }
 
         @media(max-width:1000px) {
-            .shell {
-                grid-template-columns: 74px minmax(0, 1fr)
-            }
-
             .sidebar {
                 padding: 22px 11px
             }
@@ -1985,13 +1937,12 @@
         input[type="password"], input[type="number"] { width:100%; border:1px solid #d9dde1; border-radius:9px; padding:11px; background:#fff; color:#22262b; font:inherit; box-sizing:border-box; }
         .side-btn:disabled, .quiet-link:disabled { opacity:.6; cursor:wait; }
         .feature-actions { display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
-        .feature-note { color:#737982; font-size:12px; margin:10px 0; }
+        .feature-note { color:var(--muted); font-size:13px; margin:10px 0; }
         .report-actions { justify-content:flex-end; margin-bottom:18px; }
         .check-label { display:flex!important; align-items:center; gap:8px; font-size:12px; margin:12px 0; }
         .check-label input { width:auto; margin:0; }
         .side-field { font-size:10px; color:#b9bdc2; margin:12px 0 5px; }
         .side-select { font-size:11px; color:#f4f5f6; background:#2b2f34; border-color:#41464d; padding:8px; }
-        .shell.collapsed .side-field, .shell.collapsed .side-select { display:none; }
         .compare-options { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:10px; margin:18px 0; }
         .compare-options label { padding:12px; border:1px solid #e1e4e8; border-radius:10px; display:flex; gap:10px; align-items:flex-start; }
         .table-scroll { overflow:auto; }
@@ -2015,44 +1966,115 @@
         #settings-form label { font-size:12px; font-weight:600; }
         #settings-form input[type="password"] { font-family:inherit; }
         @media(max-width:650px) { .control-grid, #settings-form .control-grid { grid-template-columns:1fr; } .feature-actions { align-items:flex-start; } }
+        /* A compact, legible workflow with the same controls at every size. */
+        #view-setup.active { display:grid; gap:16px; }
+        #view-setup .panel { padding:24px; }
+        #view-setup .block-title { font-size:17px; margin-bottom:8px; }
+        .drag-drop-zone { color:var(--muted); cursor:pointer; }
+        .drag-drop-zone:hover, .drag-drop-zone:focus-visible { border-color:#316d82; background:#f0f7f8; }
+        .drag-drop-zone.drag-active { border-color:#316d82; background:#eaf4f7; }
+        .drag-drop-zone.uploading { opacity:.7; cursor:wait; }
+        .drag-drop-zone small { color:var(--muted); }
+        .scoring-details { margin:0 0 16px; color:var(--muted); font-size:13px; }
+        .scoring-details summary { cursor:pointer; color:var(--ink); font-weight:600; width:fit-content; padding:4px 0; }
+        .manual-form label { font-size:13px; font-weight:600; }
+        .manual-form label input, .manual-form label textarea { display:block; margin-top:6px; }
+        .json-accordion-head { width:100%; padding:0; border:0; background:none; text-align:left; font-size:16px; font-weight:700; }
+        .chat-input:focus-visible { outline:3px solid #316d82; outline-offset:3px; }
+        @media(max-width:650px) {
+            .sidebar { display:flex; min-height:0; padding:12px 16px; }
+            .sidebar .brand { flex-direction:row; padding:0 0 12px; }
+            .sidebar .brand-word { display:inline; }
+            .sidebar .nav-label, .sidebar .side-metric,
+            .sidebar .side-btn, .sidebar .sidebar-bottom { display:none; }
+            .sidebar .nav { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:4px; margin:0; }
+            .sidebar .nav button { min-height:44px; padding:8px 4px; justify-content:center; font-size:11px; text-align:center; }
+            .sidebar .nav button .ico { display:none; }
+            .sidebar .nav-text { display:inline; }
+            .topline { gap:8px; flex-wrap:wrap; margin-bottom:24px; }
+            .session { display:flex; }
+            #view-setup .panel { padding:20px 16px; }
+        }
+        @media(prefers-reduced-motion:reduce) {
+            *, *::before, *::after { animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important; }
+        }
+        /* Horizontal workspace navigation keeps the full page width available. */
+        .sidebar { display:block; min-height:0; padding:0 clamp(16px, 4vw, 48px); }
+        .workspace-header { display:flex; align-items:center; gap:32px; min-height:72px; }
+        .workspace-header .brand { flex-direction:row; padding:0; flex:none; }
+        .workspace-header .brand-word { display:inline; }
+        .nav-label, .sidebar-bottom { display:none; }
+        .workspace-header .nav { display:flex; gap:4px; margin:0; flex-wrap:wrap; }
+        .workspace-header .nav button { width:auto; min-height:44px; padding:10px 14px; justify-content:center; }
+        .workspace-header .nav-text { display:inline; }
+        .workspace-session { display:flex; align-items:center; gap:20px; flex-wrap:wrap; padding:8px 0 12px; border-top:1px solid #41464d; }
+        .sidebar .workspace-session .side-metric { display:flex; align-items:center; gap:8px; padding:0; margin:0; background:none; }
+        .workspace-session .side-metric small { display:inline; color:#c3c8ce; font-size:11px; text-transform:none; letter-spacing:0; margin:0; }
+        .workspace-session .side-metric b { font-size:12px; }
+        .workspace-session #backend-source-note { margin-top:0 !important; }
+        .status-banner #status-banner-msg { flex:1; }
+        .status-banner .dismiss-banner { min-width:32px; min-height:32px; border:0; background:transparent; color:inherit; font-size:18px; line-height:1; }
+        .resume-clear { margin-top:8px; padding:8px 0; }
+        .progress-track i.indeterminate { width:40% !important; animation:progress-indeterminate 1.4s ease-in-out infinite alternate; }
+        @keyframes progress-indeterminate { from { transform:translateX(-10%); } to { transform:translateX(150%); } }
+        .topline .session { display:none; }
+        @media(max-width:900px) {
+            .workspace-header { flex-wrap:wrap; gap:8px; padding:12px 0; }
+            .workspace-header .brand { width:100%; }
+            .workspace-header .nav { width:100%; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); }
+            .workspace-header .nav button { width:100%; padding:8px 4px; font-size:12px; }
+            .workspace-header .nav button .ico { display:none; }
+            .workspace-session { gap:12px; }
+        }
+        @media(min-width:1001px) {
+            #view-setup.active { grid-template-columns:minmax(0, 1fr) minmax(0, 1.15fr); align-items:start; }
+        }
+        @media(max-width:650px) {
+            .item-row { flex-wrap:wrap; }
+            .item-row > div { flex-basis:100%; overflow-wrap:anywhere; }
+            .grid-4 { grid-template-columns:minmax(0, 1fr); }
+            .workspace-header .nav { grid-template-columns:repeat(2,minmax(0,1fr)); }
+        }
+        .compare-resume { max-width:34rem; margin:16px 0; }
+        .compare-resume label { display:block; margin-bottom:6px; font-size:13px; font-weight:600; }
     </style>
 </head>
 
 <body>
     <div class="shell">
         <aside class="sidebar">
+            <div class="workspace-header">
             <div class="brand">
-                <div class="brand-mark">AI</div><span class="brand-word">AI Resume Analyzer</span><button
-                    class="collapse-btn" id="sidebar-toggle" onclick="toggleSidebar()" title="Minimize sidebar"
-                    aria-label="Minimize sidebar" aria-expanded="true"><span id="sidebar-toggle-ico">«</span></button>
+                <div class="brand-mark">AI</div><span class="brand-word">AI Resume Analyzer</span>
             </div>
 
             <div class="nav-label">Workspace</div>
             <nav class="nav" aria-label="Main navigation">
-                <button class="active" data-view="placement" id="nav-placement"><span class="ico">◫</span><span class="nav-text">Placement fit</span></button>
-                <button data-view="jobs" id="nav-jobs"><span class="ico">▤</span><span class="nav-text">Jobs</span></button>
-                <button data-view="compare" id="nav-compare"><span class="ico">⇄</span><span class="nav-text">Compare roles</span></button>
-                <button data-view="settings" id="nav-settings"><span class="ico">⚙</span><span class="nav-text">Settings</span></button>
+                <button class="active" data-view="placement" id="nav-placement" aria-label="Placement fit" title="Placement fit" aria-current="page"><span class="ico" aria-hidden="true">◫</span><span class="nav-text">Placement fit</span></button>
+                <button data-view="jobs" id="nav-jobs" aria-label="Jobs" title="Jobs"><span class="ico" aria-hidden="true">▤</span><span class="nav-text">Jobs</span></button>
+                <button data-view="compare" id="nav-compare" aria-label="Compare roles" title="Compare roles"><span class="ico" aria-hidden="true">⇄</span><span class="nav-text">Compare roles</span></button>
+                <button data-view="settings" id="nav-settings" aria-label="Settings" title="Settings"><span class="ico" aria-hidden="true">⚙</span><span class="nav-text">Settings</span></button>
             </nav>
+            </div>
 
+            <div class="workspace-session">
             <div class="nav-label">Session</div>
             <div class="side-metric">
-                <small>Resumes uploaded</small><b id="resume-count">0 resumes</b>
+                <small>Uploaded:</small><b id="resume-count">0 resumes</b>
             </div>
             <div class="side-metric">
-                <small>Jobs available</small><b id="jd-count">0 jobs</b>
+                <small>Available:</small><b id="jd-count">0 jobs</b>
             </div>
-            <button class="side-btn danger" onclick="resetSession()"><span class="btn-text">Clear uploaded resumes</span></button>
-
             <div class="nav-label">Backend</div>
             <div class="side-metric">
-                <small>Connection status</small>
+                <small>Server:</small>
                 <b style="display:flex;align-items:center;gap:7px"><span class="status-dot"
                         id="backend-dot"></span><span id="backend-status-label">Connected</span></b>
                 <div style="font-size:10px;color:#9ea2a8;margin-top:7px" id="backend-source-note">Checking connection…</div>
             </div>
             <div class="sidebar-bottom"><span class="conn-dot" id="conn-dot" title="Connected to server"
                     aria-label="Server connected"></span></div>
+            </div>
         </aside>
 
         <main>
@@ -2067,8 +2089,8 @@
             <div class="title-row">
                 <div>
                     <div class="eyebrow" id="page-eyebrow">Placement setup</div>
-                    <h1 id="page-h1">Find your next best fit.</h1>
-                    <p class="subhead" id="page-sub">Upload your resumes, choose one, and find your best fit across our job listings.</p>
+                    <h1 id="page-h1" tabindex="-1">Match your resume to jobs</h1>
+                    <p class="subhead" id="page-sub">Upload a resume, choose your preferences, and explore matching jobs.</p>
                 </div>
                 <div class="candidate-chip" id="candidate-chip" hidden>
                     <div class="avatar" id="candidate-initials">PD</div>
@@ -2077,31 +2099,31 @@
             </div>
 
             <div class="status-banner" id="status-banner" role="status" aria-live="polite"><b id="status-banner-tag">Info</b><span
-                    id="status-banner-msg"></span></div>
+                    id="status-banner-msg"></span><button type="button" class="dismiss-banner" onclick="dismissBanner()" aria-label="Dismiss notification">×</button></div>
 
             <div class="view" id="view-jobs">
                 <section class="panel">
                     <h2 class="block-title">Upload job descriptions</h2>
                     <p class="feature-note">Upload several job files at once. Saved jobs join the library for resume matching and role comparison.</p>
-                    <div id="jd-file-mode" class="drag-drop-zone" role="button" tabindex="0" aria-label="Upload jobs" onclick="document.getElementById('jd-file-input').click()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); document.getElementById('jd-file-input').click(); }">
+                    <div id="jd-file-mode" class="drag-drop-zone" role="button" tabindex="0" aria-label="Upload jobs" onclick="if (this.getAttribute('aria-disabled') !== 'true') document.getElementById('jd-file-input').click()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); if (this.getAttribute('aria-disabled') !== 'true') document.getElementById('jd-file-input').click(); }">
                         <div class="dz-ico">💼</div><div><b>Choose job files</b> or drag and drop them here</div>
-                        <small style="display:block;margin-top:6px;color:#8a8f96">PDF, DOCX or TXT · select multiple files · up to 5 MB each</small>
+                        <small style="display:block;margin-top:6px">PDF, DOCX or TXT · select multiple files · up to 5 MB each</small>
                     </div>
                     <input type="file" id="jd-file-input" accept=".pdf,.docx,.txt" multiple hidden onchange="handleFileSelect('jd', this.files)">
                     <div id="job-upload-notices" role="status" aria-live="polite"></div>
                     <details style="margin-top:20px"><summary style="cursor:pointer">Add a job manually</summary>
                         <div class="manual-form" style="margin-top:16px">
-                            <input type="text" id="jd-title-input" placeholder="Job title">
-                            <input type="text" id="jd-company-input" placeholder="Company name">
-                            <input type="text" id="jd-location-input" placeholder="Location (e.g. Mumbai, India)">
-                            <textarea id="jd-text-input" placeholder="Paste the complete job description…"></textarea>
+                            <label>Job title<input type="text" id="jd-title-input" placeholder="Job title"></label>
+                            <label>Company name<input type="text" id="jd-company-input" placeholder="Company name"></label>
+                            <label>Location<input type="text" id="jd-location-input" placeholder="e.g. Mumbai, India"></label>
+                            <label>Job description<textarea id="jd-text-input" placeholder="Paste the complete job description…"></textarea></label>
                             <button class="primary" id="add-job-btn" onclick="addManualJD()">Save job</button>
                         </div>
                     </details>
                 </section>
                 <section class="panel">
                     <div class="panel-head"><h2>Saved jobs</h2><button class="quiet-link" id="refresh-store-btn" onclick="refreshDataset()">Refresh jobs</button></div>
-                    <label class="sr-label" for="job-search">Search jobs</label><input type="text" id="job-search" placeholder="Search title, company or location" oninput="renderList('jd')">
+                    <label class="sr-label" for="job-search">Search jobs</label><input type="text" id="job-search" placeholder="Search title, company or location" oninput="queueJobSearch()">
                     <p class="feature-note" id="job-list-count"></p><div id="jd-list"></div>
                 </section>
             </div>
@@ -2110,19 +2132,21 @@
             <div class="view active" id="view-placement">
             <div class="placement-step active" id="view-setup">
                 <section class="panel">
-                    <h2 class="block-title">Upload your resumes</h2>
+                    <h2 class="block-title">1. Upload your resume</h2>
                     <p class="feature-note">Upload one or several resumes, then choose which version to match against our job listings.</p>
-                    <div id="res-file-mode" class="drag-drop-zone" role="button" tabindex="0" aria-label="Upload resumes" onclick="document.getElementById('res-file-input').click()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); document.getElementById('res-file-input').click(); }">
+                    <button type="button" class="quiet-link" id="load-sample-resumes-btn" onclick="loadSampleResumes()">Try 5 synthetic sample resumes</button>
+                    <p class="feature-note">Sample resumes are sent to your configured AI providers when matched or analyzed.</p>
+                    <div id="res-file-mode" class="drag-drop-zone" role="button" tabindex="0" aria-label="Upload resumes" onclick="if (this.getAttribute('aria-disabled') !== 'true') document.getElementById('res-file-input').click()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); if (this.getAttribute('aria-disabled') !== 'true') document.getElementById('res-file-input').click(); }">
                         <div class="dz-ico">📄</div>
                         <div><b>Choose resume files</b> or drag and drop them here</div>
-                        <small style="display:block;margin-top:6px;color:#8a8f96">PDF, DOCX or TXT · select multiple files · up to 5 MB each</small>
+                        <small style="display:block;margin-top:6px">PDF, DOCX or TXT · select multiple files · up to 5 MB each</small>
                     </div>
                     <input type="file" id="res-file-input" accept=".pdf,.docx,.txt" multiple hidden onchange="handleFileSelect('res', this.files)">
                     <div id="upload-notices" role="status" aria-live="polite"></div>
-                    <details id="resumes-details" hidden><summary style="margin:16px 0;cursor:pointer">Manage uploaded resumes</summary><div id="resume-list"></div></details>
+                    <details id="resumes-details" hidden><summary style="margin:16px 0;cursor:pointer">Manage uploaded resumes</summary><div id="resume-list"></div><button type="button" class="quiet-link resume-clear" onclick="resetSession()">Clear uploaded resumes</button></details>
                 </section>
                 <section class="panel">
-                    <h2 class="block-title" style="margin-bottom:16px">Choose your resume and preferences</h2>
+                    <h2 class="block-title">2. Choose your resume and preferences</h2>
             <section class="document-context" style="grid-template-columns:minmax(0,1fr)" aria-label="Selected documents">
                 <div><label for="target-resume-select">Selected resume</label><select id="target-resume-select" onchange="onCandidateSelected(this.value)"></select></div>
             </section>
@@ -2132,8 +2156,8 @@
                         <div><label for="preferred-arrangement">Preferred work arrangement</label><select id="preferred-arrangement"><option value="">Any</option><option>Remote</option><option>Hybrid</option><option>On-site</option></select></div>
                         <div><label for="rank-top-n">Results</label><select id="rank-top-n"><option value="5">Top 5</option><option value="10">Top 10</option><option value="25">Top 25</option><option value="0">All jobs</option></select></div>
                     </div>
-                    <p class="feature-note">Location bonus: preferred city +5 · within 100 km +4 · within 200 km +3 · within 300 km +2 · farther away +0. Distances are approximate and straight-line. Matching work arrangement adds +3.</p>
-                    <button id="run-ranking-btn" class="primary" style="font-size:13.5px;padding:13px 30px" onclick="runAnalysis()">Run placement fit</button><p id="placement-status" role="status" aria-live="polite"></p>
+                    <details class="scoring-details"><summary>How preferences affect ranking</summary><p>Location bonus: preferred city +5 · within 100 km +4 · within 200 km +3 · within 300 km +2 · farther away +0. Distances are approximate and straight-line. Matching work arrangement adds +3.</p></details>
+                    <button id="run-ranking-btn" class="primary" style="font-size:13.5px;padding:13px 30px" onclick="runAnalysis()" aria-describedby="placement-readiness">Run placement fit</button><p id="placement-readiness" class="feature-note" role="status" aria-live="polite">Upload a resume to start.</p><p id="placement-status" role="status" aria-live="polite"></p>
                 </section>
             </div>
 
@@ -2147,9 +2171,9 @@
                         </div>
                     </div>
                     <div class="control-grid result-filters">
-                        <label>Search location<input id="filter-location" type="text" placeholder="Filter ranked roles" oninput="renderRankings()"></label>
+                        <label>Search location<input id="filter-location" type="text" placeholder="Filter ranked roles" oninput="queueRankingFilter()"></label>
                         <div><label for="filter-arrangement">Work arrangement</label><select id="filter-arrangement" onchange="renderRankings()"><option value="">All arrangements</option><option>Remote</option><option>Hybrid</option><option>On-site</option></select></div>
-                        <label><span id="minimum-score-label">Minimum fit</span><input id="filter-score" type="number" min="0" max="100" value="0" oninput="renderRankings()"></label>
+                        <label><span id="minimum-score-label">Minimum fit</span><input id="filter-score" type="number" min="0" max="100" value="0" oninput="queueRankingFilter()"></label>
                         <div><label for="rank-sort">Sort by</label><select id="rank-sort" onchange="renderRankings()"><option value="score">Best fit</option><option value="similarity">Highest similarity</option><option value="title">Job title</option><option value="company">Company</option></select></div>
                     </div>
                     <p class="feature-note" id="rank-result-count"></p>
@@ -2295,9 +2319,7 @@
                         </section>
 
                         <section class="panel">
-                            <div class="json-accordion-head" onclick="toggleJSON()">
-                                <h2 style="margin:0">Raw backend API response JSON</h2><span id="json-arrow">▼</span>
-                            </div>
+                            <h2 style="margin:0"><button type="button" class="json-accordion-head" id="json-toggle" onclick="toggleJSON()" aria-expanded="false" aria-controls="json-view">Raw backend API response JSON<span id="json-arrow" aria-hidden="true">▼</span></button></h2>
                             <div class="json-view" id="json-view"></div>
                         </section>
                     </div>
@@ -2345,6 +2367,7 @@
             <div class="view" id="view-compare">
                 <section class="panel">
                     <h2>Compare roles for your resume</h2><p class="feature-note" id="compare-candidate">Choose a resume in Placement fit.</p>
+                    <div class="compare-resume"><label for="compare-resume-select">Resume to compare</label><select id="compare-resume-select" onchange="onCandidateSelected(this.value)"></select></div>
                     <div id="compare-options" class="compare-options"></div>
                     <div class="feature-actions"><button class="primary" id="compare-btn" onclick="compareRoles()">Compare selected roles</button><span id="compare-status" role="status" aria-live="polite">Choose two or three roles.</span></div>
                 </section>
@@ -2373,11 +2396,11 @@
     </div>
 
     <!-- Progress modal -->
-    <div class="modal-backdrop" id="progress-modal">
+    <div class="modal-backdrop" id="progress-modal" role="dialog" aria-modal="true" aria-labelledby="progress-text" tabindex="-1" onkeydown="if (event.key === 'Tab') event.preventDefault()">
         <div class="modal progress-box">
             <h2 id="progress-text">Step 1/5: Uploading &amp; parsing…</h2>
             <p>Please wait while the pipeline runs.</p>
-            <div class="progress-track"><i id="modal-progress-bar" style="width:0%"></i></div>
+            <div class="progress-track"><i id="modal-progress-bar" class="indeterminate"></i></div>
         </div>
     </div>
     <div class="toast" id="toast" role="status"></div>
@@ -2409,7 +2432,7 @@
         <div class="chat-status-bar" id="chat-status-bar">Powered by Gemini · RAG over your documents</div>
 
         <div class="chat-input-area">
-            <textarea class="chat-input" id="chat-input" placeholder="Ask about skills, gaps, interview tips…" rows="1"
+            <textarea class="chat-input" id="chat-input" aria-label="Ask about your resume and job match" placeholder="Ask about skills, gaps, interview tips…" rows="1"
                 onkeydown="chatInputKeydown(event)" oninput="autoResizeChatInput(this)"></textarea>
             <button class="chat-send-btn" id="chat-send-btn" onclick="sendChatMessage()" aria-label="Send">➤</button>
         </div>
@@ -2471,6 +2494,10 @@
         let savedSettings = null;
         let analysisCache = new Map();
         let configurationRevision = 0;
+        let catalogRequestsInFlight = 0;
+        let catalogLoadError = null;
+        let rankingInProgress = false;
+        const uploadInProgress = { res: false, jd: false };
 
         const toast = document.getElementById('toast');
         const showToast = (message) => { 
@@ -2485,10 +2512,16 @@
             const msg = document.getElementById('status-banner-msg');
             if (!el || !tag || !msg) return;
             el.className = 'status-banner show ' + type;
-            tag.textContent = type === 'success' ? 'Success' : type === 'error' ? 'Notice' : 'Info';
+            tag.textContent = type === 'success' ? 'Success' : type === 'error' ? 'Error' : 'Info';
             msg.textContent = message;
             clearTimeout(window.__bannerTimeout);
             if (type !== 'error') window.__bannerTimeout = setTimeout(() => { el.classList.remove('show'); }, 7000);
+        }
+
+        function dismissBanner() {
+            clearTimeout(window.__bannerTimeout);
+            document.getElementById('status-banner').classList.remove('show');
+            document.getElementById('page-h1').focus?.({ preventScroll:true });
         }
 
         function logActivity(type, message) {
@@ -2502,24 +2535,26 @@
            Live Backend Connection Monitor
            Shows RED DOT in sidebar when disconnected, GREEN when online
         --------------------------------------------------------------- */
+        let healthCheckInFlight = false;
         async function checkServerConnection() {
+            if (healthCheckInFlight) return;
+            healthCheckInFlight = true;
             const connDot = document.getElementById('conn-dot');
             const backendDot = document.getElementById('backend-dot');
             const statusLabel = document.getElementById('backend-status-label');
             const sourceNote = document.getElementById('backend-source-note');
             const headerStatus = document.getElementById('backend-status');
 
+            let timeoutId;
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 2200);
+                timeoutId = setTimeout(() => controller.abort(), 2200);
                 const res = await fetch(`${API_BASE}/health`, {
                     method: 'GET',
                     headers: { 'Accept': 'application/json' },
                     signal: controller.signal,
                     cache: 'no-store'
                 });
-                clearTimeout(timeoutId);
-
                 if (res.ok) {
                     const data = await res.json();
                     const wasOffline = !isServerOnline;
@@ -2562,12 +2597,21 @@
                     logActivity('error', 'Server disconnected. Showing red dot in sidebar.');
                 }
                 return false;
+            } finally {
+                clearTimeout(timeoutId);
+                healthCheckInFlight = false;
             }
         }
 
-        // Start health monitor immediately and poll every 3.5s
-        checkServerConnection();
-        setInterval(checkServerConnection, 3500);
+        // Poll only while the page is visible and refresh as soon as it returns.
+        function pollServerConnection() {
+            if (!document.hidden) return checkServerConnection();
+        }
+        if (!document.hidden) {
+            checkServerConnection();
+        }
+        setInterval(pollServerConnection, 3500);
+        document.addEventListener?.('visibilitychange', pollServerConnection);
 
         function onCandidateSelected(id) {
             currentResumeId = id || null;
@@ -2576,12 +2620,15 @@
             clearAnalysisSelection();
             updateChatContext();
             invalidateRankings();
+            setNotice('placement-status', '');
             renderCompareOptions();
             if (document.getElementById('view-placement').classList.contains('active') && !document.getElementById('view-setup').classList.contains('active')) switchView('setup');
             const r = resumes.find(item => item.id === id);
             document.getElementById('candidate-name').textContent = r?.name || 'No candidate selected';
             document.getElementById('candidate-meta').textContent = r ? `Resume · ${r.text.split(/\s+/).filter(Boolean).length} words` : 'Choose a resume';
             document.getElementById('candidate-initials').textContent = r ? r.name.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase() : '–';
+            updateTargetSelect();
+            updatePlacementReadiness();
             if (r) {
                 logActivity('info', `Selected candidate "${r.name}". Run matching to update results.`);
             }
@@ -2591,6 +2638,7 @@
            Navigation & View Switching
         --------------------------------------------------------------- */
         function switchView(view) {
+            const focusedNav = !!document.activeElement?.closest?.('.nav');
             if (view === 'upload') view = 'setup';
             if (view === 'gap' && !currentJdData) {
                 logActivity('info', 'Open a ranked role to run its detailed analysis first.');
@@ -2603,7 +2651,7 @@
                 view = 'placement';
                 document.querySelectorAll('.placement-step').forEach(section => section.classList.remove('active'));
                 document.getElementById('view-' + step).classList.add('active');
-                if (step === 'setup') setNotice('placement-status', '');
+                if (step === 'setup') updatePlacementReadiness();
                 window.scrollTo?.({ top: 0, behavior: 'instant' });
             }
             const btn = document.getElementById('nav-' + view);
@@ -2612,13 +2660,17 @@
             if (view === 'compare') renderCompareOptions();
             // Display only completed backend rankings.
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.nav button').forEach(b => {
+                b.classList.remove('active');
+                b.removeAttribute?.('aria-current');
+            });
             const targetView = document.getElementById('view-' + view);
             if (targetView) targetView.classList.add('active');
-            if (btn) btn.classList.add('active');
+            if (btn) { btn.classList.add('active'); btn.setAttribute?.('aria-current', 'page'); }
 
             const crumb = document.getElementById('crumb-view');
-            if (crumb) crumb.textContent = btn?.querySelector?.('.nav-text')?.textContent.trim() || view;
+            const stepCrumbs = {setup:'Placement setup', matches:'Matching jobs', gap:'Gap analysis'};
+            if (crumb) crumb.textContent = view === 'placement' ? stepCrumbs[step] : (btn?.querySelector?.('.nav-text')?.textContent.trim() || view);
 
             const titles = {
                 jobs: ['Build your job library.', 'Upload job listings in bulk, then compare a resume against your saved jobs.'],
@@ -2626,7 +2678,7 @@
                     ? ['See where you fit this role.', 'Gap analysis for your selected resume and job. Return to matching jobs to explore another role.']
                     : step === 'matches'
                         ? ['Your matching jobs.', 'Choose a ranked job to run its gap analysis.']
-                        : ['Find your next best fit.', 'Upload your resumes, choose one, and find your best fit across our job listings.'],
+                        : ['Match your resume to jobs', 'Upload a resume, choose your preferences, and explore matching jobs.'],
                 compare: ['Find the role that fits you best.', 'Compare requirements and skill gaps across two or three jobs.'],
                 settings: ['Make the assistant work your way.', 'Manage providers, models and search preferences.'],
             };
@@ -2637,12 +2689,18 @@
                 document.getElementById('page-h1').textContent = titles[view][0];
                 document.getElementById('page-sub').textContent = titles[view][1];
             }
+            const focusWasHidden = document.activeElement?.closest?.('.view:not(.active), .placement-step:not(.active)');
+            if ((focusedNav || focusWasHidden) && !document.getElementById('progress-modal').classList.contains('open')) {
+                document.getElementById('page-h1').focus?.({ preventScroll:true });
+            }
         }
         document.querySelectorAll('.nav button').forEach(b => b.addEventListener('click', () => switchView(b.dataset.view)));
 
         function toggleJSON() {
             document.getElementById('json-view').classList.toggle('open');
-            document.getElementById('json-arrow').textContent = document.getElementById('json-view').classList.contains('open') ? '▲' : '▼';
+            const isOpen = document.getElementById('json-view').classList.contains('open');
+            document.getElementById('json-toggle').setAttribute('aria-expanded', String(isOpen));
+            document.getElementById('json-arrow').textContent = isOpen ? '▲' : '▼';
         }
 
         /* ---------------------------------------------------------------
@@ -2666,8 +2724,26 @@
             const files = Array.from(fileList || []);
             if (!files.length) return;
             const notices = document.getElementById(type === 'res' ? 'upload-notices' : 'job-upload-notices');
+            if (uploadInProgress[type]) {
+                document.getElementById(type === 'res' ? 'res-file-input' : 'jd-file-input').value = '';
+                return;
+            }
+            uploadInProgress[type] = true;
+            updatePlacementReadiness();
+            const zone = document.getElementById(type === 'res' ? 'res-file-mode' : 'jd-file-mode');
+            zone.classList.add('uploading');
+            zone.setAttribute('aria-busy', 'true');
+            zone.setAttribute('aria-disabled', 'true');
             notices.innerHTML = '';
+            const progress = document.createElement('div');
+            progress.className = 'notice';
+            notices.appendChild(progress);
+            let processed = 0;
+            let documentsChanged = false;
+            let latestResume = null;
+            try {
             for (const file of files) {
+                progress.textContent = `Uploading and reading ${processed + 1} of ${files.length}: ${file.name}`;
                 try {
                     if (file.size > 5 * 1024 * 1024) throw new Error('The file exceeds the 5 MB upload limit.');
                     if (!/\.(pdf|docx|txt)$/i.test(file.name)) throw new Error('Use PDF, DOCX or UTF-8 TXT files.');
@@ -2682,15 +2758,14 @@
                         status: doc.status, warning: doc.warning
                     };
                     const title = doc.name.replace(/\.[^/.]+$/, '').replace(/^\d+[_ -]+/, '').replace(/^(John_Doe_|JD_)/i, '').replace(/_/g, ' ');
-                    if (type === 'res') { record.name = title; resumes.push(record); }
+                    if (type === 'res') { record.name = title; resumes.push(record); latestResume = record; }
                     else {
                         Object.assign(record, { title, company: 'Uploaded Document', location: 'Unspecified' });
                         await ensureJobStored(record);
                         jds.push(record);
                     }
-                    renderList(type);
-                    if (type === 'jd') renderCompareOptions();
-                    if (type === 'res' && !currentResumeId) onCandidateSelected(record.id);
+                    documentsChanged = true;
+                    // Invalidate immediately so in-flight results cannot survive a document change.
                     invalidateRankings();
                     const note = document.createElement('div');
                     note.className = 'notice success';
@@ -2702,8 +2777,41 @@
                     note.textContent = `${file.name}: ${error.message}`;
                     notices.appendChild(note);
                 }
+                processed++;
             }
-            document.getElementById(type === 'res' ? 'res-file-input' : 'jd-file-input').value = '';
+            progress.textContent = `Finished processing ${processed} ${processed === 1 ? 'file' : 'files'}.`;
+            } finally {
+                try {
+                    if (documentsChanged) {
+                        if (latestResume) onCandidateSelected(latestResume.id);
+                        renderList(type);
+                        if (type === 'res') document.getElementById('resumes-details').open = true;
+                        else renderCompareOptions();
+                    }
+                } finally {
+                    uploadInProgress[type] = false;
+                    updatePlacementReadiness();
+                    zone.classList.remove('uploading');
+                    zone.removeAttribute('aria-busy');
+                    zone.removeAttribute('aria-disabled');
+                    document.getElementById(type === 'res' ? 'res-file-input' : 'jd-file-input').value = '';
+                }
+            }
+        }
+
+        function loadSampleResumes() {
+            const added = [];
+            for (const sample of sampleResumes) {
+                if (resumes.some(r => r.id === sample.id || r.text.trim() === sample.text.trim())) continue;
+                const record = { ...sample, name: `${sample.name} (sample)`, status: 'Valid', pages: [{ text: sample.text, page: 1 }] };
+                resumes.push(record);
+                added.push(record);
+            }
+            if (!added.length) return logActivity('info', 'Sample resumes are already loaded.');
+            if (!currentResumeId) onCandidateSelected(added[0].id);
+            renderList('res');
+            document.getElementById('resumes-details').open = true;
+            logActivity('success', `Added ${added.length} synthetic sample ${added.length === 1 ? 'resume' : 'resumes'}.`);
         }
 
         /* ---------------------------------------------------------------
@@ -2722,8 +2830,24 @@
             document.getElementById('resume-count').innerText = `${resumes.length} resumes`;
             document.getElementById('jd-count').innerText = `${serverJDCount} jobs`;
             document.getElementById('resumes-details').hidden = !resumes.length;
-            document.getElementById('run-ranking-btn').disabled = !resumes.length || !jds.length;
             updateTargetSelect();
+            updatePlacementReadiness();
+        }
+
+        function updatePlacementReadiness() {
+            const selected = Boolean(currentResumeId && resumes.some(r => r.id === currentResumeId));
+            const button = document.getElementById('run-ranking-btn');
+            const note = document.getElementById('placement-readiness');
+            button.disabled = rankingInProgress || uploadInProgress.res || uploadInProgress.jd || catalogRequestsInFlight > 0 || !selected || !jds.length;
+            let message = '';
+            if (rankingInProgress) message = 'Calculating job matches…';
+            else if (uploadInProgress.res || uploadInProgress.jd) message = 'Wait for the current upload to finish before matching.';
+            else if (catalogRequestsInFlight > 0) message = 'Loading saved jobs. You can upload a resume while you wait.';
+            else if (!resumes.length) message = 'Upload a resume or try the synthetic samples to start.';
+            else if (!selected) message = 'Choose a resume above to start matching.';
+            else if (!jds.length && catalogLoadError) message = 'Jobs could not be loaded. Check your connection or AI settings, then refresh jobs.';
+            else if (!jds.length) message = 'No jobs are saved yet. Open Jobs to add job descriptions.';
+            if (note) note.textContent = message;
         }
 
         function updateTargetSelect() {
@@ -2740,6 +2864,12 @@
             } else {
                 sel.value = '';
             }
+        }
+
+        let jobSearchTimer;
+        function queueJobSearch() {
+            clearTimeout(jobSearchTimer);
+            jobSearchTimer = setTimeout(() => renderList('jd'), 180);
         }
 
         function renderList(type) {
@@ -2819,6 +2949,7 @@
         }
 
         async function resetSession() {
+            if (uploadInProgress.res || uploadInProgress.jd) return logActivity('error', 'Wait for the current upload to finish before clearing resumes.');
             if (chatIsStreaming || chatIsIndexing) return logActivity('error', 'Wait for chat to finish before resetting.');
             if (!window.confirm('Clear uploaded resumes and this chat? The job listings will remain.')) return;
             try {
@@ -2846,10 +2977,12 @@
            Results come from the backend; failures are displayed explicitly.
         --------------------------------------------------------------- */
         async function runAnalysis() {
+            if (rankingInProgress || catalogRequestsInFlight || uploadInProgress.res || uploadInProgress.jd) return;
             const targetId = document.getElementById('target-resume-select').value;
             if (!targetId || !resumes.some(r => r.id === targetId)) return logActivity('error', 'Select a resume first.');
             if (!jds.length) return logActivity('error', 'The job catalog is unavailable. Check your Gemini settings and refresh.');
-            setBusy('run-ranking-btn', true);
+            rankingInProgress = true;
+            updatePlacementReadiness();
             setNotice('ranking-status', 'Calculating job matches…');
             setNotice('placement-status', 'Calculating job matches…');
             try {
@@ -2857,7 +2990,7 @@
                 setNotice('placement-status', `Returned ${lastRankings.length} ranked jobs.`);
             }
             catch (error) { setNotice('placement-status', `Ranking failed: ${error.message}`, true); logActivity('error', `Ranking failed: ${error.message}`); }
-            finally { setBusy('run-ranking-btn', false); }
+            finally { rankingInProgress = false; updatePlacementReadiness(); }
         }
 
         async function generateRankings(resumeId, doSwitchView = true) {
@@ -2919,7 +3052,7 @@
             const modal = document.getElementById('progress-modal');
             modal.classList.add('open');
             document.getElementById('progress-text').textContent = 'Analyzing the selected resume and job description…';
-            document.getElementById('modal-progress-bar').style.width = '65%';
+            modal.focus?.();
             try {
                 const data = await analyzePair(resume, jd);
                 if (version !== analysisRequestVersion) return;
@@ -2934,11 +3067,17 @@
                 switchView('matches');
                 logActivity('error', `Analysis unavailable: ${error.message}`);
                 if (chatPanelOpen) setChatStatus('Resume and job selected · Detailed analysis unavailable', 'error');
-            } finally { if (version === analysisRequestVersion) modal.classList.remove('open'); }
+            } finally {
+                if (version === analysisRequestVersion) {
+                    const hadFocus = document.activeElement === modal;
+                    modal.classList.remove('open');
+                    if (hadFocus) document.getElementById('page-h1').focus?.({ preventScroll:true });
+                }
+            }
         }
 
         function tagListHTML(items, cls, dot) {
-            if (!items || items.length === 0) return '<span style="color:#9a9ea3;font-size:11px">None</span>';
+            if (!items || items.length === 0) return '<span class="empty-note">None</span>';
             return items.map(s => `<span class="skill-tag ${cls}">${dot} ${escapeHtml(typeof s === 'string' ? s : s.skill_name)}</span>`).join('');
         }
 
@@ -2952,7 +3091,8 @@
 
             // Score ring
             document.getElementById('gap-score-text').textContent = data.match_score;
-            document.getElementById('gap-score-ring').style.background = `conic-gradient(var(--green) 0 ${data.match_score}%, #e6e8eb ${data.match_score}%)`;
+            const coverageColor = data.match_score >= 75 ? 'var(--skill-matched)' : data.match_score >= 50 ? 'var(--skill-preferred)' : 'var(--skill-essential)';
+            document.getElementById('gap-score-ring').style.background = `conic-gradient(${coverageColor} 0 ${data.match_score}%, #e6e8eb ${data.match_score}%)`;
             document.getElementById('gap-score-label').textContent = data.match_score >= 75 ? 'Strong alignment' : data.match_score >= 50 ? 'Moderate alignment' : 'Weak alignment';
 
             // Counts
@@ -2973,7 +3113,7 @@
             // Gap breakdown tags
             document.getElementById('gap-matched').innerHTML = (sg.matched && sg.matched.length) 
                 ? sg.matched.map(s => `<span class="skill-tag ${s.match_type === 'exact' ? 'tag-exact' : 'tag-close'}">${s.match_type === 'exact' ? '●' : '◐'} ${escapeHtml(s.skill_name)}</span>`).join('')
-                : '<span style="color:#9a9ea3;font-size:11px">None</span>';
+                : '<span class="empty-note">None</span>';
             document.getElementById('gap-miss-ess').innerHTML = tagListHTML(sg.missing_essential, 'tag-miss-ess', '○');
             document.getElementById('gap-miss-pref').innerHTML = tagListHTML(sg.missing_preferred, 'tag-miss-pref', '△');
             document.getElementById('gap-extra').innerHTML = tagListHTML(sg.extra, 'tag-extra', '◆');
@@ -2998,7 +3138,7 @@
             const total = Math.max((sg.matched||[]).length + (sg.missing_essential||[]).length + (sg.missing_preferred||[]).length + (sg.extra||[]).length, 1);
             let acc = 0;
             const segs = [(sg.matched||[]).length, (sg.missing_essential||[]).length, (sg.missing_preferred||[]).length, (sg.extra||[]).length];
-            const colors = ['#34393f', '#777c83', '#b2b6bc', '#e5e7ea'];
+            const colors = ['var(--skill-matched)', 'var(--skill-essential)', 'var(--skill-preferred)', 'var(--skill-extra)'];
             let stops = [];
             segs.forEach((count, i) => {
                 const start = acc; acc += (count / total) * 100;
@@ -3026,16 +3166,6 @@
             } catch (err) {
                 document.getElementById('json-view').innerText = 'Backend response: ' + err.message;
             }
-        }
-
-        function toggleSidebar() {
-            const shell = document.querySelector('.shell');
-            const collapsed = shell.classList.toggle('collapsed');
-            const btn = document.getElementById('sidebar-toggle');
-            document.getElementById('sidebar-toggle-ico').textContent = collapsed ? '»' : '«';
-            btn.title = collapsed ? 'Maximize sidebar' : 'Minimize sidebar';
-            btn.setAttribute('aria-label', btn.title);
-            btn.setAttribute('aria-expanded', String(!collapsed));
         }
 
         /* ---------------------------------------------------------------
@@ -3365,12 +3495,18 @@
         }
 
         function chatInputKeydown(e) {
-            if (e.key === 'Escape') { toggleChatPanel(); return; }
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 sendChatMessage();
             }
         }
+        document.getElementById('chat-panel').addEventListener('keydown', e => {
+            if (e.key === 'Escape' && chatPanelOpen) {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleChatPanel();
+            }
+        });
 
         function autoResizeChatInput(el) {
             el.style.height = 'auto';
@@ -3424,6 +3560,10 @@
         }
 
         async function syncDataset() {
+            catalogRequestsInFlight++;
+            catalogLoadError = null;
+            updatePlacementReadiness();
+            try {
             const jobs = await apiRequest('/api/jobs/catalog', { method: 'POST', timeoutMs: 300000 });
             const previous = jds;
             jds = jobs.jds.map(item => {
@@ -3445,6 +3585,13 @@
             updateChatContext();
             renderCompareOptions();
             return jobs;
+            } catch (error) {
+                catalogLoadError = error;
+                throw error;
+            } finally {
+                catalogRequestsInFlight--;
+                updatePlacementReadiness();
+            }
         }
 
         async function refreshDataset() {
@@ -3498,19 +3645,26 @@
             return Number(Number(value).toFixed(1)).toString();
         }
 
+        let rankingFilterTimer;
+        function queueRankingFilter() {
+            clearTimeout(rankingFilterTimer);
+            rankingFilterTimer = setTimeout(renderRankings, 180);
+        }
+
         function renderRankings() {
             const container = document.getElementById('role-list');
             const location = document.getElementById('filter-location').value.trim().toLowerCase();
             const arrangement = document.getElementById('filter-arrangement').value.toLowerCase();
             const minimum = Number(document.getElementById('filter-score').value || 0);
             const sort = document.getElementById('rank-sort').value;
+            const hasMercuryFit = lastRankings.some(usesMercuryFit);
             const matches = lastRankings.filter(item => {
                 const value = (item.location || '').toLowerCase();
                 const workMatch = !arrangement || (arrangement === 'on-site' ? /on-site|onsite|office|in-person/.test(value) : value.includes(arrangement));
-                return value.includes(location) && workMatch && primaryRankingScore(item) >= minimum && !(minimum > 0 && lastRankings.some(usesMercuryFit) && !usesMercuryFit(item));
+                return value.includes(location) && workMatch && primaryRankingScore(item) >= minimum && !(minimum > 0 && hasMercuryFit && !usesMercuryFit(item));
             }).sort((a, b) => sort === 'title' ? a.title.localeCompare(b.title) : sort === 'company' ? a.company.localeCompare(b.company) : sort === 'similarity' ? (b.embedding_similarity ?? b.similarity_score) - (a.embedding_similarity ?? a.similarity_score) || a.rank - b.rank : a.rank - b.rank);
-            document.getElementById('minimum-score-label').textContent = lastRankings.some(usesMercuryFit) ? 'Minimum role fit' : 'Minimum similarity';
-            document.getElementById('ranking-score-explanation').textContent = lastRankings.some(usesMercuryFit) ? 'Role fit is a model rating. AI reviews up to 25 shortlisted jobs; the rest show similarity. Bonuses affect order separately.' : 'Similarity fallback is active. Bonuses affect order separately.';
+            document.getElementById('minimum-score-label').textContent = hasMercuryFit ? 'Minimum role fit' : 'Minimum similarity';
+            document.getElementById('ranking-score-explanation').textContent = hasMercuryFit ? 'Role fit is a model rating. AI reviews up to 25 shortlisted jobs; the rest show similarity. Bonuses affect order separately.' : 'Similarity fallback is active. Bonuses affect order separately.';
             container.innerHTML = '';
             document.getElementById('rank-result-count').textContent = lastRankings.length ? `${matches.length} of ${lastRankings.length} returned roles shown` : '';
             if (!matches.length) container.innerHTML = `<div class="empty-note">${lastRankings.length ? 'No roles match these filters.' : 'Run placement fit above to see matching jobs, then choose a job for gap analysis.'}</div>`;
@@ -3519,7 +3673,6 @@
                 const card = document.createElement('button');
                 card.className = 'role-card';
                 card.type = 'button';
-                card.ariaLabel = `Run gap analysis for ${item.title}`;
                 const modelUsed = usesMercuryFit(item);
                 const mainScore = modelUsed ? `${rankingNumber(item.model_fit_score)}/100` : `${item.embedding_similarity ?? item.similarity_score}%`;
                 const scoreLabel = modelUsed ? `Role fit${item.model_fit ? ` · ${escapeHtml(item.model_fit)}` : ''}` : (item.fit_status === 'not_reviewed' ? 'similarity · outside AI shortlist' : 'similarity');
@@ -3572,21 +3725,44 @@
             finally { setBusy('download-report-btn', false); }
         }
 
+        let compareSelectionVersion = 0;
+        function updateCompareSelection() {
+            const container = document.getElementById('compare-options');
+            const inputs = Array.from(container.querySelectorAll?.('input[name="compare-jd"]') || []);
+            const count = inputs.filter(input => input.checked).length;
+            inputs.forEach(input => { input.disabled = !input.checked && count >= 3; });
+        }
+
         function renderCompareOptions() {
             const container = document.getElementById('compare-options');
             const selected = new Set(Array.from(document.querySelectorAll('input[name="compare-jd"]:checked')).map(el => el.value));
             container.innerHTML = '';
             const resume = resumes.find(r => r.id === currentResumeId);
-            document.getElementById('compare-candidate').textContent = resume ? `Candidate: ${resume.name}. Choose two or three roles.` : 'Choose a resume in Placement fit.';
+            document.getElementById('compare-candidate').textContent = resume ? `Candidate: ${resume.name}. Choose two or three roles.` : 'Upload a resume in Placement fit, then select it here.';
+            const resumeSelect = document.getElementById('compare-resume-select');
+            resumeSelect.innerHTML = '<option value="">— Select a resume —</option>';
+            resumes.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id; option.textContent = item.name;
+                resumeSelect.appendChild(option);
+            });
+            resumeSelect.value = resume?.id || '';
             for (const jd of jds) {
                 const label = document.createElement('label');
                 const input = document.createElement('input');
                 input.type = 'checkbox'; input.name = 'compare-jd'; input.value = jd.id; input.checked = selected.has(jd.id);
+                input.addEventListener('change', () => {
+                    compareSelectionVersion++;
+                    document.getElementById('compare-results').innerHTML = '';
+                    setNotice('compare-status', 'Selection changed. Choose two or three roles to compare.');
+                    updateCompareSelection();
+                });
                 label.appendChild(input);
                 const text = document.createElement('span'); text.textContent = `${jd.title} · ${jd.company}`; label.appendChild(text);
                 container.appendChild(label);
             }
             if (!jds.length) container.textContent = 'Add at least two job descriptions to compare roles.';
+            updateCompareSelection();
         }
 
         async function compareRoles() {
@@ -3595,9 +3771,10 @@
             if (!resume || ids.length < 2 || ids.length > 3) return setNotice('compare-status', 'Select a candidate and two or three roles.', true);
             const signature = JSON.stringify([resume.id, resume.text, ids, configurationRevision]);
             const documentVersion = rankingRequestVersion;
+            const selectionVersion = compareSelectionVersion;
             setBusy('compare-btn', true);
             const results = ids.map(id => ({ jd: jds.find(j => j.id === id), pending: true }));
-            const isCurrent = () => documentVersion === rankingRequestVersion && resume.id === currentResumeId && JSON.stringify([resume.id, resume.text, ids, configurationRevision]) === signature;
+            const isCurrent = () => documentVersion === rankingRequestVersion && selectionVersion === compareSelectionVersion && resume.id === currentResumeId && JSON.stringify([resume.id, resume.text, ids, configurationRevision]) === signature;
             let completed = 0;
             document.getElementById('compare-results').innerHTML = '';
             try {
