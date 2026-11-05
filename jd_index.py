@@ -252,6 +252,17 @@ def get_jd_records() -> list[JDRecord]:
 
 
 @_synchronized
+def get_catalog_records(seed_catalog) -> list[JDRecord]:
+    """Seed the demo library once; refresh must respect deleted/uploaded jobs."""
+    collection = _get_collection()
+    metadata = collection.metadata or {}
+    if not metadata.get('demo_catalog_initialized'):
+        seed_catalog()
+        collection.modify(metadata={**metadata, 'demo_catalog_initialized': True})
+    return get_jd_records()
+
+
+@_synchronized
 def get_ranking_snapshot() -> list[tuple[JDRecord, list[float]]]:
     _ensure_cache_synced()
     return [(record, _EMBEDDING_CACHE[j_id]) for j_id, record in _RECORD_CACHE.items() if j_id in _EMBEDDING_CACHE]

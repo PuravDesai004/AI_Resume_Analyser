@@ -2030,8 +2030,6 @@
             <div class="nav-label">Workspace</div>
             <nav class="nav" aria-label="Main navigation">
                 <button class="active" data-view="placement" id="nav-placement"><span class="ico">◫</span><span class="nav-text">Placement fit</span></button>
-                <button data-view="upload" id="nav-upload"><span class="ico">⌘</span><span
-                        class="nav-text">Resumes</span></button>
                 <button data-view="jobs" id="nav-jobs"><span class="ico">▤</span><span class="nav-text">Jobs</span></button>
                 <button data-view="compare" id="nav-compare"><span class="ico">⇄</span><span class="nav-text">Compare roles</span></button>
                 <button data-view="settings" id="nav-settings"><span class="ico">⚙</span><span class="nav-text">Settings</span></button>
@@ -2042,10 +2040,9 @@
                 <small>Resumes uploaded</small><b id="resume-count">0 resumes</b>
             </div>
             <div class="side-metric">
-                <small>Jobs saved</small><b id="jd-count">0 jobs</b>
+                <small>Jobs available</small><b id="jd-count">0 jobs</b>
             </div>
-            <button class="side-btn danger" onclick="resetSession()"><span class="btn-text">Reset session &amp; clear
-                    store</span></button>
+            <button class="side-btn danger" onclick="resetSession()"><span class="btn-text">Clear uploaded resumes</span></button>
 
             <div class="nav-label">Backend</div>
             <div class="side-metric">
@@ -2066,13 +2063,12 @@
                             connected</span></span></div>
             </div>
 
-            <div id="upload-notices" role="status" aria-live="polite"></div>
 
             <div class="title-row">
                 <div>
                     <div class="eyebrow" id="page-eyebrow">Placement setup</div>
                     <h1 id="page-h1">Find your next best fit.</h1>
-                    <p class="subhead" id="page-sub">Choose your resume and preferences, then run matching against your saved jobs.</p>
+                    <p class="subhead" id="page-sub">Upload your resumes, choose one, and find your best fit across our job listings.</p>
                 </div>
                 <div class="candidate-chip" id="candidate-chip" hidden>
                     <div class="avatar" id="candidate-initials">PD</div>
@@ -2083,77 +2079,30 @@
             <div class="status-banner" id="status-banner" role="status" aria-live="polite"><b id="status-banner-tag">Info</b><span
                     id="status-banner-msg"></span></div>
 
-            <!-- ===================== RESUMES & MATCHING ===================== -->
-            <div class="view" id="view-upload">
-                    <section class="panel">
-                        <h2 class="block-title">Resumes</h2>
-                        <div class="radio-group">
-                            <label><input type="radio" name="resMode" value="file" checked onchange="toggleMode('res')">
-                                Files (PDF/DOCX)</label>
-                            <label><input type="radio" name="resMode" value="manual" onchange="toggleMode('res')">
-                                Manual paste</label>
-                        </div>
-                        <div id="res-file-mode" class="drag-drop-zone" onclick="document.getElementById('res-file-input').click()">
-                            <div class="dz-ico">📄</div>
-                            <div><b>Click to upload</b> or drag &amp; drop resumes (PDF/DOCX/TXT)</div>
-                            <small style="display:block;margin-top:4px;color:#8a8f96">Extracted &amp; validated automatically by backend</small>
-                            <input type="file" id="res-file-input" accept=".pdf,.docx,.txt" multiple style="display:none" onchange="handleFileSelect('res', this.files)">
-                        </div>
-                        <div id="res-manual-mode" class="manual-form hidden">
-                            <input type="text" id="res-name-input" placeholder="Candidate name (e.g., John Doe)">
-                            <textarea id="res-text-input" placeholder="Paste full resume text here…"></textarea>
-                            <button class="primary" onclick="addManualResume()">Add manual resume</button>
-                        </div>
-                        <h4 class="list-heading">Uploaded resumes</h4>
-                        <div id="resume-list">
-                            <div class="empty-note">No resumes yet. Load sample data or add one manually.</div>
-                        </div>
-                    </section>
-
-
-            </div>
-
-            <!-- ===================== JOB UPLOADS & MANAGEMENT ===================== -->
             <div class="view" id="view-jobs">
-                    <section class="panel">
-                        <div class="panel-head"><h2 class="block-title">Upload job descriptions</h2><button class="quiet-link" id="load-fixtures-btn" onclick="loadSampleData()">Load dataset</button></div>
-                        <label class="sr-label" for="sample-dataset">Demo dataset</label>
-                        <select id="sample-dataset"><option value="sample">Original 5 jobs + 5 resumes</option><option value="india">India dataset · 100 jobs + 100 resumes</option></select>
-                        <p class="feature-note">Fictional demo data. Loading adds records and keeps your existing jobs and resumes.</p>
-                        <div class="radio-group">
-                            <label><input type="radio" name="jdMode" value="file" checked onchange="toggleMode('jd')">
-                                Files (PDF/DOCX)</label>
-                            <label><input type="radio" name="jdMode" value="manual" onchange="toggleMode('jd')"> Manual
-                                form</label>
-                        </div>
-                        <div id="jd-file-mode" class="drag-drop-zone" onclick="document.getElementById('jd-file-input').click()">
-                            <div class="dz-ico">💼</div>
-                            <div><b>Click to upload</b> or drag &amp; drop job descriptions (PDF/DOCX/TXT)</div>
-                            <small style="display:block;margin-top:4px;color:#8a8f96">Jobs are saved and available for matching</small>
-                            <input type="file" id="jd-file-input" accept=".pdf,.docx,.txt" multiple style="display:none" onchange="handleFileSelect('jd', this.files)">
-                        </div>
-                        <div id="jd-manual-mode" class="manual-form hidden">
-                            <input type="text" id="jd-title-input" placeholder="Job title (e.g., Software Engineer)">
-                            <input type="text" id="jd-company-input" placeholder="Company name">
-                            <input type="text" id="jd-location-input" placeholder="Location">
-                            <textarea id="jd-text-input" placeholder="Paste full JD text here…"></textarea>
-                            <button class="primary" onclick="addManualJD()">Add manual JD</button>
-                        </div>
-                        <h4 class="list-heading">Saved jobs</h4>
-                        <div id="jd-list">
-                            <div class="empty-note">No job descriptions yet. Load sample jobs or add one manually.</div>
-                        </div>
-                    </section>
-
                 <section class="panel">
-                    <div class="panel-head">
-                        <div>
-                            <h2>Stored job descriptions</h2>
-                            <p id="store-summary">Checking the job store…</p>
-                        </div><div class="feature-actions"><button class="quiet-link" id="refresh-store-btn" onclick="refreshDataset()">Refresh jobs</button><button class="quiet-link" onclick="toggleBackendJSON()" id="backend-json-toggle">View raw
-                            JSON →</button></div>
+                    <h2 class="block-title">Upload job descriptions</h2>
+                    <p class="feature-note">Upload several job files at once. Saved jobs join the library for resume matching and role comparison.</p>
+                    <div id="jd-file-mode" class="drag-drop-zone" role="button" tabindex="0" aria-label="Upload jobs" onclick="document.getElementById('jd-file-input').click()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); document.getElementById('jd-file-input').click(); }">
+                        <div class="dz-ico">💼</div><div><b>Choose job files</b> or drag and drop them here</div>
+                        <small style="display:block;margin-top:6px;color:#8a8f96">PDF, DOCX or TXT · select multiple files · up to 5 MB each</small>
                     </div>
-                    <div class="json-view" id="backend-json-view"></div>
+                    <input type="file" id="jd-file-input" accept=".pdf,.docx,.txt" multiple hidden onchange="handleFileSelect('jd', this.files)">
+                    <div id="job-upload-notices" role="status" aria-live="polite"></div>
+                    <details style="margin-top:20px"><summary style="cursor:pointer">Add a job manually</summary>
+                        <div class="manual-form" style="margin-top:16px">
+                            <input type="text" id="jd-title-input" placeholder="Job title">
+                            <input type="text" id="jd-company-input" placeholder="Company name">
+                            <input type="text" id="jd-location-input" placeholder="Location (e.g. Mumbai, India)">
+                            <textarea id="jd-text-input" placeholder="Paste the complete job description…"></textarea>
+                            <button class="primary" id="add-job-btn" onclick="addManualJD()">Save job</button>
+                        </div>
+                    </details>
+                </section>
+                <section class="panel">
+                    <div class="panel-head"><h2>Saved jobs</h2><button class="quiet-link" id="refresh-store-btn" onclick="refreshDataset()">Refresh jobs</button></div>
+                    <label class="sr-label" for="job-search">Search jobs</label><input type="text" id="job-search" placeholder="Search title, company or location" oninput="renderList('jd')">
+                    <p class="feature-note" id="job-list-count"></p><div id="jd-list"></div>
                 </section>
             </div>
 
@@ -2161,10 +2110,21 @@
             <div class="view active" id="view-placement">
             <div class="placement-step active" id="view-setup">
                 <section class="panel">
+                    <h2 class="block-title">Upload your resumes</h2>
+                    <p class="feature-note">Upload one or several resumes, then choose which version to match against our job listings.</p>
+                    <div id="res-file-mode" class="drag-drop-zone" role="button" tabindex="0" aria-label="Upload resumes" onclick="document.getElementById('res-file-input').click()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); document.getElementById('res-file-input').click(); }">
+                        <div class="dz-ico">📄</div>
+                        <div><b>Choose resume files</b> or drag and drop them here</div>
+                        <small style="display:block;margin-top:6px;color:#8a8f96">PDF, DOCX or TXT · select multiple files · up to 5 MB each</small>
+                    </div>
+                    <input type="file" id="res-file-input" accept=".pdf,.docx,.txt" multiple hidden onchange="handleFileSelect('res', this.files)">
+                    <div id="upload-notices" role="status" aria-live="polite"></div>
+                    <details id="resumes-details" hidden><summary style="margin:16px 0;cursor:pointer">Manage uploaded resumes</summary><div id="resume-list"></div></details>
+                </section>
+                <section class="panel">
                     <h2 class="block-title" style="margin-bottom:16px">Choose your resume and preferences</h2>
-            <section class="document-context" aria-label="Selected documents">
+            <section class="document-context" style="grid-template-columns:minmax(0,1fr)" aria-label="Selected documents">
                 <div><label for="target-resume-select">Selected resume</label><select id="target-resume-select" onchange="onCandidateSelected(this.value)"></select></div>
-                <button class="quiet-link" onclick="switchView('jobs')">Manage jobs →</button>
             </section>
 
                     <div class="control-grid ranking-preferences">
@@ -2474,21 +2434,20 @@
             ? window.location.origin 
             : 'http://127.0.0.1:8010';
 
-        const RESUME_STORAGE_KEY = 'resume-analyzer-resumes-v1';
+        const RESUME_STORAGE_KEY = 'resume-analyzer-uploaded-resumes-v2';
         function restoreResumeState() {
             try {
                 const saved = JSON.parse(window.localStorage?.getItem(RESUME_STORAGE_KEY) || 'null');
                 if (saved && Array.isArray(saved.resumes) && saved.resumes.every(r =>
                     typeof r.id === 'string' && typeof r.name === 'string' && typeof r.text === 'string')) {
-                    return { resumes: saved.resumes, selected: saved.resumes.some(r => r.id === saved.selected) ? saved.selected : saved.resumes[0]?.id || null,
-                        importedDemoDatasets: Array.isArray(saved.importedDemoDatasets) ? saved.importedDemoDatasets.filter(id => ['sample', 'india'].includes(id)) : [] };
+                    return { resumes: saved.resumes, selected: saved.resumes.some(r => r.id === saved.selected) ? saved.selected : saved.resumes[0]?.id || null };
                 }
             } catch (_) {}
-            return { resumes: [...sampleResumes], selected: sampleResumes[0].id, importedDemoDatasets: [] };
+            return { resumes: [], selected: null };
         }
         function saveResumeState() {
             try {
-                window.localStorage?.setItem(RESUME_STORAGE_KEY, JSON.stringify({ resumes, selected: currentResumeId, importedDemoDatasets }));
+                window.localStorage?.setItem(RESUME_STORAGE_KEY, JSON.stringify({ resumes, selected: currentResumeId }));
             } catch (_) {
                 showBanner('error', 'Browser storage is unavailable or full. Keep a copy of your resumes; they may not survive a refresh.');
             }
@@ -2497,7 +2456,6 @@
 
         let isServerOnline = false;
         let resumes = restoredResumeState.resumes;
-        let importedDemoDatasets = restoredResumeState.importedDemoDatasets;
         let jds = [];
         let currentResumeId = restoredResumeState.selected;
         let currentJdData = null;
@@ -2633,6 +2591,7 @@
            Navigation & View Switching
         --------------------------------------------------------------- */
         function switchView(view) {
+            if (view === 'upload') view = 'setup';
             if (view === 'gap' && !currentJdData) {
                 logActivity('info', 'Open a ranked role to run its detailed analysis first.');
                 return;
@@ -2662,13 +2621,12 @@
             if (crumb) crumb.textContent = btn?.querySelector?.('.nav-text')?.textContent.trim() || view;
 
             const titles = {
-                upload: ['Keep your resumes ready.', 'Upload or paste resumes, then use Placement fit to choose a resume and find matching jobs.'],
-                jobs: ['Keep your target jobs in one place.', 'Upload, paste or remove job descriptions. Saved jobs are available for matching and chat.'],
+                jobs: ['Build your job library.', 'Upload job listings in bulk, then compare a resume against your saved jobs.'],
                 placement: step === 'gap'
                     ? ['See where you fit this role.', 'Gap analysis for your selected resume and job. Return to matching jobs to explore another role.']
                     : step === 'matches'
                         ? ['Your matching jobs.', 'Choose a ranked job to run its gap analysis.']
-                        : ['Find your next best fit.', 'Choose your resume and preferences, then run matching against your saved jobs.'],
+                        : ['Find your next best fit.', 'Upload your resumes, choose one, and find your best fit across our job listings.'],
                 compare: ['Find the role that fits you best.', 'Compare requirements and skill gaps across two or three jobs.'],
                 settings: ['Make the assistant work your way.', 'Manage providers, models and search preferences.'],
             };
@@ -2682,27 +2640,9 @@
         }
         document.querySelectorAll('.nav button').forEach(b => b.addEventListener('click', () => switchView(b.dataset.view)));
 
-        function toggleMode(type) {
-            const mode = document.querySelector(`input[name="${type}Mode"]:checked`).value;
-            if (type === 'res') {
-                document.getElementById('res-file-mode').classList.toggle('hidden', mode === 'manual');
-                document.getElementById('res-manual-mode').classList.toggle('hidden', mode === 'file');
-            } else {
-                document.getElementById('jd-file-mode').classList.toggle('hidden', mode === 'manual');
-                document.getElementById('jd-manual-mode').classList.toggle('hidden', mode === 'file');
-            }
-        }
-
         function toggleJSON() {
             document.getElementById('json-view').classList.toggle('open');
             document.getElementById('json-arrow').textContent = document.getElementById('json-view').classList.contains('open') ? '▲' : '▼';
-        }
-
-        function toggleBackendJSON() {
-            const el = document.getElementById('backend-json-view');
-            el.classList.toggle('open');
-            renderBackendJSON();
-            document.getElementById('backend-json-toggle').textContent = el.classList.contains('open') ? 'Hide raw JSON ↑' : 'View raw JSON →';
         }
 
         /* ---------------------------------------------------------------
@@ -2722,9 +2662,10 @@
         });
 
         async function handleFileSelect(type, fileList) {
+            if (!['res', 'jd'].includes(type)) return;
             const files = Array.from(fileList || []);
             if (!files.length) return;
-            const notices = document.getElementById('upload-notices');
+            const notices = document.getElementById(type === 'res' ? 'upload-notices' : 'job-upload-notices');
             notices.innerHTML = '';
             for (const file of files) {
                 try {
@@ -2740,7 +2681,7 @@
                         id: `${type}_${crypto.randomUUID()}`, text: doc.text, pages: doc.pages,
                         status: doc.status, warning: doc.warning
                     };
-                    const title = doc.name.replace(/\.[^/.]+$/, '').replace(/^(John_Doe_|JD_)/i, '').replace(/_/g, ' ');
+                    const title = doc.name.replace(/\.[^/.]+$/, '').replace(/^\d+[_ -]+/, '').replace(/^(John_Doe_|JD_)/i, '').replace(/_/g, ' ');
                     if (type === 'res') { record.name = title; resumes.push(record); }
                     else {
                         Object.assign(record, { title, company: 'Uploaded Document', location: 'Unspecified' });
@@ -2748,7 +2689,8 @@
                         jds.push(record);
                     }
                     renderList(type);
-                    if (type === 'res') onCandidateSelected(record.id);
+                    if (type === 'jd') renderCompareOptions();
+                    if (type === 'res' && !currentResumeId) onCandidateSelected(record.id);
                     invalidateRankings();
                     const note = document.createElement('div');
                     note.className = 'notice success';
@@ -2779,7 +2721,8 @@
             saveResumeState();
             document.getElementById('resume-count').innerText = `${resumes.length} resumes`;
             document.getElementById('jd-count').innerText = `${serverJDCount} jobs`;
-            document.getElementById('store-summary').textContent = `${serverJDCount} job descriptions stored. Refresh to load the latest jobs.`;
+            document.getElementById('resumes-details').hidden = !resumes.length;
+            document.getElementById('run-ranking-btn').disabled = !resumes.length || !jds.length;
             updateTargetSelect();
         }
 
@@ -2800,10 +2743,13 @@
         }
 
         function renderList(type) {
-            const list = type === 'res' ? resumes : jds;
+            const query = type === 'jd' ? document.getElementById('job-search').value.trim().toLowerCase() : '';
+            const list = type === 'res' ? resumes : jds.filter(j => `${j.title} ${j.company} ${j.location}`.toLowerCase().includes(query));
             const container = document.getElementById(type === 'res' ? 'resume-list' : 'jd-list');
+            if (!container) { updateCounts(); return; }
             container.innerHTML = '';
-            if (!list.length) container.innerHTML = `<div class="empty-note">No ${type === 'res' ? 'resumes' : 'job descriptions'} yet. Upload a document or load samples.</div>`;
+            if (type === 'jd') document.getElementById('job-list-count').textContent = `${list.length} of ${jds.length} saved jobs shown`;
+            if (!list.length) container.innerHTML = `<div class="empty-note">${type === 'res' ? 'No resumes uploaded yet. Choose one or several files above.' : query ? 'No jobs match your search.' : 'No jobs saved yet. Upload job files or add a job above.'}</div>`;
             list.forEach(item => {
                 const words = (item.text || '').split(/\s+/).filter(Boolean).length;
                 const badge = getWordCountBadge(item.text);
@@ -2827,36 +2773,23 @@
             updateCounts();
         }
 
-        function addManualResume() {
-            const name = document.getElementById('res-name-input').value.trim();
-            const text = document.getElementById('res-text-input').value.trim();
-            if (!name || !text) return logActivity('error', 'Fill in the candidate name and resume text.');
-            if (resumes.some(r => r.text.trim() === text)) return logActivity('error', 'This resume is already loaded.');
-            resumes.push({ id: 'res_' + crypto.randomUUID(), name, text });
-            document.getElementById('res-name-input').value = '';
-            document.getElementById('res-text-input').value = '';
-            renderList('res');
-            onCandidateSelected(resumes.at(-1).id);
-            invalidateRankings();
-            logActivity('success', `Resume "${name}" added.`);
-        }
-
         async function addManualJD() {
             const title = document.getElementById('jd-title-input').value.trim();
             const company = document.getElementById('jd-company-input').value.trim();
             const location = document.getElementById('jd-location-input').value.trim() || 'Unspecified';
             const text = document.getElementById('jd-text-input').value.trim();
-            if (!title || !company || !text) return logActivity('error', 'Job title, company, and JD text are required.');
-            if (jds.some(j => j.text.trim() === text)) return logActivity('error', 'This job description is already loaded.');
+            if (!title || !company || !text) return setNotice('job-upload-notices', 'Job title, company and description are required.', true);
+            if (jds.some(j => j.text.trim() === text)) return setNotice('job-upload-notices', 'This job description is already saved.', true);
+            setBusy('add-job-btn', true);
             try {
-                const jd = { id: 'jd_' + crypto.randomUUID(), title, company, location, text };
+                const jd = {id:'jd_' + crypto.randomUUID(),title,company,location,text};
                 await ensureJobStored(jd);
                 jds.push(jd);
-                ['jd-title-input', 'jd-company-input', 'jd-location-input', 'jd-text-input'].forEach(id => document.getElementById(id).value = '');
-                renderList('jd');
-                invalidateRankings();
-                logActivity('success', `Job description "${title}" stored.`);
-            } catch (error) { logActivity('error', `Job could not be saved: ${error.message}`); }
+                ['jd-title-input','jd-company-input','jd-location-input','jd-text-input'].forEach(id => document.getElementById(id).value = '');
+                renderList('jd'); renderCompareOptions(); invalidateRankings();
+                setNotice('job-upload-notices', `Saved "${title}". ${serverJDCount} jobs available for matching.`);
+            } catch (error) { setNotice('job-upload-notices', `Could not save job: ${error.message}`, true); }
+            finally { setBusy('add-job-btn', false); }
         }
 
         async function removeItem(type, id) {
@@ -2885,55 +2818,14 @@
             } catch (error) { logActivity('error', `Could not remove the document: ${error.message}`); }
         }
 
-        async function loadSampleData() {
-            setBusy('load-fixtures-btn', true);
-            const dataset = document.getElementById('sample-dataset').value === 'india' ? 'india' : 'sample';
-            const expected = dataset === 'india' ? 100 : 5;
-            setNotice('upload-notices', `Saving ${expected} demo jobs…`);
-            try {
-                const data = await apiRequest(`/api/load-fixtures/${dataset}`, { method: 'POST', timeoutMs: 300000 });
-                if (data.count !== expected || data.jds?.length !== expected || data.jds.some(j => !j.backend_id)) {
-                    throw new Error(`The backend did not save all ${expected} demo jobs. Please retry.`);
-                }
-                for (const resume of data.resumes || []) {
-                    if (!resumes.some(r => r.id === resume.id || r.text.trim() === resume.text.trim())) resumes.push(resume);
-                }
-                if (!importedDemoDatasets.includes(dataset)) importedDemoDatasets.push(dataset);
-                for (const job of data.jds) {
-                    if (!jds.some(j => (j.backend_id || j.id) === job.backend_id)) jds.push(job);
-                }
-                if (!resumes.some(r => r.id === currentResumeId)) currentResumeId = resumes[0]?.id || null;
-                invalidateRankings();
-                renderList('res');
-                await syncDataset();
-                if (data.jds.some(job => !storedJobIds.includes(job.backend_id))) {
-                    throw new Error(`Not all ${expected} demo jobs are available in the store. Please retry.`);
-                }
-                updateChatContext();
-                switchView('jobs');
-                const message = `All ${expected} demo jobs are saved. ${serverJDCount} jobs available for matching; ${resumes.length} resumes loaded in this browser.`;
-                setNotice('upload-notices', message);
-                logActivity('success', message);
-            } catch (error) {
-                try { await syncDataset(); } catch (_) {}
-                setNotice('upload-notices', `Sample loading failed: ${error.message}`, true);
-                logActivity('error', `Sample loading failed: ${error.message}`);
-            } finally { setBusy('load-fixtures-btn', false); }
-        }
-
         async function resetSession() {
             if (chatIsStreaming || chatIsIndexing) return logActivity('error', 'Wait for chat to finish before resetting.');
-            if (!window.confirm('Remove all stored job descriptions, loaded resumes, and this chat?')) return;
+            if (!window.confirm('Clear uploaded resumes and this chat? The job listings will remain.')) return;
             try {
                 await clearChatData();
-                await apiRequest('/jds', { method: 'DELETE' });
                 resumes = [];
-                importedDemoDatasets = [];
-                jds = [];
                 currentResumeId = null;
                 selectedJdId = null;
-                storedJobIds = [];
-                serverJDCount = 0;
                 clearAnalysisSelection();
                 analysisCache.clear();
                 invalidateRankings();
@@ -2944,8 +2836,8 @@
                 document.getElementById('candidate-name').textContent = 'No candidate selected';
                 document.getElementById('candidate-meta').textContent = 'Choose a resume';
                 document.getElementById('upload-notices').innerHTML = '';
-                switchView('upload');
-                logActivity('success', 'Session, job store, and indexed chat data cleared.');
+                switchView('setup');
+                logActivity('success', 'Uploaded resumes and chat cleared. All jobs are still available.');
             } catch (error) { logActivity('error', `Reset failed: ${error.message}`); }
         }
 
@@ -2956,7 +2848,7 @@
         async function runAnalysis() {
             const targetId = document.getElementById('target-resume-select').value;
             if (!targetId || !resumes.some(r => r.id === targetId)) return logActivity('error', 'Select a resume first.');
-            if (!jds.length) return logActivity('error', 'Upload or add at least one job description.');
+            if (!jds.length) return logActivity('error', 'The job catalog is unavailable. Check your Gemini settings and refresh.');
             setBusy('run-ranking-btn', true);
             setNotice('ranking-status', 'Calculating job matches…');
             setNotice('placement-status', 'Calculating job matches…');
@@ -2986,7 +2878,7 @@
                 rankedResumeId = resume.id;
                 document.getElementById('matches-header').textContent = `Target resume: ${resume.name} (${resume.text.split(/\s+/).filter(Boolean).length} words)`;
                 document.getElementById('ranking-updated').textContent = `Updated ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-                setNotice('ranking-status', lastRankings.length ? (result.ranking_note || '') : 'The backend returned no matches. Add job descriptions and retry.');
+                setNotice('ranking-status', lastRankings.length ? (result.ranking_note || '') : 'The backend returned no matches. Check your settings and retry.');
                 renderRankings();
                 if (doSwitchView) switchView('matches');
                 logActivity('success', `Ranked ${lastRankings.length} stored jobs for "${resume.name}".`);
@@ -3150,36 +3042,15 @@
            Auto-Initialization on Load
            Load the actual stored jobs and configuration.
         --------------------------------------------------------------- */
-        async function syncDemoResumes() {
-            const data = await apiRequest('/api/loaded-demo-resumes');
-            let changed = false;
-            for (const dataset of data.datasets || []) {
-                if (!['sample', 'india'].includes(dataset.id) || importedDemoDatasets.includes(dataset.id)) continue;
-                for (const resume of dataset.resumes || []) {
-                    if (!resumes.some(r => r.id === resume.id || r.text.trim() === resume.text.trim())) resumes.push(resume);
-                }
-                importedDemoDatasets.push(dataset.id);
-                changed = true;
-            }
-            if (changed) {
-                if (!resumes.some(r => r.id === currentResumeId)) currentResumeId = resumes[0]?.id || null;
-                renderList('res');
-                renderCompareOptions();
-                updateChatContext();
-            }
-        }
-
         async function initializeApp() {
+            try { window.localStorage?.removeItem?.('resume-analyzer-resumes-v1'); } catch (_) {}
             renderList('res');
-            renderList('jd');
             renderRankings();
             const select = document.getElementById('target-resume-select');
             select.value = currentResumeId || "";
             updateChatContext();
             try { await syncDataset(); }
             catch (error) { logActivity('error', `Could not load stored jobs: ${error.message}`); }
-            try { await syncDemoResumes(); }
-            catch (error) { logActivity('error', `Could not load demo resumes: ${error.message}`); }
             await loadSettings();
         }
 
@@ -3553,21 +3424,19 @@
         }
 
         async function syncDataset() {
-            const [jobs, stats, ids] = await Promise.all([
-                apiRequest('/jds'), apiRequest('/jds/count'), apiRequest('/jds/ids')
-            ]);
+            const jobs = await apiRequest('/api/jobs/catalog', { method: 'POST', timeoutMs: 300000 });
             const previous = jds;
             jds = jobs.jds.map(item => {
-                const old = previous.find(j => (j.backend_id || j.id) === item.jd_id);
+                const old = previous.find(j => (j.backend_id || j.id) === item.backend_id);
                 return {
-                    ...old, id: old?.id || item.jd_id, backend_id: item.jd_id,
+                    ...old, id: old?.id || item.backend_id, backend_id: item.backend_id,
                     title: item.title, company: item.company, location: item.location,
-                    text: item.full_text || item.snippet
+                    text: item.text
                 };
             });
-            jdCap = stats.cap;
-            serverJDCount = stats.count;
-            storedJobIds = ids.ids;
+            jdCap = null;
+            serverJDCount = jobs.count;
+            storedJobIds = jobs.jds.map(job => job.backend_id);
             if (selectedJdId && !jds.some(j => j.id === selectedJdId)) {
                 selectedJdId = null;
                 clearAnalysisSelection();
@@ -3580,21 +3449,9 @@
 
         async function refreshDataset() {
             setBusy('refresh-store-btn', true);
-            try {
-                await syncDataset();
-                invalidateRankings();
-                logActivity('success', `Loaded ${serverJDCount} stored job descriptions.`);
-                if (document.getElementById('backend-json-view').classList.contains('open')) renderBackendJSON();
-            } catch (error) { logActivity('error', `Could not refresh jobs: ${error.message}`); }
+            try { await syncDataset(); invalidateRankings(); logActivity('success', `Loaded ${serverJDCount} saved jobs.`); }
+            catch (error) { logActivity('error', `Could not refresh jobs: ${error.message}`); }
             finally { setBusy('refresh-store-btn', false); }
-        }
-
-        function renderBackendJSON() {
-            document.getElementById('backend-json-view').textContent = JSON.stringify({
-                backend_connected: isServerOnline,
-                stored_count: serverJDCount, capacity: jdCap, stored_job_ids: storedJobIds,
-                jobs: jds.map(j => ({ id: j.backend_id || j.id, title: j.title, company: j.company, location: j.location }))
-            }, null, 2);
         }
 
         async function ensureJobStored(jd) {
@@ -3688,7 +3545,7 @@
             const key = analysisKey(resume, jd);
             const configVersion = configurationRevision;
             if (analysisCache.has(key)) return analysisCache.get(key);
-            const data = await apiRequest('/analyze', { ...postJSON({ resume_text: resume.text, resume_id: resume.id, jd_id: jd.backend_id }), timeoutMs: 180000 });
+            const data = await apiRequest('/analyze', { ...postJSON({ resume_text: resume.text, resume_id: resume.id, jd_id: jd.backend_id }), timeoutMs: 60000 });
             if (configVersion !== configurationRevision) throw new Error('Settings changed during analysis. Please run it again.');
             if (!data.context_sufficient) throw new Error(data.insufficient_reason || 'The documents lack enough information for analysis.');
             if (data.resume_id !== resume.id || data.jd_id !== jd.backend_id) throw new Error('The analysis belongs to different documents. Please retry.');
@@ -3739,18 +3596,24 @@
             const signature = JSON.stringify([resume.id, resume.text, ids, configurationRevision]);
             const documentVersion = rankingRequestVersion;
             setBusy('compare-btn', true);
-            const results = [];
+            const results = ids.map(id => ({ jd: jds.find(j => j.id === id), pending: true }));
+            const isCurrent = () => documentVersion === rankingRequestVersion && resume.id === currentResumeId && JSON.stringify([resume.id, resume.text, ids, configurationRevision]) === signature;
+            let completed = 0;
             document.getElementById('compare-results').innerHTML = '';
             try {
-                for (const id of ids) {
-                    const jd = jds.find(j => j.id === id);
-                    if (!jd) throw new Error('A selected job was removed. Choose the jobs again.');
-                    setNotice('compare-status', `Analyzing role ${results.length + 1} of ${ids.length}: ${jd.title}…`);
-                    try { results.push({ jd, analysis: await analyzePair(resume, jd) }); }
-                    catch (error) { results.push({ jd, error: error.message }); }
-                    if (documentVersion !== rankingRequestVersion || resume.id !== currentResumeId || JSON.stringify([resume.id, resume.text, ids, configurationRevision]) !== signature) return;
-                }
+                if (results.some(r => !r.jd)) throw new Error('A selected job was removed. Choose the jobs again.');
+                setNotice('compare-status', `Analyzing ${ids.length} roles together… 0 of ${ids.length} finished.`);
                 renderComparison(results);
+                await Promise.all(results.map(async (result) => {
+                    try { result.analysis = await analyzePair(resume, result.jd); }
+                    catch (error) { result.error = error.message; }
+                    result.pending = false;
+                    completed++;
+                    if (!isCurrent()) return;
+                    renderComparison(results);
+                    setNotice('compare-status', `Analyzing roles… ${completed} of ${ids.length} finished.`);
+                }));
+                if (!isCurrent()) return;
                 const successful = results.filter(r => r.analysis).length;
                 setNotice('compare-status', successful === results.length ? `Compared ${successful} roles.` : `Compared ${successful} of ${results.length} roles. Failed analyses are shown below.`, successful !== results.length);
             } catch (error) { setNotice('compare-status', error.message, true); }
@@ -3760,16 +3623,16 @@
         function renderComparison(results) {
             const cell = value => `<td>${escapeHtml(value)}</td>`;
             const fields = [
-                ['Skill coverage', r => r.analysis ? `${r.analysis.match_score}%` : 'Unavailable'],
-                ['Missing essential', r => r.analysis?.skill_gap?.missing_essential?.join(', ') || (r.analysis ? 'None' : r.error)],
-                ['Missing preferred', r => r.analysis?.skill_gap?.missing_preferred?.join(', ') || (r.analysis ? 'None' : 'Unavailable')],
-                ['Matched skills', r => r.analysis?.skill_gap?.matched?.map(s => s.skill_name).join(', ') || 'None'],
-                ['Summary', r => r.analysis?.summary || r.error]
+                ['Skill coverage', r => r.pending ? 'Analyzing…' : r.analysis ? `${r.analysis.match_score}%` : 'Unavailable'],
+                ['Missing essential', r => r.pending ? 'Analyzing…' : r.analysis?.skill_gap?.missing_essential?.join(', ') || (r.analysis ? 'None' : r.error)],
+                ['Missing preferred', r => r.pending ? 'Analyzing…' : r.analysis?.skill_gap?.missing_preferred?.join(', ') || (r.analysis ? 'None' : 'Unavailable')],
+                ['Matched skills', r => r.pending ? 'Analyzing…' : r.analysis?.skill_gap?.matched?.map(s => s.skill_name).join(', ') || (r.analysis ? 'None' : 'Unavailable')],
+                ['Summary', r => r.pending ? 'Analyzing…' : r.analysis?.summary || r.error]
             ];
             const counts = new Map();
             results.filter(r => r.analysis).forEach(r => new Set(r.analysis.skill_gap.missing_essential).forEach(skill => counts.set(skill, (counts.get(skill) || 0) + 1)));
             const gaps = [...counts].sort((a, b) => b[1] - a[1]).map(([skill, count]) => `${skill} (${count} roles)`).join(' · ');
-            document.getElementById('compare-results').innerHTML = `<section class="panel"><h2>Role comparison</h2><div class="table-scroll"><table class="comparison-table"><thead><tr><th>Requirement</th>${results.map(r => `<th>${escapeHtml(r.jd.title)}<br><span class="feature-note">${escapeHtml(r.jd.company)}</span></th>`).join('')}</tr></thead><tbody>${fields.map(([label, get]) => `<tr><th>${label}</th>${results.map(r => cell(get(r))).join('')}</tr>`).join('')}</tbody></table></div><h3>Recurring essential gaps</h3><p class="feature-note">${escapeHtml(gaps || 'No essential gaps in the successfully analyzed roles.')}</p></section>`;
+            document.getElementById('compare-results').innerHTML = `<section class="panel"><h2>Role comparison</h2><div class="table-scroll"><table class="comparison-table"><thead><tr><th>Requirement</th>${results.map(r => `<th>${escapeHtml(r.jd.title)}<br><span class="feature-note">${escapeHtml(r.jd.company)}</span></th>`).join('')}</tr></thead><tbody>${fields.map(([label, get]) => `<tr><th>${label}</th>${results.map(r => cell(get(r))).join('')}</tr>`).join('')}</tbody></table></div><h3>Recurring essential gaps</h3><p class="feature-note">${escapeHtml(gaps || (results.some(r => r.pending) ? 'Waiting for completed role analyses.' : results.some(r => r.analysis) ? 'No essential gaps in the successfully analyzed roles.' : 'No successful analyses to compare.'))}</p></section>`;
         }
 
 
@@ -3787,7 +3650,7 @@
                 document.getElementById('settings-embedding').textContent = data.embedding_model;
                 document.getElementById('settings-rerank').checked = data.rerank;
                 jdCap = data.jd_cap;
-                serverJDCount = data.jd_count;
+                serverJDCount = jds.length;
                 updateCounts();
                 setBusy('settings-save-btn', false);
                 setNotice('settings-status', 'Current settings loaded.');
@@ -3823,6 +3686,7 @@
                 try { await clearChatData(); }
                 catch (_) { chatContextId = null; chatContextKey = null; chatHistory = []; updateChatContext(); }
                 await loadSettings();
+                await syncDataset();
                 setNotice('settings-status', 'Settings saved. Your next request will use the new configuration.');
             } catch (error) { setNotice('settings-status', `Settings could not be saved: ${error.message}`, true); }
             finally { setBusy('settings-save-btn', !savedSettings); }

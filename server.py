@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 from uuid import UUID, uuid4
 from typing import TYPE_CHECKING, Optional
+from threading import Lock
 from dotenv import load_dotenv
 load_dotenv(override=True)
 
@@ -34,18 +35,20 @@ app.add_middleware(
 
 # Initialize services (analyzer is primary Phase 1 service, rag is lazy-loaded for Phase 2)
 analyzer = None
+_analyzer_lock = Lock()
 _rag: Optional[RAGPipeline] = None
 _chat = ChatService()
 
 
 def get_analyzer():
     global analyzer
-    if analyzer is None:
-        from analysis_pipeline import AnalysisPipeline
-        try:
-            analyzer = AnalysisPipeline()
-        except FileNotFoundError as exc:
-            raise HTTPException(status_code=503, detail=str(exc)) from exc
+    with _analyzer_lock:
+        if analyzer is None:
+            from analysis_pipeline import AnalysisPipeline
+            try:
+                analyzer = AnalysisPipeline()
+            except FileNotFoundError as exc:
+                raise HTTPException(status_code=503, detail=str(exc)) from exc
     return analyzer
 
 
@@ -405,6 +408,19 @@ def load_json_fixtures():
     if not all(job["backend_id"] in saved_ids for job in jds):
         raise HTTPException(status_code=503, detail="Not all five sample jobs were saved. Please retry.")
     return {"resumes": resumes, "jds": jds, "count": len(jds), "stored_count": len(saved_ids)}
+
+
+@app.post("/api/jobs/catalog")
+def load_job_catalog():
+    """Initialize jobs once, then return the current editable job library."""
+    import jd_index
+    def seed_catalog():
+        load_json_fixtures()
+        load_india_fixtures()
+    jobs = [{"id": r.jd_id, "backend_id": r.jd_id, "title": r.title,
+             "company": r.company, "location": r.location, "text": r.full_text}
+            for r in jd_index.get_catalog_records(seed_catalog)]
+    return {"jds": jobs, "count": len(jobs)}
 
 
 @app.post("/api/load-fixtures/india")

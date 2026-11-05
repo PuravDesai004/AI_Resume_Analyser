@@ -1,5 +1,6 @@
 import os
 import json
+import time
 from typing import Any, Optional
 from dotenv import load_dotenv
 from google import genai
@@ -21,6 +22,8 @@ from analysis_prompt_builder import build_analysis_prompt, get_generation_config
 load_dotenv(override=True)
 # Model fallback cascade per specification: gemini-3.8-flash -> gemini-3.6-flash -> gemini-3.5-flash-lite -> gemini-3.5-flash -> gemini-flash-latest
 MODELS_TO_TRY = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-3.5-flash", "gemini-flash-latest"]
+GENERATION_BUDGET_SECONDS = 45
+GENERATION_CALL_TIMEOUT_SECONDS = 15
 
 
 class AnalysisPipeline:
@@ -132,6 +135,52 @@ class AnalysisPipeline:
             ][:4]
         }
 
+    def _generate_response(self, prompt, config):
+        """Keep the entire provider fallback cascade within one time budget."""
+        deadline = time.monotonic() + GENERATION_BUDGET_SECONDS
+        last_error = None
+        quota_seen = False
+        configured_model = os.getenv("RAG_GENERATION_MODEL", "").strip()
+        models = list(dict.fromkeys(([configured_model] if configured_model else []) + MODELS_TO_TRY))
+        for client in self.clients or [self.client]:
+            for model in models:
+                for attempt in range(2):
+                    remaining = deadline - time.monotonic()
+                    # Gemini rejects manually set deadlines below ten seconds.
+                    # End the cascade rather than sending an invalid last call.
+                    if remaining < 10:
+                        message = "Gemini analysis took too long. Please retry."
+                        if quota_seen:
+                            message = "Gemini analysis timed out and some attempts hit its usage quota. Wait for the quota to reset or configure another Gemini key in Settings."
+                        raise TimeoutError(message)
+                    # Copy the shared generation config: parallel comparisons
+                    # must not mutate each other's request timeout settings.
+                    request_config = config.model_copy(update={"http_options": genai.types.HttpOptions(
+                        timeout=max(1, int(min(remaining, GENERATION_CALL_TIMEOUT_SECONDS) * 1000)),
+                        retry_options=genai.types.HttpRetryOptions(attempts=1),
+                    )})
+                    try:
+                        response = client.models.generate_content(model=model, contents=prompt, config=request_config)
+                        if response is not None and response.text:
+                            return response
+                        last_error = RuntimeError("Generation failed: empty model response")
+                        break
+                    except Exception as exc:
+                        last_error = exc
+                        message = str(exc).lower()
+                        if "429" in message or "resource_exhausted" in message:
+                            quota_seen = True
+                        if attempt == 0 and ("503" in message or "high demand" in message):
+                            if deadline - time.monotonic() > 0.8:
+                                time.sleep(0.8)
+                                continue
+                        # Quota errors and missing models move on immediately;
+                        # repeatedly waiting on the same model cannot help.
+                        break
+        if quota_seen:
+            raise RuntimeError("Gemini usage quota reached. Wait for the quota to reset or configure another Gemini key in Settings.") from last_error
+        raise last_error or RuntimeError("Generation failed: no model response")
+
     def analyze(self, resume_text: str, resume_id: str, jd_id: str) -> dict[str, Any]:
         """
         Tier 2: Comprehensive gap analysis.
@@ -173,38 +222,7 @@ class AnalysisPipeline:
             prompt = build_analysis_prompt(clean_resume_text, jd_record.full_text)
             config = get_generation_config()
 
-            response = None
-            last_err = None
-            clients_to_try = self.clients if self.clients else [self.client]
-            configured_model = os.getenv("RAG_GENERATION_MODEL", "").strip()
-            models_to_try = list(dict.fromkeys(([configured_model] if configured_model else []) + MODELS_TO_TRY))
-
-            for active_client in clients_to_try:
-                for model_name in models_to_try:
-                    for attempt in range(2):
-                        try:
-                            response = active_client.models.generate_content(
-                                model=model_name,
-                                contents=prompt,
-                                config=config
-                            )
-                            if response and response.text:
-                                break
-                        except Exception as e:
-                            last_err = e
-                            err_str = str(e).lower()
-                            if ("503" in err_str or "429" in err_str or "high demand" in err_str or "resource_exhausted" in err_str) and attempt == 0:
-                                import time
-                                time.sleep(0.8)
-                                continue
-                            break
-                    if response is not None and response.text:
-                        break
-                if response is not None and response.text:
-                    break
-
-            if response is None or not response.text:
-                raise last_err if last_err else RuntimeError("Generation failed: empty model response")
+            response = self._generate_response(prompt, config)
 
             response_text = response.text.strip()
             if response_text.startswith("```"):

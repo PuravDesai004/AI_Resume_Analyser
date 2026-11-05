@@ -11,7 +11,7 @@ Python 3.12 is the tested local runtime. From the repository directory on macOS 
 ```bash
 python3.12 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
-[ -e .env ] || cp .env.example .env
+cp .env.example .env
 .venv/bin/python -m uvicorn server:app --host 127.0.0.1 --port 8010
 ```
 
@@ -25,7 +25,7 @@ On Windows PowerShell:
 ```powershell
 py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
-if (-not (Test-Path .env)) { Copy-Item .env.example .env }
+Copy-Item .env.example .env
 .\.venv\Scripts\python.exe -m uvicorn server:app --host 127.0.0.1 --port 8010
 ```
 
@@ -39,23 +39,31 @@ the CrossEncoder model.
 
 ## App flow
 
-1. Add your resume in **Resumes** and job descriptions in **Jobs**.
-2. Open **Placement fit** and choose your resume on the setup screen.
-3. Run placement fit to rank all saved jobs, with optional location/work preferences.
-   Matching opens a separate results screen; the setup controls are hidden.
-4. Click **Run gap analysis** on a ranked job to open its report inside Placement fit.
-5. Click **Ask AI about this match** in the report. The assistant uses this exact
-   resume, job and completed analysis, displayed as read-only context labels.
-6. Use **Back to matching jobs** to explore another role, or **Back to setup**
-   to change the resume/preferences. The ranking remains available until the resume changes.
+1. Open **Placement fit**. It starts with no resumes and 105 job listings (the original five plus 100 Indian examples).
+2. Click **Choose resume files** or drag and drop PDF, DOCX or TXT files. You can
+   select several files at once. Each file can be up to 5 MB.
+3. Pick the resume/version to analyze from **Selected resume**, optionally set
+   location/work preferences, and run matching against all saved jobs. Choose Top 5, Top 10, Top 25 or All results.
+4. Results open separately from the upload/setup screen. Open a ranked job to
+   run gap analysis, then **Ask AI about this match** to discuss the report.
+5. Use the back buttons to return to matching jobs or upload/select another resume.
+   **Compare roles** compares two or three jobs from the full library.
 
-Resume text, original page references and your selected resume are saved in this
-browser's local storage and restored after refresh. Jobs persist in the backend.
-Analysis and conversation state are per-page sessions; after refresh run the
-analysis again before chatting. Changing the selected resume or opening another
-match closes the prior chat and prevents late answers from appearing in the new
-conversation. Reset removes the saved browser resumes, backend jobs and current
-chat data. Local browser storage is specific to the URL and browser profile.
+The uploadable examples are in `demo_resumes/`: the five original profiles
+(Python Developer, Frontend Engineer, Data Scientist, DevOps Engineer and
+Fullstack Engineer), plus Aditi Shah's Data Engineer profile. These six files are
+not imported automatically. The former 100 generated profiles are no longer
+loaded into the app; the browser storage version changed to start the new flow empty.
+
+Uploaded resumes and the selected version persist in this browser. Use **Manage
+uploaded resumes** to switch/remove profiles. **Clear uploaded resumes** clears
+these profiles and the current chat, while retaining all job listings.
+The separate Resumes tab is removed; uploads live in Placement fit. **Jobs**
+supports multiple-file upload, drag-and-drop, manual job entry, search, refresh
+and removal. The original 105 jobs are provisioned once through `/api/jobs/catalog`;
+uploaded jobs are retained and deleted jobs stay removed after refresh. There is
+no job-count cap. Analysis/chat are per-page sessions, so after refresh
+run gap analysis again before chatting.
 
 Result cards show **Role fit /100**, with Strong/Moderate/Weak in the same score area, as the primary score when reranking succeeds.
 This is a normalized model rating, not percentage requirement coverage or a hiring
@@ -67,16 +75,12 @@ report's skill coverage score uses 80% essential and 20% preferred requirement
 coverage. Experience, education and responsibility percentages are AI estimates
 shown separately; they do not enter that computed skill score.
 
-The HTML interface includes provider settings, Markdown report downloads, Top 5 /
-Top 10 / Top 25 / All rankings, location and work arrangement preferences, result filters
-and sorting, two- or three-role comparisons, a demo dataset selector (the original five examples or 100 India jobs/resumes), and job-store
-refresh. The resume selector is on the Placement fit setup screen. Resumes and Jobs
-handle uploads and document management. Placement fit has separate setup, ranked
-results and gap-report screens; returning from a gap report keeps
-the ranked results. Chat includes a completed analysis
-for the selected pair, preserves real PDF page references, and clears indexed
-contexts when documents or conversations are removed. Provider failures are
-displayed instead of simulated ranking or analysis results.
+The HTML interface includes multi-resume upload and selection in Placement fit,
+provider settings, Markdown report downloads, location/work preferences, result
+filters, sorting and two- or three-role comparisons. Matching and gap reports
+have separate screens with back buttons; changing resumes invalidates old results.
+Chat uses the completed analysis and the selected document pair, with original
+page references. Provider failures are displayed instead of simulated results.
 
 Chat is available only after a successful gap analysis for the selected pair.
 Follow-up questions reuse the report and indexed evidence. Failed or mismatched
@@ -87,11 +91,6 @@ may use general knowledge, clearly labelled as suggestions. Sources establish th
 skills/role basis; proposed projects are never presented as completed resume work.
 Learning timelines include assumptions and estimates, while candidate facts, job
 requirements and computed scores remain tied to the selected documents.
-
-Resume/JD questions are available in the AI Assistant. The sample button adds all five bundled jobs and sample resumes, keeps your loaded
-resume and existing jobs, and reuses previously saved samples instead of duplicating
-them. Success is shown only after verifying every sample job in the backend. Resetting
-clears stored jobs and the current chat's indexed data after confirmation.
 
 Settings save provider keys locally in `.env`. Empty key fields keep existing
 keys; use the removal checkboxes to clear them. Model changes apply to chat and placement analysis, with the existing model
@@ -105,11 +104,10 @@ If changing the backend port, also change `API_BASE_URL` in `.env` and restart t
 
 ## Bounded role-fit reranking
 
-Job storage has no artificial count cap; API `cap` / `jd_cap` fields are null.
+The app uses all 105 job listings. Backend storage and ranking APIs retain no artificial record-count cap; `cap` / `jd_cap` fields are null.
 Placement fit compares embeddings against all stored jobs and applies location/work
 preferences. The **top 25** embedding matches form the fixed maximum Mercury pool,
-regardless of how many results the user chooses to display. Top 5/10/25 shows that
-many results after reranking; **All jobs** displays the reviewed shortlist first,
+for backend callers using larger libraries. The job library retains the original five plus 100 Indian listings; **All jobs** displays the reviewed shortlist first,
 then the rest in original similarity order. Jobs outside the pool are explicitly
 labelled “similarity · outside AI shortlist” and never receive invented role-fit
 scores. A positive role-fit minimum filters to AI-reviewed jobs only.
@@ -137,15 +135,22 @@ menu lets you inspect the original semantic ordering without another API call.
 
 The combined Role fit score/category appears only for validated assessments used for reranking.
 Missing keys, disabled reranking, provider errors, incomplete/malformed answers,
-an individual document pair that exceeds the 60 KB request budget, or any confidence below
-`OPENROUTER_DECISION_MIN_CONFIDENCE=0.5` preserve the whole baseline order. The
-results explain the fallback; uncertain assessments keep the similarity display. Calls use a
+or an individual document pair that exceeds the 60 KB request budget preserve the
+whole baseline order. Every valid assessment is used regardless of its confidence;
+confidence remains available in the API response and does not gate reranking.
+The results explain any fallback. Calls use a
 3-second connection / 20-second read timeout and a 20-second failure cooldown.
 
 Successful document-pair assessments are cached in memory for 30 minutes (128
 entries). Resume/JD content, model, key and rubric changes invalidate reuse;
 Settings edits clear the cache. Restarting also clears it. Gemini still handles
 individual gap reports and report-scoped chat; Mercury changes job ordering only.
+
+Compare roles starts the selected two or three gap analyses together and shows
+each result as it completes. Each role shares a 45-second Gemini fallback budget,
+with provider calls limited to 15 seconds and no SDK retries. The browser stops
+waiting after 60 seconds per role. A failed role shows its error alongside any
+successful results and the comparison button becomes available again.
 
 ## Nearby location hierarchy
 
@@ -238,7 +243,9 @@ node tests/test_html_features.cjs
 node tests/test_html_placement_flow.cjs
 node tests/test_html_chat_suggestions.cjs
 node tests/test_html_mercury.cjs
-node tests/test_html_india_dataset.cjs
+node tests/test_html_resume_upload.cjs
+node tests/test_html_job_upload.cjs
+node tests/test_html_compare.cjs
 ```
 
 Chat tests use actual Chroma filtering with fake AI calls:
